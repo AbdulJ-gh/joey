@@ -1,0 +1,30 @@
+{
+  "compilerOptions": {
+    "target": "esnext",
+    "module": "esnext",
+    "lib": ["esnext", "webworker"],
+    "declaration": true,
+    "removeComments": true,
+    "outDir": "lib",
+    "strict": true,
+    "esModuleInterop": true,
+    "moduleResolution": "node",
+    "alwaysStrict": true,
+    "noImplicitAny": true,
+    "preserveConstEnums": true,
+    "sourceMap": false,
+    "types": ["@cloudflare/workers-types"]
+  },
+  "exclude": [
+    "node_modules",
+    "lib",
+    "src/*.test.ts",
+    "src/**/*.test.ts"
+  ],
+  "include": [
+    "src/*.ts",
+    "src/**/*.ts",
+    "./node_modules/@types/node/globals.d.ts",
+    "./node_modules/@cloudflare/workers-types/index.d.ts"
+  ],
+}
