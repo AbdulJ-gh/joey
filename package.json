@@ -1,13 +1,12 @@
 {
   "name": "@marsupialdev/joey",
-  "version": "0.1.8",
+  "version": "0.1.6",
   "description": "A framework for Cloudflare Workers",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
     "build": "tsc -p tsconfig-build.json",
-    "prepublish": "tsc && npm version patch && cp package.json lib/",
-    "publish": "npm publish",
+    "prepublish": "tsc && npm version patch && cp package.json lib/ && cd lib",
     "test": "jest --coverage ./src",
     "watch": "watch 'npm run build' ./src"
   },
