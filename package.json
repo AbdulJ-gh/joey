@@ -7,7 +7,7 @@
   "scripts": {
     "build": "tsc -p tsconfig-build.json",
     "prepublish": "tsc && npm version patch && cp package.json lib/",
-    "publish": "npm publish ./lib",
+    "publish": "npm publish",
     "test": "jest --coverage ./src",
     "watch": "watch 'npm run build' ./src"
   },
