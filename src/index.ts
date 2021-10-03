@@ -1,9 +1,6 @@
-import Routing from './Routing';
+import * as Routing from './Routing';
+
+const Joey = { Joey: 'THIS IS A RANDOM STRING' };
 
 export { Routing };
-
-const Joey = {
-	Joey: 'THIS IS A RANDOM STRING'
-};
-
 export default Joey;
