@@ -6,7 +6,7 @@
   "types": "lib/index.d.ts",
   "scripts": {
     "build": "tsc -p tsconfig-build.json",
-    "prepub": "tsc && npm version patch && cp package.json lib/ && cd lib",
+    "prepub": "tsc && npm version patch && cp package.json lib/ && cd lib && npm pack",
     "pub": "npm publish",
     "test": "jest --coverage ./src",
     "watch": "watch 'npm run build' ./src"
@@ -18,9 +18,6 @@
   "publishConfig": {
     "@marsupialdev:registry": "https://gitlab.com/api/v4/projects/30124177/packages/npm/"
   },
-  "files": [
-    "lib"
-  ],
   "keywords": [
     "cloudflare",
     "workers",
