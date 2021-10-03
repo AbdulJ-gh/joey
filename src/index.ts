@@ -1,4 +1,9 @@
-console.log(100);
-console.log(200);
-console.log(300);
-console.log(400);
+import Routing from './Routing';
+
+export { Routing };
+
+const Joey = {
+	Joey: 'THIS IS A RANDOM STRING'
+};
+
+export default Joey;
