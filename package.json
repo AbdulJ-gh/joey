@@ -6,7 +6,8 @@
   "types": "lib/index.d.ts",
   "scripts": {
     "build": "tsc -p tsconfig-build.json",
-    "prepublish": "tsc && npm version patch && cp package.json lib/ && cd lib",
+    "prepublish": "tsc && npm version patch && cp package.json lib/",
+    "publish": "npm publish lib",
     "test": "jest --coverage ./src",
     "watch": "watch 'npm run build' ./src"
   },
