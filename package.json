@@ -6,15 +6,11 @@
   "types": "lib/index.d.ts",
   "scripts": {
     "build": "tsc -p tsconfig-build.json",
-    "prepublish": "tsc && npm version patch",
+    "prepublish": "tsc && npm version patch && cp package.json lib/",
+    "publish": "",
+    "postpublish": "git clean -fd",
     "test": "jest --coverage ./src",
     "watch": "watch 'npm run build' ./src"
-  },
-  "babel": {
-    "presets": [
-      "@babel/preset-env",
-      "@babel/preset-typescript"
-    ]
   },
   "repository": {
     "type": "git",
