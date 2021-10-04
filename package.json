@@ -1,6 +1,6 @@
 {
   "name": "@marsupialdev/joey",
-  "version": "0.1.17",
+  "version": "0.1.18",
   "description": "A framework for Cloudflare Workers",
   "main": "index.js",
   "types": "index.d.ts",
