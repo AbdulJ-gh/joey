@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
     "target": "esnext",
-    "module": "esnext",
-    "lib": ["esnext", "webworker"],
+    "module": "CommonJS",
+    "lib": ["esnext", "webWorker"],
     "declaration": true,
     "outDir": "lib",
     "strict": true,
@@ -12,16 +12,17 @@
     "noImplicitAny": true,
     "preserveConstEnums": true,
     "sourceMap": false,
-    "types": ["@cloudflare/workers-types", "jest"]
+    "typeRoots": [ "node_modules/@types", "typings" ],
+    "types": ["@cloudflare/workers-types", "mocha", "chai", "expect"]
   },
   "exclude": [
     "node_modules",
     "lib",
   ],
   "include": [
-    "src/*.ts",
-    "src/**/*.ts",
-    "./node_modules/@types/node/globals.d.ts",
-    "./node_modules/@cloudflare/workers-types/index.d.ts"
+    "src/**/*",
+    "typings/expect",
+    "node_modules/@types/node/globals.d.ts",
+    "node_modules/@cloudflare/workers-types"
   ],
 }

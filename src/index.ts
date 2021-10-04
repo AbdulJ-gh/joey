@@ -1,6 +1,5 @@
 import * as Routing from './Routing';
-
-const Joey = { Joey: 'THIS IS A RANDOM STRING' };
+import App from './Joey';
 
 export { Routing };
-export default Joey;
+export default App;

@@ -1,5 +1,1 @@
-const Router = {
-	a: 100
-};
-
-export default Router;
+export { default } from './router';

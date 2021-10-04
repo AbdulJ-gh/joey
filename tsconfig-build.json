@@ -2,9 +2,8 @@
   "compilerOptions": {
     "target": "esnext",
     "module": "esnext",
-    "lib": ["esnext", "webworker"],
+    "lib": ["esnext", "webWorker"],
     "declaration": true,
-    "removeComments": true,
     "outDir": "lib",
     "strict": true,
     "esModuleInterop": true,
@@ -13,18 +12,13 @@
     "noImplicitAny": true,
     "preserveConstEnums": true,
     "sourceMap": false,
-    "types": ["@cloudflare/workers-types"]
+    "types": ["@cloudflare/workers-types"],
+    "removeComments": true,
   },
-  "exclude": [
-    "node_modules",
-    "lib",
-    "src/*.test.ts",
-    "src/**/*.test.ts"
-  ],
+  "exclude": [ "node_modules", "lib", "src/**/*.test.ts" ],
   "include": [
-    "src/*.ts",
-    "src/**/*.ts",
-    "./node_modules/@types/node/globals.d.ts",
-    "./node_modules/@cloudflare/workers-types/index.d.ts"
+    "src/**/*",
+    "node_modules/@types/node/globals.d.ts",
+    "node_modules/@cloudflare/workers-types"
   ],
 }
