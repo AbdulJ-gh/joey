@@ -1,4 +1,6 @@
-import { Request, Headers } from 'cross-fetch'
+import { fetch, Request, Response, Headers } from 'cross-fetch';
 
-globalThis.Request = Request
-globalThis.Headers = Headers
+globalThis.fetch = fetch;
+globalThis.Request = Request;
+globalThis.Response = Response;
+globalThis.Headers = Headers;

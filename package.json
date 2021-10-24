@@ -10,6 +10,7 @@
     "pub": "npm publish ./lib",
     "pretest": "tsc -p tsconfig.json",
     "test": "c8 ava --verbose",
+    "test:watch": "c8 ava --verbose --watch",
     "watch": "watch 'npm run build' ./src"
   },
   "repository": {
@@ -44,7 +45,7 @@
     "cross-fetch": "^3.1.4",
     "esm": "^3.2.25",
     "prettier": "^2.4.1",
-    "typescript": "^4.4.3",
+    "typescript": "^4.4.4",
     "watch": "^0.13.0"
   }
 }

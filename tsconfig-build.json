@@ -2,7 +2,7 @@
   "compilerOptions": {
     "target": "esnext",
     "module": "esnext",
-    "lib": ["esnext", "webWorker"],
+    "lib": ["esnext"],
     "declaration": true,
     "outDir": "lib",
     "strict": true,
@@ -16,9 +16,5 @@
     "removeComments": true,
   },
   "exclude": [ "node_modules", "lib", "src/**/*.test.ts" ],
-  "include": [
-    "src/**/*",
-    "node_modules/@types/node/globals.d.ts",
-    "node_modules/@cloudflare/workers-types"
-  ],
+  "include": [ "src/**/*" ],
 }

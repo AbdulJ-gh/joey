@@ -1,53 +1,84 @@
 import test from 'ava';
 import Res from './res';
 
+const defaultProperties = {
+	pretty: false,
+	status: 200,
+	body: {},
+	headers: new Headers()
+};
 
-test('foo', t => {
-	const a = new Request('http://google.com')
-	t.pass();
+test('Default properties', t => {
+	const res = new Res();
+	t.is(res['pretty'], defaultProperties.pretty);
+	t.is(res['status'], defaultProperties.status);
+	t.deepEqual(res['body'], defaultProperties.body);
+	t.deepEqual(res.headers, defaultProperties.headers);
 });
 
-
-test('bar', t => {
-	const a = new Request('http://google.com')
-	t.pass();
+test('Constructed Res', t => {
+	const body = { hello: 'world' };
+	const status = 400;
+	const headers = { key: 'value1' };
+	const res = new Res(body, status, headers);
+	t.is(res['status'], 400);
+	t.deepEqual(res['body'], { hello: 'world' });
+	t.deepEqual(res.headers, new Headers(headers));
 });
 
-// import * as nodeFetch from 'node-fetch';
+test('Set prettify', t => {
+	const res = new Res({ hello: 'world' });
+	res.prettify();
+	t.is(res['pretty'], true);
+});
 
-// if (typeof fetch === 'undefined') {
-// 	console.log('TRYING TO SET HEADERS GLOBALLY');
-// 	expect.Headers = nodeFetch.Headers;
-// }
+test('setBody', t => {
+	const res = new Res();
+	const body = { hello: 'world' };
+	res.setBody(body);
+	t.deepEqual(res['body'], body);
+});
 
-// describe('MODULE: RES', () => {
-// 	describe('Instantiate class', () => {
-// 		const response = '11';
-//
-// 		it('should have a `status` property with a default value of 200', () => {
-// 			expect(response).to.be.a('string');
-// 			// expect(response).to.haveOwnProperty('status');
-// 			// expect(response['status']).to.equal(200);
-// 		});
-//
-// 		// it('should have a `body` property with a default value of `{}`', () => {
-// 		// 	expect(response).toHaveProperty('body');
-// 		// 	expect(response['body']).toEqual({});
-// 		// });
-// 		//
-// 		// it('should have a `headers` property with a default value of ``', () => {
-// 		// 	expect(response).toHaveProperty('header');
-// 		// 	expect(response['headers']).toEqual({});
-// 		// });
-// 	});
-// });
+test('setStatus', t => {
+	const res = new Res();
+	res.setStatus(500);
+	t.is(res['status'], 500);
+});
 
-const a =
-	'npm uninstall @babel/core @babel/preset-env @babel/preset-typescript @types/jest @types/node babel-jest jest node-fetch';
+test('setHeaders', t => {
+	const res = new Res();
+	const headers1 = { key: 'value1' }; // Type - Record<string, string>
+	const headers2 = [['key', 'value2']] as [string, string][]; // Type - [key: string, value: string][]  OR  [string, string][]
+	const headers3 = new Headers({ key: 'value3' }); // Type - Headers
 
-const config = `  "babel": {
-    "presets": [
-      "@babel/preset-env",
-      "@babel/preset-typescript"
-    ]
-  },`;
+	res.setHeaders(headers1);
+	t.is(res.headers.get('key'), 'value1');
+
+	res.setHeaders(headers2);
+	t.is(res.headers.get('key'), 'value2');
+
+	res.setHeaders(headers3);
+	t.is(res.headers.get('key'), 'value3');
+});
+
+test('set', t => {
+	const res = new Res();
+	const body = { hello: 'world' };
+	const status = 400;
+	const headers = { key: 'value1' };
+
+	res.set(body);
+	t.deepEqual(res['body'], body);
+	t.is(res['status'], defaultProperties.status);
+	t.deepEqual(res.headers, defaultProperties.headers);
+
+	res.set(body, status);
+	t.deepEqual(res['body'], body);
+	t.is(res['status'], status);
+	t.deepEqual(res.headers, defaultProperties.headers);
+
+	res.set(body, status, headers);
+	t.deepEqual(res['body'], body);
+	t.is(res['status'], status);
+	t.deepEqual(res.headers, new Headers(headers));
+});
