@@ -1,5 +1,6 @@
-import * as Routing from './Routing';
-import App from './Joey';
+import Routing from './Routing';
+import Joey from './Routing/Joey';
 
 export { Routing };
-export default App;
+
+export default Joey;

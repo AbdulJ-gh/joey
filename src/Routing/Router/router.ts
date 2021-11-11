@@ -1,5 +1,9 @@
-const Router = {
-	a: 100
-};
+import Joey from '../Joey';
 
-export default Router;
+export default class Router extends Joey {
+	constructor() {
+		super();
+	}
+
+	someMethod() {}
+}

@@ -11,7 +11,7 @@
     "pretest": "tsc -p tsconfig.json",
     "test": "c8 ava --verbose",
     "test:watch": "c8 ava --verbose --watch",
-    "watch": "watch 'npm run build' ./src"
+    "watch": "watch 'npm run build && node scripts/create-dist-package-json.js' ./src"
   },
   "repository": {
     "type": "git",

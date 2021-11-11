@@ -1,22 +1,30 @@
 import Res from '../Res';
 
-type BodyType = 'json' | 'formData' | 'arrayBuffer' | 'blob' | 'text';
-
 export default class Responder extends Res {
-	// private readonly req: Request
-	// public respond: handler
-
 	constructor(res: Res) {
-		super(res);
+		super(...res);
 	}
 
-	public send() {
+	public send(): Response {
 		const { body, pretty, status, headers } = this;
+
+		if (this.isClientError(status)) {
+			// Do telemetry stuff
+		}
+
+		const jsonSend = () => new Response(JSON.stringify(body, null, pretty ? 2 : 0), { status, headers });
+
 		switch (this.bodyType) {
 			case 'json':
-				return new Response(JSON.stringify(body, null, pretty ? 2 : 0), { status, headers });
+				return jsonSend();
 			default:
-				return new Response(JSON.stringify(body, null, pretty ? 2 : 0), { status, headers });
+				return jsonSend();
 		}
 	}
+
+	private isClientError(status: number): boolean {
+		return status.toString().startsWith('4');
+	}
 }
+
+// TODO - encoding/compression, cache, keep-alive, case sensitivity for url paths

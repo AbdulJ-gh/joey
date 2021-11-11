@@ -1,6 +1,4 @@
-export declare type JsonBody = Record<string, any> | any[];
-
-type BodyType = 'json' | 'formData' | 'arrayBuffer' | 'blob' | 'text';
+import { BodyType, JsonBody } from '../../types';
 
 export default class Res {
 	protected pretty: boolean = false;
@@ -9,11 +7,18 @@ export default class Res {
 	protected body: JsonBody = {};
 	public headers: Headers = new Headers();
 
-	constructor(body?: JsonBody, status?: number, headers?: HeadersInitializer) {
+	constructor(body?: JsonBody, status?: number, headers?: HeadersInitializer, pretty?: boolean) {
 		this.body = body || {};
 		this.status = status || 200;
 		this.headers = new Headers(headers || {});
-		this.pretty = false;
+		this.pretty = pretty || false;
+	}
+
+	*[Symbol.iterator]() {
+		const items: any[] = [this.body, this.status, this.headers, this.pretty];
+		for (let i of items) {
+			yield i;
+		}
 	}
 
 	public prettify(): this {
