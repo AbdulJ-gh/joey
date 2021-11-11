@@ -4,11 +4,6 @@ import Responder from '../Responder';
 import { AuthData, AuthHandler, Context, Handler, Method, Register, Req, ResolvedHandler } from '../../types';
 import { badRequest, internalServerError, methodNotAllowed, unauthorized } from '../responses/errorResponses';
 
-/** IMMEDIATE TODOS
- * FIGURE OUT WHY ROUTES IN A ROUTER AREN'T WORKING IN JOEY-PLAYGROUND (I PROBABLY DIDN'T FINISH SETTING IT UP, SEE resolveHandler FUNCTION)
- * MAKE ROUTE PARAMETERS SUCH AS :ID WORK
- * */
-
 export default class Joey {
 	protected req: Req = new Request('');
 	protected res: Res = new Res();
@@ -59,19 +54,23 @@ export default class Joey {
 		const { url } = event.request;
 		const route = new URL(url).pathname;
 
-		const registeredName = this.getRegisteredName(route).slice(reducer.length);
+		const registeredName = this.getRegisteredName(route.slice(reducer.length));
+		const exactPathMatch = Boolean(this.register.paths[registeredName]);
 
-		if (this.register.paths[registeredName]) {
-			if (this.register.paths[registeredName][method]) {
-				return this.register.paths[registeredName][method] as ResolvedHandler;
-			} else {
-				return { handler: methodNotAllowed, authenticate: false, context: this };
-			}
-		} else {
+		/** 1. Look for the exact path and method */
+		if (exactPathMatch && this.register.paths[registeredName][method]) {
+			console.log('RETURN 1');
+			return this.register.paths[registeredName][method] as ResolvedHandler;
+		}
+
+		/** 2. See if there is a valid router */
+		if (registeredName !== '__base_route') {
+			console.log('IS NOT BASE ROUTE');
 			let name = registeredName;
 
 			while (name.length > 0) {
 				if (this.register.routers[name]) {
+					console.log('RETURN 2');
 					return this.register.routers[name].resolveHandler(event, res, reducer + name);
 				}
 				const dirs = name.split('/');
@@ -79,6 +78,14 @@ export default class Joey {
 			}
 		}
 
+		/** 3. Check if there is a valid path but wrong method  */
+		if (exactPathMatch) {
+			console.log('RETURN 3');
+			return { handler: methodNotAllowed, authenticate: false, context: this };
+		}
+
+		/** 4. Return the default */
+		console.log('RETURN 4');
 		return {
 			handler: this.defaultHandler,
 			authenticate: false,
