@@ -46,6 +46,7 @@ export default class Joey {
 		});
 	}
 
+	/** Resolving methods */
 	/** Resolver
 	 * This method finds the handler, first checking an exact path, then the routers
 	 * */
@@ -54,23 +55,24 @@ export default class Joey {
 		const { url } = event.request;
 		const route = new URL(url).pathname;
 
-		const registeredName = this.getRegisteredName(route.slice(reducer.length));
-		const exactPathMatch = Boolean(this.register.paths[registeredName]);
+		const reducedName = this.getRegisteredName(route.slice(reducer.length));
+		const exactPathMatch = this.matchRoute(reducedName);
 
 		/** 1. Look for the exact path and method */
-		if (exactPathMatch && this.register.paths[registeredName][method]) {
-			console.log('RETURN 1');
-			return this.register.paths[registeredName][method] as ResolvedHandler;
+		// I NEED TO APPLY THIS TO ROUTERS AND PATHS, SO WILL NEED A MATCHING FUNCTION
+		if (exactPathMatch && this.register.paths[exactPathMatch][method]) {
+			// console.log('RETURN 1');
+			return this.register.paths[exactPathMatch][method] as ResolvedHandler;
 		}
 
 		/** 2. See if there is a valid router */
-		if (registeredName !== '__base_route') {
-			console.log('IS NOT BASE ROUTE');
-			let name = registeredName;
+		if (reducedName !== '__base_route') {
+			// console.log('IS NOT BASE ROUTE');
+			let name = reducedName;
 
 			while (name.length > 0) {
 				if (this.register.routers[name]) {
-					console.log('RETURN 2');
+					// console.log('RETURN 2');
 					return this.register.routers[name].resolveHandler(event, res, reducer + name);
 				}
 				const dirs = name.split('/');
@@ -80,17 +82,24 @@ export default class Joey {
 
 		/** 3. Check if there is a valid path but wrong method  */
 		if (exactPathMatch) {
-			console.log('RETURN 3');
+			// console.log('RETURN 3');
 			return { handler: methodNotAllowed, authenticate: false, context: this };
 		}
 
 		/** 4. Return the default */
-		console.log('RETURN 4');
+		// console.log('RETURN 4');
 		return {
 			handler: this.defaultHandler,
 			authenticate: false,
 			context: this
 		};
+	}
+
+	protected matchRoute(route: string) {
+		return Object.keys(this.register.paths).find(path => {
+			const regex = path.replace(/:[^/]+/g, '[^/]+').concat('$');
+			return route.match(regex) || null;
+		});
 	}
 
 	// Handle the request
