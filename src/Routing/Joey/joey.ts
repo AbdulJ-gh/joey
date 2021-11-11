@@ -59,7 +59,6 @@ export default class Joey {
 		const exactPathMatch = this.matchRoute(reducedName);
 
 		/** 1. Look for the exact path and method */
-		// I NEED TO APPLY THIS TO ROUTERS AND PATHS, SO WILL NEED A MATCHING FUNCTION
 		if (exactPathMatch && this.register.paths[exactPathMatch][method]) {
 			return this.register.paths[exactPathMatch][method] as ResolvedHandler;
 		}
@@ -69,9 +68,12 @@ export default class Joey {
 			let name = reducedName;
 
 			while (name.length > 0) {
-				if (this.register.routers[name]) {
-					return this.register.routers[name].resolveHandler(event, res, reducer + name);
+				const matchedRouter = this.matchRoute(name, true);
+
+				if (matchedRouter && this.register.routers[matchedRouter]) {
+					return this.register.routers[matchedRouter].resolveHandler(event, res, reducer + name);
 				}
+
 				const dirs = name.split('/');
 				name = name.slice(0, -1 - dirs[dirs.length - 1].length);
 			}
@@ -90,8 +92,8 @@ export default class Joey {
 		};
 	}
 
-	protected matchRoute(route: string) {
-		return Object.keys(this.register.paths).find(path => {
+	protected matchRoute(route: string, router: boolean = false) {
+		return Object.keys(this.register[router ? 'routers' : 'paths']).find(path => {
 			const regex = path.replace(/:[^/]+/g, '[^/]+').concat('$');
 			return route.match(regex) || null;
 		});
