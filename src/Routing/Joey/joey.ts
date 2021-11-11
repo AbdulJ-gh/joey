@@ -61,18 +61,15 @@ export default class Joey {
 		/** 1. Look for the exact path and method */
 		// I NEED TO APPLY THIS TO ROUTERS AND PATHS, SO WILL NEED A MATCHING FUNCTION
 		if (exactPathMatch && this.register.paths[exactPathMatch][method]) {
-			// console.log('RETURN 1');
 			return this.register.paths[exactPathMatch][method] as ResolvedHandler;
 		}
 
 		/** 2. See if there is a valid router */
 		if (reducedName !== '__base_route') {
-			// console.log('IS NOT BASE ROUTE');
 			let name = reducedName;
 
 			while (name.length > 0) {
 				if (this.register.routers[name]) {
-					// console.log('RETURN 2');
 					return this.register.routers[name].resolveHandler(event, res, reducer + name);
 				}
 				const dirs = name.split('/');
@@ -82,12 +79,10 @@ export default class Joey {
 
 		/** 3. Check if there is a valid path but wrong method  */
 		if (exactPathMatch) {
-			// console.log('RETURN 3');
 			return { handler: methodNotAllowed, authenticate: false, context: this };
 		}
 
 		/** 4. Return the default */
-		// console.log('RETURN 4');
 		return {
 			handler: this.defaultHandler,
 			authenticate: false,
