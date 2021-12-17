@@ -1,13 +1,14 @@
-import { BodyType, JsonBody } from '../../types';
+import statuses, { Status } from '../../Utilities/general/statuses';
+import { BodyType, JsonBody } from './res.types';
 
 export class Res {
 	protected pretty: boolean = false;
 	protected bodyType: BodyType = 'json';
-	protected status: number = 200;
+	protected status: Status = 200;
 	protected body: JsonBody = {};
 	public headers: Headers = new Headers();
 
-	constructor(body?: JsonBody, status?: number, headers?: HeadersInitializer, pretty?: boolean) {
+	constructor(body?: JsonBody, status?: Status, headers?: HeadersInitializer, pretty?: boolean) {
 		this.body = body || {};
 		this.status = status || 200;
 		this.headers = new Headers(headers || {});
@@ -29,12 +30,12 @@ export class Res {
 		this.bodyType = bodyType;
 		return this;
 	};
-	// ISSUE HERE, it is always asking for JsonBody, but the Res might be of a different kind
+
 	public setBody = (body: JsonBody): this => {
 		this.body = body;
 		return this;
 	};
-	public setStatus = (status: number): this => {
+	public setStatus = (status: Status): this => {
 		this.status = status;
 		return this;
 	};
@@ -43,10 +44,20 @@ export class Res {
 		return this;
 	};
 
-	public set(body: JsonBody, status?: number, headers?: HeadersInitializer): this {
+	public set(body: JsonBody, status?: Status, headers?: HeadersInitializer): this {
 		this.body = body;
 		status && this.setStatus(status);
 		headers && this.setHeaders(headers);
+		return this;
+	}
+
+	public error(status: Status, message?: string): this {
+		this.status = status;
+		this.body = {
+			success: false,
+			message: message ? message : statuses[status]
+		};
+
 		return this;
 	}
 }

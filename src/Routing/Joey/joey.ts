@@ -1,13 +1,15 @@
 import { Res } from '../Res';
 import { Router } from '../Router';
 import { Responder } from '../Responder';
-import { AuthData, AuthHandler, Context, Handler, Method, Register, Req, ResolvedHandler } from '../../types';
-import { badRequest, internalServerError, methodNotAllowed, unauthorized } from '../responses/errorResponses';
+import { AuthData, AuthHandler, Context, Handler, Method, Register, Req, ResolvedHandler } from './joey.types';
+import { Status } from '../../Utilities/general/statuses';
+
+const error = (status: Status) => new Res().error(status);
 
 export class Joey {
 	protected req: Req = new Request('');
 	protected res: Res = new Res();
-	protected defaultHandler: Handler = badRequest;
+	protected defaultHandler: Handler = () => error(400);
 	protected register: Register = { paths: {}, routers: {} };
 	protected authHandler: AuthHandler = () => null;
 	protected authData: AuthData = null;
@@ -18,29 +20,12 @@ export class Joey {
 			this.req = event.request;
 			this.res = new Res();
 
-			// Then find the correct handler and it's context
+			// Then find the correct handler and context
 			const { handler, authenticate, context } = this.resolveHandler(event, this.res);
 
-			// Next need to check if the request endpoint requires auth, and auth if so
-			if (authenticate && !context.authenticated())
-				return event.respondWith(new Responder(unauthorized()).send());
-
-			// Return a response
-
-			// console.log('PATHS:\n', this.register.paths, '\n');
-			// console.log('ROUTERS:\n', this.register.routers, '\n');
-			// console.log('CONTEXT:\n', context.register.paths, '\n');
-
-			// // console.log('RANDOM A:\n', this.register.routers['/randomA'].register.paths['/hello'].GET, '\n');
-			// // @ts-ignore
-			// console.log('RANDOM A:\n', this.register.routers['/randomA'].register.paths['/hello'].GET.handler, '\n');
-			// // @ts-ignore
-			// console.log(
-			// 	'RANDOM A:\n',
-			// 	// @ts-ignore
-			// 	this.register.routers['/randomA'].register.paths['/hello'].GET.context.register.paths,
-			// 	'\n'
-			// );
+			// Next check if the request endpoint requires auth, and is so, do the auth
+			if (authenticate && !(context as Joey).authenticated())
+				return event.respondWith(new Responder(error(401)).send());
 
 			event.respondWith(this.handleResponse(handler));
 		});
@@ -82,7 +67,7 @@ export class Joey {
 		/** 3. Check if there is a valid path but wrong method  */
 		/** THIS IS THE WRONG USAGE OF METHOD NOT ALLOWED ACTUALLY. I THINK IT SHOULD BE BASED ON IF CORS POLICY DENY A PARTICULAR METHOD */
 		if (exactPathMatch) {
-			return { handler: methodNotAllowed, authenticate: false, context: this };
+			return { handler: () => error(403), authenticate: false, context: this };
 		}
 
 		/** 4. Return the default */
@@ -115,7 +100,7 @@ export class Joey {
 				return handledResponse as Response;
 			}
 		} catch (e) {
-			return new Responder(internalServerError()).send();
+			return new Responder(error(500)).send();
 		}
 	};
 
