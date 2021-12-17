@@ -1,6 +1,6 @@
 import test from 'ava';
-import Res from '../Res';
-import Responder from './responder';
+import { Res } from '../Res';
+import { Responder } from './responder';
 
 test('Send JSON', async t => {
 	const res = new Res({ hello: 'world' }, 201, { someKey: 'someValue' });

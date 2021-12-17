@@ -1,4 +1,4 @@
-import Res from '../Res';
+import { Res } from '../Res';
 
 export function badRequest(): Res {
 	return new Res({ success: false, message: 'Bad Request' }, 400);

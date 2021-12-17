@@ -1,8 +1,14 @@
-import Res from '../Res';
-import Router from '../Router';
-import Responder from '../Responder';
+import { Res } from '../Res';
+import { Router } from '../Router';
+import { Responder } from '../Responder';
 import { AuthData, AuthHandler, Context, Handler, Method, Register, Req, ResolvedHandler } from '../../types';
 import { badRequest, internalServerError, methodNotAllowed, unauthorized } from '../responses/errorResponses';
+
+/** NEXT MOST IMPORTANT - LOOK AT HOW I AM HANDLING ERRORS, ERROR MESSAGE LIST, AND GLOBAL DEFAULT ERROR INCLUDING PENETRATING ROUTERS */
+/** PENETRATION COULD HAPPEN BY INHERITING DEFAULT HANDLER OF PARENT CONTEXT */
+/** THEN THERE'S ALSO THE DEFAULT SERVER ERROR */
+
+/** TELEMETRY!!!!!! */
 
 export default class Joey {
 	protected req: Req = new Request('');
@@ -80,6 +86,7 @@ export default class Joey {
 		}
 
 		/** 3. Check if there is a valid path but wrong method  */
+		/** THIS IS THE WRONG USAGE OF METHOD NOT ALLOWED ACTUALLY. I THINK IT SHOULD BE BASED ON IF CORS POLICY DENY A PARTICULAR METHOD */
 		if (exactPathMatch) {
 			return { handler: methodNotAllowed, authenticate: false, context: this };
 		}

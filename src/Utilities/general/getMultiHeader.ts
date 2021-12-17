@@ -1,4 +1,4 @@
-export default function getMultiHeader(headerValue: string): Record<string, string> {
+export function getMultiHeader(headerValue: string): Record<string, string> {
 	const split = headerValue.split(', ');
 	const values: Record<string, any> = {};
 

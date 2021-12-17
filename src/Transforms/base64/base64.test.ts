@@ -1,5 +1,5 @@
 import test from 'ava';
-import Base64 from './base64';
+import * as Base64 from './base64';
 import ByteArray from '../byteArray';
 import bytesAreEqual from '../../../testUtils/compareArrayLikeBytes';
 import { longBase64String, longString, longUriSafeBase64String } from '../../../testUtils/testValues';

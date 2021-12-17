@@ -1,5 +1,5 @@
-import Res from './Routing/Res';
-import Router from './Routing/Router';
+import { Res } from './Routing/Res';
+import { Router } from './Routing/Router';
 
 /** Request Types */
 export declare interface Req extends Request {

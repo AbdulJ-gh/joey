@@ -1,5 +1,8 @@
-import Router from './Router';
-import Res from './Res';
-import Responses from './responses';
+import { Res } from './Res';
+import { Router } from './Router';
+import responses from './responses';
 
-export default { Router, Res, Responses };
+export { Router } from './Router';
+export { Res } from './Res';
+
+export default { Res, Router, responses };

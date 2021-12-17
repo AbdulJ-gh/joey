@@ -20,10 +20,4 @@ function join(byteArray: Uint8Array, ...items: Uint8Array[]): Uint8Array {
 	return Uint8Array.from(Array.from(byteArray).concat(...items.map(item => Array.from(item))));
 }
 
-export default {
-	fromString,
-	toString,
-	fromBuffer,
-	toBuffer,
-	join
-};
+export { fromString, toString, fromBuffer, toBuffer, join };

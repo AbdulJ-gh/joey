@@ -1,4 +1,4 @@
-import byteArray from '../byteArray';
+import ByteArray from '../byteArray';
 
 function encode(string: string): string {
 	return btoa(
@@ -41,7 +41,7 @@ function decodeUriSafe(base64String: string): string {
 }
 
 function fromByteArray(array: Uint8Array, uriSafe: boolean = false): string {
-	const string = byteArray.toString(array);
+	const string = ByteArray.toString(array);
 	return uriSafe ? encodeUriSafe(string) : encode(string);
 }
 
@@ -51,7 +51,7 @@ function toByteArray(base64String: string, uriSafe: boolean = false): Uint8Array
 }
 
 function fromArrayBuffer(buffer: ArrayBuffer, uriSafe: boolean = false): string {
-	const string = byteArray.toString(byteArray.fromBuffer(buffer));
+	const string = ByteArray.toString(ByteArray.fromBuffer(buffer));
 	return uriSafe ? encodeUriSafe(string) : encode(string);
 }
 
@@ -59,13 +59,4 @@ function toArrayBuffer(base64String: string, uriSafe: boolean = false): ArrayBuf
 	return toByteArray(base64String, uriSafe).buffer;
 }
 
-export default {
-	encode,
-	decode,
-	encodeUriSafe,
-	decodeUriSafe,
-	fromByteArray,
-	toByteArray,
-	fromArrayBuffer,
-	toArrayBuffer
-};
+export { encode, decode, encodeUriSafe, decodeUriSafe, fromByteArray, toByteArray, fromArrayBuffer, toArrayBuffer };

@@ -1,5 +1,5 @@
 import test from 'ava';
-import getMultiHeader from '../getMultiHeader';
+import { getMultiHeader } from '../getMultiHeader';
 
 test('Single header', t => {
 	const headers = new Headers({ Authorization: 'Bearer someToken' });

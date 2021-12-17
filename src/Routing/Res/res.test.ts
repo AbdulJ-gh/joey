@@ -1,5 +1,5 @@
 import test from 'ava';
-import Res from './res';
+import { Res } from './res';
 
 const defaultProperties = {
 	pretty: false,

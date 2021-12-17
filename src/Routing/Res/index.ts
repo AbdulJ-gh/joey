@@ -1,1 +1,1 @@
-export { default } from './res';
+export { Res } from './res';

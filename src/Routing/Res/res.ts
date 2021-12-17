@@ -1,6 +1,6 @@
 import { BodyType, JsonBody } from '../../types';
 
-export default class Res {
+export class Res {
 	protected pretty: boolean = false;
 	protected bodyType: BodyType = 'json';
 	protected status: number = 200;

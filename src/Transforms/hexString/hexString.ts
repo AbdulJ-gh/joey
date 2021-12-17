@@ -1,4 +1,3 @@
-import byteArray from '../byteArray';
 import ByteArray from '../byteArray';
 
 function fromBytes(byteArray: Uint8Array): string {
@@ -14,13 +13,9 @@ function toBytes(hexString: string): Uint8Array {
 }
 
 function fromBuffer(arrayBuffer: ArrayBuffer): string {
-	return Array.from(byteArray.fromBuffer(arrayBuffer))
+	return Array.from(ByteArray.fromBuffer(arrayBuffer))
 		.map(byte => byte.toString(16).padStart(2, '0'))
 		.join('');
 }
 
-export default {
-	fromBytes,
-	toBytes,
-	fromBuffer
-};
+export { fromBytes, toBytes, fromBuffer };

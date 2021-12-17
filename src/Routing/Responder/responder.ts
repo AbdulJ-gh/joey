@@ -1,6 +1,6 @@
-import Res from '../Res';
+import { Res } from '../Res';
 
-export default class Responder extends Res {
+export class Responder extends Res {
 	constructor(res: Res) {
 		super(...res);
 	}
