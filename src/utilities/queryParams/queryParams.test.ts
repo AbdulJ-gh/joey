@@ -1,5 +1,5 @@
 import test from 'ava';
-import queryParams from '../getQueryParams';
+import queryParams from '../queryParams';
 
 /** Get Query Param **/
 test('#getQueryParam - No matching query param', t => {

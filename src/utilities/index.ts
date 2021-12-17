@@ -1,7 +1,7 @@
-import queryParams from './getQueryParams';
-import getMultiHeader from './getMultiHeader';
+import QueryParams from './queryParams';
+import getMultiHeader from './general/getMultiHeader';
 
 export default {
-	queryParams,
+	QueryParams,
 	getMultiHeader
 };

@@ -16,7 +16,7 @@ function getQueryParam(url: URL, param: string): QueryParam {
 	const queryParams = new URLSearchParams(url.search);
 	return returnParam(queryParams.getAll(param));
 }
-function getQueryParams(url: URL, params: string[]): QueryParams {
+function queryParams(url: URL, params: string[]): QueryParams {
 	const queryParams = new URLSearchParams(url.search);
 	const obj: QueryParams = {};
 
@@ -27,5 +27,4 @@ function getQueryParams(url: URL, params: string[]): QueryParams {
 	return obj;
 }
 
-const queryParams = { getQueryParam, getQueryParams };
-export default queryParams;
+export default { getQueryParam, getQueryParams: queryParams };
