@@ -50,5 +50,3 @@ export class Res {
 		return this;
 	}
 }
-
-// Have a res.error(ErrorResponse), which sets res.end to true and sets the body etc. And this needs a way to hook in to error logging waitUntil etc

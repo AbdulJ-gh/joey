@@ -10,7 +10,7 @@
     "pub": "npm publish ./lib",
     "test": "c8 ava",
     "test:watch": "c8 ava --watch",
-    "watch": "watch 'npm run build' ./src",
+    "watch": "watch 'npm run build && node scripts/create-dist-package-json.js' ./src",
     "cleanup": "rm -rf ./lib ./lib-test ./coverage"
   },
   "repository": {

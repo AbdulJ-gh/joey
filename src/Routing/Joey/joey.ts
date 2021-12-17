@@ -4,12 +4,6 @@ import { Responder } from '../Responder';
 import { AuthData, AuthHandler, Context, Handler, Method, Register, Req, ResolvedHandler } from '../../types';
 import { badRequest, internalServerError, methodNotAllowed, unauthorized } from '../responses/errorResponses';
 
-/** NEXT MOST IMPORTANT - LOOK AT HOW I AM HANDLING ERRORS, ERROR MESSAGE LIST, AND GLOBAL DEFAULT ERROR INCLUDING PENETRATING ROUTERS */
-/** PENETRATION COULD HAPPEN BY INHERITING DEFAULT HANDLER OF PARENT CONTEXT */
-/** THEN THERE'S ALSO THE DEFAULT SERVER ERROR */
-
-/** TELEMETRY!!!!!! */
-
 export default class Joey {
 	protected req: Req = new Request('');
 	protected res: Res = new Res();
