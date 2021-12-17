@@ -4,7 +4,7 @@ import { Responder } from '../Responder';
 import { AuthData, AuthHandler, Context, Handler, Method, Register, Req, ResolvedHandler } from '../../types';
 import { badRequest, internalServerError, methodNotAllowed, unauthorized } from '../responses/errorResponses';
 
-export default class Joey {
+export class Joey {
 	protected req: Req = new Request('');
 	protected res: Res = new Res();
 	protected defaultHandler: Handler = badRequest;
@@ -200,3 +200,5 @@ export default class Joey {
 		return this.method('DELETE', ...args);
 	}
 }
+
+export default () => new Joey();

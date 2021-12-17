@@ -1,4 +1,4 @@
-import Joey from '../Joey';
+import { Joey } from '../Joey';
 
 export class Router extends Joey {
 	constructor() {
