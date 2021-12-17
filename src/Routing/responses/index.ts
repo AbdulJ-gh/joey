@@ -9,17 +9,13 @@ import {
 	serviceUnavailable
 } from './errorResponses';
 
-export default {
-	clientError: {
-		badRequest,
-		unauthorized,
-		forbidden,
-		notFound,
-		methodNotAllowed,
-		tooManyRequests
-	},
-	serverError: {
-		internalServerError,
-		serviceUnavailable
-	}
+export const clientError = {
+	badRequest,
+	unauthorized,
+	forbidden,
+	notFound,
+	methodNotAllowed,
+	tooManyRequests
 };
+
+export const serverError = { internalServerError, serviceUnavailable };
