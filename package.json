@@ -2,8 +2,6 @@
   "name": "@marsupialdev/joey",
   "version": "0.1.32",
   "description": "A framework for Cloudflare Workers",
-  "main": "index.js",
-  "types": "index.d.ts",
   "scripts": {
     "build": "rm -rf ./lib && tsc -p tsconfig-build.json",
     "prepub": "npm run build && npm version patch && node scripts/create-dist-package-json.js",
@@ -12,6 +10,13 @@
     "test:watch": "c8 ava --watch",
     "watch": "watch 'npm run build && node scripts/create-dist-package-json.js' ./src",
     "cleanup": "rm -rf ./lib ./lib-test ./coverage"
+  },
+  "exports": {
+    ".": "./Routing/Joey.",
+    "./Routing": "./Routing",
+    "./Transforms": "./Transforms",
+    "./Crypto": "./Crypto",
+    "./Utilities": "./Utilities"
   },
   "repository": {
     "type": "git",
