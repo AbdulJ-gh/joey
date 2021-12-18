@@ -13,7 +13,7 @@
     "cleanup": "rm -rf ./lib ./lib-test ./coverage"
   },
   "exports": {
-    ".": "./Routing/Joey.",
+    ".": "./Routing/Router.",
     "./Routing": "./Routing",
     "./Transforms": "./Transforms",
     "./Crypto": "./Crypto",

@@ -1,6 +1,6 @@
 import test from 'ava';
 import * as HexString from './hexString';
-import ByteArray from '../byteArray';
+import * as ByteArray from '../byteArray';
 import { longString, longHexString, longArray } from '../../../testUtils/testValues';
 import bytesAreEqual from '../../../testUtils/compareArrayLikeBytes';
 
