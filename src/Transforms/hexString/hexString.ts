@@ -1,21 +1,19 @@
-import * as ByteArray from '../byteArray';
+import ByteArray from '../byteArray';
 
-function fromBytes(byteArray: Uint8Array): string {
+export function fromBytes(byteArray: Uint8Array): string {
 	return Array.from(byteArray)
 		.map(byte => byte.toString(16).padStart(2, '0'))
 		.join('');
 }
 
-function toBytes(hexString: string): Uint8Array {
+export function toBytes(hexString: string): Uint8Array {
 	const matches: RegExpMatchArray = hexString.match(/.{1,2}/g) || [];
 	const string = decodeURIComponent('%' + matches.join('%'));
 	return ByteArray.fromString(string);
 }
 
-function fromBuffer(arrayBuffer: ArrayBuffer): string {
+export function fromBuffer(arrayBuffer: ArrayBuffer): string {
 	return Array.from(ByteArray.fromBuffer(arrayBuffer))
 		.map(byte => byte.toString(16).padStart(2, '0'))
 		.join('');
 }
-
-export { fromBytes, toBytes, fromBuffer };

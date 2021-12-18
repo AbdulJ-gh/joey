@@ -1,3 +1,7 @@
-export * as Base64 from './base64';
-export * as ByteArray from './byteArray';
-export * as HexString from './hexString';
+import Base64 from './base64';
+import ByteArray from './byteArray';
+import HexString from './hexString';
+
+const Transforms = { Base64, ByteArray, HexString };
+
+export default Transforms;

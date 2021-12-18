@@ -1,6 +1,6 @@
-import * as ByteArray from '../byteArray';
+import ByteArray from '../byteArray';
 
-function encode(string: string): string {
+export function encode(string: string): string {
 	return btoa(
 		encodeURIComponent(string).replace(/%([0-9A-F]{2})/g, (match, p1) => {
 			return String.fromCharCode(Number('0x' + p1));
@@ -8,7 +8,7 @@ function encode(string: string): string {
 	);
 }
 
-function decode(string: string): string {
+export function decode(string: string): string {
 	return decodeURIComponent(
 		atob(string)
 			.split('')
@@ -19,7 +19,7 @@ function decode(string: string): string {
 	);
 }
 
-function encodeUriSafe(string: string): string {
+export function encodeUriSafe(string: string): string {
 	const map: Record<string, string> = {
 		'+': '-',
 		'/': '_',
@@ -28,7 +28,7 @@ function encodeUriSafe(string: string): string {
 	return encode(string).replace(/[+/=]/g, match => map[match]);
 }
 
-function decodeUriSafe(base64String: string): string {
+export function decodeUriSafe(base64String: string): string {
 	const map: Record<string, string> = {
 		'-': '+',
 		_: '/'
@@ -40,23 +40,21 @@ function decodeUriSafe(base64String: string): string {
 	return decode(decoded);
 }
 
-function fromByteArray(array: Uint8Array, uriSafe: boolean = false): string {
+export function fromByteArray(array: Uint8Array, uriSafe: boolean = false): string {
 	const string = ByteArray.toString(array);
 	return uriSafe ? encodeUriSafe(string) : encode(string);
 }
 
-function toByteArray(base64String: string, uriSafe: boolean = false): Uint8Array {
+export function toByteArray(base64String: string, uriSafe: boolean = false): Uint8Array {
 	const string = uriSafe ? decodeUriSafe(base64String) : decode(base64String);
 	return Uint8Array.from(string, char => char.charCodeAt(0));
 }
 
-function fromArrayBuffer(buffer: ArrayBuffer, uriSafe: boolean = false): string {
+export function fromArrayBuffer(buffer: ArrayBuffer, uriSafe: boolean = false): string {
 	const string = ByteArray.toString(ByteArray.fromBuffer(buffer));
 	return uriSafe ? encodeUriSafe(string) : encode(string);
 }
 
-function toArrayBuffer(base64String: string, uriSafe: boolean = false): ArrayBuffer {
+export function toArrayBuffer(base64String: string, uriSafe: boolean = false): ArrayBuffer {
 	return toByteArray(base64String, uriSafe).buffer;
 }
-
-export { encode, decode, encodeUriSafe, decodeUriSafe, fromByteArray, toByteArray, fromArrayBuffer, toArrayBuffer };
