@@ -1,4 +1,4 @@
-import ByteArray from '../byteArray';
+import * as ByteArray from '../byteArray';
 
 export function fromBytes(byteArray: Uint8Array): string {
 	return Array.from(byteArray)

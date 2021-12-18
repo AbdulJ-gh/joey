@@ -1,2 +1,4 @@
-export * as QueryParams from './queryParams';
-export { getMultiHeader } from './general/getMultiHeader';
+import * as QueryParams from './queryParams';
+import { getMultiHeader } from './general/getMultiHeader';
+
+export { QueryParams, getMultiHeader };
