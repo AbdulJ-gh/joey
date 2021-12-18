@@ -1,1 +1,1 @@
-export * from './hexString';
+export { fromBytes, toBytes, fromBuffer } from './hexString';
