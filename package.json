@@ -1,6 +1,7 @@
 {
   "name": "@marsupialdev/joey",
   "version": "0.1.33",
+  "main": "./Routing/Joey/index.js",
   "description": "A framework for Cloudflare Workers",
   "scripts": {
     "build": "rm -rf ./lib && tsc -p tsconfig-build.json",
