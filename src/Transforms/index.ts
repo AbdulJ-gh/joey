@@ -1,4 +1,4 @@
-import Base64 from './base64';
+import * as Base64 from './base64';
 import ByteArray from './byteArray';
 import HexString from './hexString';
 
