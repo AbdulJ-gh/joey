@@ -1,1 +1,1 @@
-export * as default from './queryParams';
+export * from './queryParams';

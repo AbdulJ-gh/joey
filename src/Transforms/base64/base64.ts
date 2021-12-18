@@ -1,4 +1,4 @@
-import ByteArray from '../byteArray';
+import * as ByteArray from '../byteArray';
 
 function encode(string: string): string {
 	return btoa(

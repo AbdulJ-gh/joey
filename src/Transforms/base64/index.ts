@@ -1,1 +1,1 @@
-export * as default from './base64';
+export * from './base64';

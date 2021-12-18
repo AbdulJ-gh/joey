@@ -1,1 +1,1 @@
-export * as default from './hexString';
+export * from './hexString';

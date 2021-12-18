@@ -1,1 +1,1 @@
-export * as default from './byteArray';
+export * from './byteArray';
