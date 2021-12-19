@@ -1,0 +1,1 @@
+export { generateToken } from './generateToken';
