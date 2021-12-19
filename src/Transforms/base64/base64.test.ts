@@ -25,41 +25,41 @@ test('Base64 - Decode URI safe', t => {
 });
 
 test('Base64 - From byte array', t => {
-	const b64 = Base64.fromByteArray(ByteArray.fromString('This is a string'));
+	const b64 = Base64.fromBytes(ByteArray.fromString('This is a string'));
 	t.is(b64, Base64.encode('This is a string'));
 });
 
 test('Base64 - From byte array - URI safe', t => {
-	const b64 = Base64.fromByteArray(ByteArray.fromString('This is a string'), true);
+	const b64 = Base64.fromBytes(ByteArray.fromString('This is a string'), true);
 	t.is(b64, Base64.encodeUriSafe('This is a string'));
 });
 
 test('Base64 - To byte array', t => {
-	const bytes = Base64.toByteArray('VGhpcyBpcyBhIHN0cmluZw==');
+	const bytes = Base64.toBytes('VGhpcyBpcyBhIHN0cmluZw==');
 	t.true(bytesAreEqual(bytes, ByteArray.fromString('This is a string')));
 });
 
 test('Base64 - To byte array - URI safe', t => {
-	const bytes = Base64.toByteArray('VGhpcyBpcyBhIHN0cmluZw', true);
+	const bytes = Base64.toBytes('VGhpcyBpcyBhIHN0cmluZw', true);
 	t.true(bytesAreEqual(bytes, ByteArray.fromString('This is a string')));
 });
 
 test('Base64 - From ArrayBuffer', t => {
-	const b64 = Base64.fromArrayBuffer(ByteArray.fromString('This is a string').buffer);
+	const b64 = Base64.fromBuffer(ByteArray.fromString('This is a string').buffer);
 	t.is(b64, Base64.encode('This is a string'));
 });
 
 test('Base64 - From ArrayBuffer - URI safe', t => {
-	const b64 = Base64.fromArrayBuffer(ByteArray.fromString('This is a string').buffer, true);
+	const b64 = Base64.fromBuffer(ByteArray.fromString('This is a string').buffer, true);
 	t.is(b64, Base64.encodeUriSafe('This is a string'));
 });
 
 test('Base64 - To ArrayBuffer', t => {
-	const buffer = Base64.toArrayBuffer('VGhpcyBpcyBhIHN0cmluZw==');
+	const buffer = Base64.toBuffer('VGhpcyBpcyBhIHN0cmluZw==');
 	t.true(bytesAreEqual(buffer, ByteArray.fromString('This is a string')));
 });
 
 test('Base64 - To ArrayBuffer - URI safe', t => {
-	const buffer = Base64.toArrayBuffer('VGhpcyBpcyBhIHN0cmluZw', true);
+	const buffer = Base64.toBuffer('VGhpcyBpcyBhIHN0cmluZw', true);
 	t.true(bytesAreEqual(buffer, ByteArray.fromString('This is a string')));
 });

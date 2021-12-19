@@ -40,21 +40,21 @@ export function decodeUriSafe(base64String: string): string {
 	return decode(decoded);
 }
 
-export function fromByteArray(array: Uint8Array, uriSafe: boolean = false): string {
+export function fromBytes(array: Uint8Array, uriSafe: boolean = false): string {
 	const string = ByteArray.toString(array);
 	return uriSafe ? encodeUriSafe(string) : encode(string);
 }
 
-export function toByteArray(base64String: string, uriSafe: boolean = false): Uint8Array {
+export function toBytes(base64String: string, uriSafe: boolean = false): Uint8Array {
 	const string = uriSafe ? decodeUriSafe(base64String) : decode(base64String);
 	return Uint8Array.from(string, char => char.charCodeAt(0));
 }
 
-export function fromArrayBuffer(buffer: ArrayBuffer, uriSafe: boolean = false): string {
+export function fromBuffer(buffer: ArrayBuffer, uriSafe: boolean = false): string {
 	const string = ByteArray.toString(ByteArray.fromBuffer(buffer));
 	return uriSafe ? encodeUriSafe(string) : encode(string);
 }
 
-export function toArrayBuffer(base64String: string, uriSafe: boolean = false): ArrayBuffer {
-	return toByteArray(base64String, uriSafe).buffer;
+export function toBuffer(base64String: string, uriSafe: boolean = false): ArrayBuffer {
+	return toBytes(base64String, uriSafe).buffer;
 }
