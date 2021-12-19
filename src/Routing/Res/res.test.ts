@@ -1,5 +1,6 @@
 import test from 'ava';
 import { Res } from './res';
+import { Status } from '../../Utilities/general/statuses';
 
 const defaultProperties = {
 	pretty: false,
@@ -11,9 +12,9 @@ const defaultProperties = {
 test('Default properties', t => {
 	const res = new Res();
 	t.is(res['pretty'], defaultProperties.pretty);
-	t.is(res['status'], defaultProperties.status);
-	t.deepEqual(res['body'], defaultProperties.body);
-	t.deepEqual(res.headers, defaultProperties.headers);
+	t.is(res['_status'], defaultProperties.status);
+	t.deepEqual(res['_body'], defaultProperties.body);
+	t.deepEqual(res._headers, defaultProperties.headers);
 });
 
 test('Constructed Res', t => {
@@ -21,9 +22,9 @@ test('Constructed Res', t => {
 	const status = 400;
 	const headers = { key: 'value1' };
 	const res = new Res(body, status, headers);
-	t.is(res['status'], 400);
-	t.deepEqual(res['body'], { hello: 'world' });
-	t.deepEqual(res.headers, new Headers(headers));
+	t.is(res['_status'], 400);
+	t.deepEqual(res['_body'], { hello: 'world' });
+	t.deepEqual(res._headers, new Headers(headers));
 });
 
 test('Set prettify', t => {
@@ -35,14 +36,14 @@ test('Set prettify', t => {
 test('setBody', t => {
 	const res = new Res();
 	const body = { hello: 'world' };
-	res.setBody(body);
-	t.deepEqual(res['body'], body);
+	res.body(body);
+	t.deepEqual(res['_body'], body);
 });
 
 test('setStatus', t => {
 	const res = new Res();
-	res.setStatus(500);
-	t.is(res['status'], 500);
+	res.status(500);
+	t.is(res['_status'], 500);
 });
 
 test('setHeaders', t => {
@@ -51,14 +52,14 @@ test('setHeaders', t => {
 	const headers2 = [['key', 'value2']] as [string, string][]; // Type - [key: string, value: string][]  OR  [string, string][]
 	const headers3 = new Headers({ key: 'value3' }); // Type - Headers
 
-	res.setHeaders(headers1);
-	t.is(res.headers.get('key'), 'value1');
+	res.headers(headers1);
+	t.is(res._headers.get('key'), 'value1');
 
-	res.setHeaders(headers2);
-	t.is(res.headers.get('key'), 'value2');
+	res.headers(headers2);
+	t.is(res._headers.get('key'), 'value2');
 
-	res.setHeaders(headers3);
-	t.is(res.headers.get('key'), 'value3');
+	res.headers(headers3);
+	t.is(res._headers.get('key'), 'value3');
 });
 
 test('set', t => {
@@ -68,17 +69,17 @@ test('set', t => {
 	const headers = { key: 'value1' };
 
 	res.set(body);
-	t.deepEqual(res['body'], body);
-	t.is(res['status'], defaultProperties.status);
-	t.deepEqual(res.headers, defaultProperties.headers);
+	t.deepEqual(res['_body'], body);
+	t.is(res['_status'], defaultProperties.status);
+	t.deepEqual(res._headers, defaultProperties.headers);
 
 	res.set(body, status);
-	t.deepEqual(res['body'], body);
-	t.is(res['status'], status);
-	t.deepEqual(res.headers, defaultProperties.headers);
+	t.deepEqual(res['_body'], body);
+	t.is(res['_status'], status);
+	t.deepEqual(res._headers, defaultProperties.headers);
 
 	res.set(body, status, headers);
-	t.deepEqual(res['body'], body);
-	t.is(res['status'], status);
-	t.deepEqual(res.headers, new Headers(headers));
+	t.deepEqual(res['_body'], body);
+	t.is(res['_status'], status);
+	t.deepEqual(res._headers, new Headers(headers));
 });
