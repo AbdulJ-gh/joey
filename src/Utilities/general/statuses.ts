@@ -1,4 +1,10 @@
 export declare type Status = keyof typeof Statuses;
+export declare type DefaultResponse =
+	| Status
+	| {
+			status: Status;
+			message: string;
+	  };
 
 const Statuses = {
 	200: 'OK',

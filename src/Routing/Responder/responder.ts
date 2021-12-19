@@ -6,15 +6,19 @@ export class Responder extends Res {
 	}
 
 	public send(): Response {
-		const { body, pretty, status, headers } = this;
+		const { _body, _bodyType, pretty, _status, _headers } = this;
 
-		if (this.isClientError(status)) {
+		if (this.isClientError(_status)) {
 			// Do telemetry stuff
 		}
 
-		const jsonSend = () => new Response(JSON.stringify(body, null, pretty ? 2 : 0), { status, headers });
+		const jsonSend = () =>
+			new Response(JSON.stringify(_body, null, pretty ? 2 : 0), {
+				status: _status,
+				headers: _headers
+			});
 
-		switch (this.bodyType) {
+		switch (_bodyType) {
 			case 'json':
 				return jsonSend();
 			default:

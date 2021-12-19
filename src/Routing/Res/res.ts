@@ -1,22 +1,22 @@
 import statuses, { Status } from '../../Utilities/general/statuses';
-import { BodyType, JsonBody } from './res.types';
+import { BodyType, JsonBody } from './types';
 
 export class Res {
 	protected pretty: boolean = false;
-	protected bodyType: BodyType = 'json';
-	protected status: Status = 200;
-	protected body: JsonBody = {};
-	public headers: Headers = new Headers();
+	protected _bodyType: BodyType = 'json';
+	protected _status: Status = 200;
+	protected _body: JsonBody = {};
+	public _headers: Headers = new Headers();
 
-	constructor(body?: JsonBody, status?: Status, headers?: HeadersInitializer, pretty?: boolean) {
-		this.body = body || {};
-		this.status = status || 200;
-		this.headers = new Headers(headers || {});
+	constructor(body?: JsonBody, status?: Status, headers?: HeadersInit, pretty?: boolean) {
+		this._body = body || {};
+		this._status = status || 200;
+		this._headers = new Headers(headers || {});
 		this.pretty = pretty || false;
 	}
 
 	*[Symbol.iterator]() {
-		const items: any[] = [this.body, this.status, this.headers, this.pretty];
+		const items: any[] = [this._body, this._status, this._headers, this.pretty];
 		for (let i of items) {
 			yield i;
 		}
@@ -26,34 +26,34 @@ export class Res {
 		this.pretty = true;
 		return this;
 	}
-	public setBodyType = (bodyType: BodyType): this => {
-		this.bodyType = bodyType;
+	public bodyType = (bodyType: BodyType): this => {
+		this._bodyType = bodyType;
 		return this;
 	};
 
-	public setBody = (body: JsonBody): this => {
-		this.body = body;
+	public body = (body: JsonBody): this => {
+		this._body = body;
 		return this;
 	};
-	public setStatus = (status: Status): this => {
-		this.status = status;
+	public status = (status: Status): this => {
+		this._status = status;
 		return this;
 	};
-	public setHeaders = (headers: HeadersInitializer): this => {
-		this.headers = new Headers(headers);
+	public headers = (headers: HeadersInit): this => {
+		this._headers = new Headers(headers);
 		return this;
 	};
 
-	public set(body: JsonBody, status?: Status, headers?: HeadersInitializer): this {
-		this.body = body;
-		status && this.setStatus(status);
-		headers && this.setHeaders(headers);
+	public set(body: JsonBody, status?: Status, headers?: HeadersInit): this {
+		this._body = body;
+		status && this.status(status);
+		headers && this.headers(headers);
 		return this;
 	}
 
 	public error(status: Status, message?: string): this {
-		this.status = status;
-		this.body = {
+		this._status = status;
+		this._body = {
 			success: false,
 			message: message ? message : statuses[status]
 		};

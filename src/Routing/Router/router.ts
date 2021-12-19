@@ -1,33 +1,43 @@
 import { Res } from '../Res';
 import { Responder } from '../Responder';
-import { AuthData, AuthHandler, Context, Handler, Method, Register, Req, ResolvedHandler } from './router.types';
-import { Status } from '../../Utilities/general/statuses';
-
-const error = (status: Status) => new Res().error(status);
+import { AuthData, AuthHandler, Context, Handler, Method, Register, Req, ResolvedHandler } from './types';
+import { Status, DefaultResponse } from '../../Utilities/general/statuses';
+import { baseConfig, JoeyConfig as Config } from './index';
 
 export class Router {
+	protected register: Register = { paths: {}, routers: {} };
+	protected _config: Config = baseConfig;
+	protected authData: AuthData = null;
 	protected req: Req = new Request('');
 	protected res: Res = new Res();
-	protected defaultHandler: Handler = () => error(400);
-	protected register: Register = { paths: {}, routers: {} };
 	protected authHandler: AuthHandler = () => null;
-	protected authData: AuthData = null;
 
 	constructor() {
+		// constructor() {
 		addEventListener('fetch', (event: FetchEvent): void => {
-			// First set the request and initialise a new Req
+			// First set server config
+			this.config(this._config);
+
+			// Then set the request and initialise a new response
 			this.req = event.request;
-			this.res = new Res();
+			this.res = new Res().headers(this._config.defaultHeaders);
 
 			// Then find the correct handler and context
-			const { handler, authenticate, context } = this.resolveHandler(event, this.res);
+			const { handler, authenticate, RouterContext } = this.resolveHandler(event, this.res);
 
-			// Next check if the request endpoint requires auth, and is so, do the auth
-			if (authenticate && !(context as Router).authenticated())
-				return event.respondWith(new Responder(error(401)).send());
+			// Next check if endpoint requires auth and handle it
+			if (authenticate && !RouterContext.authenticated())
+				return event.respondWith(new Responder(this.handleDefault(this._config.defaultUnauthorized)).send());
 
+			// Finally, respond with the handler
 			event.respondWith(this.handleResponse(handler));
 		});
+	}
+
+	/** Config */
+	public config(config: Partial<Config>): this {
+		this._config = { ...baseConfig, ...config };
+		return this;
 	}
 
 	/** Resolving methods */
@@ -35,19 +45,18 @@ export class Router {
 	 * This method finds the handler, first checking an exact path, then the routers
 	 * */
 	protected resolveHandler(event: FetchEvent, res: Res, reducer: string = ''): ResolvedHandler {
-		const method = event.request.method as Method;
-		const { url } = event.request;
+		const { method, url } = event.request;
 		const route = new URL(url).pathname;
 
 		const reducedName = this.getRegisteredName(route.slice(reducer.length));
 		const exactPathMatch = this.matchRoute(reducedName);
 
 		/** 1. Look for the exact path and method */
-		if (exactPathMatch && this.register.paths[exactPathMatch][method]) {
-			return this.register.paths[exactPathMatch][method] as ResolvedHandler;
+		if (exactPathMatch && this.register.paths[exactPathMatch][method as Method]) {
+			return this.register.paths[exactPathMatch][method as Method] as ResolvedHandler;
 		}
 
-		/** 2. See if there is a valid router */
+		/** 2. Check if valid router exists */
 		if (reducedName !== '__base_route') {
 			let name = reducedName;
 
@@ -63,17 +72,21 @@ export class Router {
 			}
 		}
 
-		/** 3. Check if there is a valid path but wrong method  */
-		/** THIS IS THE WRONG USAGE OF METHOD NOT ALLOWED ACTUALLY. I THINK IT SHOULD BE BASED ON IF CORS POLICY DENY A PARTICULAR METHOD */
+		/** 3. Check if path is valid but method not implemented */
 		if (exactPathMatch) {
-			return { handler: () => error(403), authenticate: false, context: this };
+			const res = this.handleDefault(this._config.defaultMethodNotAllowed);
+			if (this._config.emitAllowHeader) {
+				const allowedMethods = Object.keys(this.register.paths[exactPathMatch]).join(', ');
+				res.headers({ ...this._config.defaultHeaders, Allow: allowedMethods });
+			}
+			return { handler: () => res, authenticate: false, RouterContext: this };
 		}
 
 		/** 4. Return the default */
 		return {
-			handler: this.defaultHandler,
+			handler: () => this.handleDefault(this._config.defaultNotFound),
 			authenticate: false,
-			context: this
+			RouterContext: this
 		};
 	}
 
@@ -92,16 +105,22 @@ export class Router {
 			const handledResponse: Res | Response | void = await handler(context);
 
 			if (handledResponse === undefined) {
-				return new Responder(this.defaultHandler(context) as Res).send();
+				return new Responder(this.handleDefault(this._config.defaultHandlerDidNotReturn)).send();
 			} else if (handledResponse instanceof Res) {
 				return new Responder(handledResponse as Res).send();
 			} else {
 				return handledResponse as Response;
 			}
 		} catch (e) {
-			return new Responder(error(500)).send();
+			return new Responder(this.handleDefault(this._config.defaultServerError)).send();
 		}
 	};
+
+	protected handleDefault(response: DefaultResponse): Res {
+		const args: [Status, string?] = [404];
+		typeof response === 'object' && args.push(response.message);
+		return new Res().error(...args);
+	}
 
 	/** Auth methods */
 	public auth(authHandler: AuthHandler): this {
@@ -130,12 +149,7 @@ export class Router {
 	protected registerMethod(method: Method, route: string, handler: Handler, authenticate: boolean = true) {
 		const registeredName = this.getRegisteredName(route);
 		if (!this.register.paths[registeredName]) this.register.paths[registeredName] = {};
-		this.register.paths[registeredName][method] = { handler, authenticate, context: this };
-	}
-
-	public fallback(handler: Handler): this {
-		this.defaultHandler = handler;
-		return this;
+		this.register.paths[registeredName][method] = { handler, authenticate, RouterContext: this };
 	}
 
 	public route(path: string, router: Router): this {
@@ -185,4 +199,4 @@ export class Router {
 	}
 }
 
-export default () => new Router();
+export default () => new Router().config(baseConfig);

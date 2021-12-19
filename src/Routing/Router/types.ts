@@ -18,12 +18,12 @@ export declare type Handler = SyncHandler | AsyncHandler;
 export declare type ResolvedHandler = {
 	handler: Handler;
 	authenticate: boolean;
-	context: Router;
+	RouterContext: Router;
 };
 
 /** Routing Types  */
 export declare type registeredRoutes = { route: string; handler: Handler }[];
-export declare type Method = 'GET' | 'POST' | 'DELETE' | 'PUT' | 'PATCH';
+export declare type Method = 'CONNECT' | 'DELETE' | 'GET' | 'HEAD' | 'OPTIONS' | 'PATCH' | 'POST' | 'PUT' | 'TRACE';
 export declare type Methods = Record<string, registeredRoutes>;
 
 export declare type MethodRegister = { [method in Method]?: ResolvedHandler };
