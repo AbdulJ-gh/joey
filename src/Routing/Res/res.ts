@@ -1,4 +1,3 @@
-import { Error } from '../Error';
 import { ResponseBody, ErrorBody, ErrorType, ResProperties } from './types';
 import httpStatuses from '../../Utilities/general/statuses';
 
