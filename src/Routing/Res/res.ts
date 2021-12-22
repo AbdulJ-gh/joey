@@ -1,62 +1,69 @@
-import statuses, { Status } from '../../Utilities/general/statuses';
-import { BodyType, JsonBody } from './types';
+import { Error } from '../Error';
+import { ResponseBody, ErrorBody, ErrorType, ResProperties } from './types';
+import httpStatuses from '../../Utilities/general/statuses';
+
+const defaults: ResProperties = {
+	body: {},
+	status: 200,
+	headers: {},
+	pretty: false
+};
+
 
 export class Res {
-	protected pretty: boolean = false;
-	protected _bodyType: BodyType = 'json';
-	protected _status: Status = 200;
-	protected _body: JsonBody = {};
-	public _headers: Headers = new Headers();
+	protected _body: ResponseBody = defaults.body;
+	protected _status: number = defaults.status;
+	protected _headers: Headers = new Headers(defaults.headers);
+	protected _pretty: boolean = defaults.pretty;
+	protected _error: Error | string | null = null;
+	protected _additionalData: Record<string, unknown> | null = null;
 
-	constructor(body?: JsonBody, status?: Status, headers?: HeadersInit, pretty?: boolean) {
-		this._body = body || {};
-		this._status = status || 200;
-		this._headers = new Headers(headers || {});
-		this.pretty = pretty || false;
+	constructor(body?: ResponseBody, status?: number, headers?: HeadersInit, pretty?: boolean) {
+		this._body = body || defaults.body;
+		this._status = status || defaults.status;
+		this._headers = new Headers(headers) || new Headers(defaults.headers);
+		this._pretty = pretty || defaults.pretty;
 	}
 
-	*[Symbol.iterator]() {
-		const items: any[] = [this._body, this._status, this._headers, this.pretty];
-		for (let i of items) {
-			yield i;
-		}
+	public get body(): ResponseBody { return this._body; }
+	public get status(): number { return this._status; }
+	public get headers(): Headers { return this._headers; }
+	public get pretty(): boolean { return this._pretty; }
+	public get isError(): boolean { return this._error !== null; }
+
+	public setBody(body: ResponseBody): this { this._body = body; return this; }
+	public setStatus(status: number): this { this._status = status; return this; }
+	public setHeaders(headers: HeadersInit): this { this._headers = new Headers(headers); return this; }
+	public prettify(bool = true): this { bool ? this._pretty = true : this._pretty = false; return this; }
+
+	public appendHeaders(headers: HeadersInit): this {
+		// This needs some magic to work with the different possible types of HeadersInit
+		console.log(headers);
+		return this;
 	}
 
-	public prettify(): this {
-		this.pretty = true;
+	public set(res: Partial<ResProperties>): this {
+		const { body, status, headers, pretty } = res;
+		if (body !== undefined) this._body = body;
+		if (status !== undefined) this._status = status;
+		if (headers !== undefined) this._headers = new Headers(headers);
+		if (pretty !== undefined) this._pretty = pretty;
 		return this;
 	}
-	public bodyType = (bodyType: BodyType): this => {
-		this._bodyType = bodyType;
-		return this;
-	};
 
-	public body = (body: JsonBody): this => {
-		this._body = body;
-		return this;
-	};
-	public status = (status: Status): this => {
+	public error(status: number): this;
+	public error(status: number, body: ErrorBody, error?: ErrorType, additionalData?: Record<string, unknown>): this;
+	public error(status: number, useDefault: true, error?: ErrorType, additionalData?: Record<string, unknown>): this;
+	public error(...args: [ number, (ErrorBody | true)?, (string | Error)?, Record<string, unknown>? ]): this {
+		const [status] = args;
 		this._status = status;
-		return this;
-	};
-	public headers = (headers: HeadersInit): this => {
-		this._headers = new Headers(headers);
-		return this;
-	};
 
-	public set(body: JsonBody, status?: Status, headers?: HeadersInit): this {
-		this._body = body;
-		status && this.status(status);
-		headers && this.headers(headers);
-		return this;
-	}
+		args.length === 1 || args[1] === true
+			? this._body = httpStatuses[status]
+			: this._body = args[1] as ResponseBody;
 
-	public error(status: Status, message?: string): this {
-		this._status = status;
-		this._body = {
-			success: false,
-			message: message ? message : statuses[status]
-		};
+		if (args[2] !== undefined) this._error = args[2];
+		if (args[3] !== undefined) this._additionalData = args[3];
 
 		return this;
 	}
