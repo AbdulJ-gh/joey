@@ -1,0 +1,5 @@
+coverage
+lib
+lib-test
+node_modules
+scripts
