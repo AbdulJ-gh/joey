@@ -26,7 +26,6 @@ rules:
     - warn
     - code: 120
       ignoreComments: true
-      ignoreStrings: true
   brace-style:
     - warn
     - 1tbs

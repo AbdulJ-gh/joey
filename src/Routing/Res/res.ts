@@ -58,7 +58,6 @@ export class Res {
 		this._body = args.length === 1 || args[1] === true ? httpStatuses[status] : args[1] as ResponseBody;
 		if (args[2] !== undefined) this._error = args[2];
 		if (args[3] !== undefined) this._additionalData = args[3];
-
 		return this;
 	}
 }

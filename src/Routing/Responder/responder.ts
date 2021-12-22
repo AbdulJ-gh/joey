@@ -1,34 +1,53 @@
 import { Res } from '../Res';
+import { BodyType, ResponseBody } from '../Res/types';
 
 export class Responder extends Res {
 	constructor(res: Res) {
-		super(...res);
+		super(res.body, res.status, res.headers, res.pretty);
+	}
+
+	static getBodyType(body: ResponseBody): BodyType {
+		if (typeof body === 'string') return 'plaintext';
+		if (body instanceof FormData) return 'formData';
+		return 'json';
+	}
+
+	static handleError(error: Res|Error|unknown): Response {
+		// Do telemetry here
+		if (error instanceof Res) {
+			console.log('Do A');
+		} else if (error instanceof Error) {
+			console.log('Do B');
+		} else {
+			console.log('Do C');
+		}
+
+		return new Response();
 	}
 
 	public send(): Response {
-		const { _body, _bodyType, pretty, _status, _headers } = this;
+		const { body, pretty, status, headers } = this;
+		const bodyType = Responder.getBodyType(body);
 
-		if (this.isClientError(_status)) {
-			// Do telemetry stuff
-		}
+		const jsonSend = () => new Response(JSON.stringify(body, null, pretty ? 2 : 0), { status, headers });
+		const textSend = () => {
+			headers.set('Content-Type', 'text/plain');
+			return new Response(body as string, { status, headers });
+		};
+		const formSend = () => {
+			headers.set('Content-Type', 'multipart/form-data');
+			return new Response(body as FormData, { status, headers });
+		};
 
-		const jsonSend = () =>
-			new Response(JSON.stringify(_body, null, pretty ? 2 : 0), {
-				status: _status,
-				headers: _headers
-			});
-
-		switch (_bodyType) {
+		switch (bodyType) {
 			case 'json':
 				return jsonSend();
+			case 'plaintext':
+				return textSend();
+			case 'formData':
+				return formSend();
 			default:
 				return jsonSend();
 		}
 	}
-
-	private isClientError(status: number): boolean {
-		return status.toString().startsWith('4');
-	}
 }
-
-// TODO - encoding/compression, cache, keep-alive, case sensitivity for url paths
