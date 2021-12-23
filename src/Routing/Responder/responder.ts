@@ -25,7 +25,7 @@ export class Responder extends Res {
 		return new Response();
 	}
 
-	public send(): Response {
+	public respond(): Response {
 		const { body, pretty, status, headers } = this;
 		const bodyType = Responder.getBodyType(body);
 

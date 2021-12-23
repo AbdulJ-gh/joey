@@ -1,12 +1,13 @@
-export declare type Status = keyof typeof Statuses;
-export declare type DefaultResponse =
-	| Status
-	| {
-			status: Status;
-			message: string;
-	  };
+import { ErrorBody } from '../../Routing/Res/types';
 
-const Statuses = {
+const informationalResponses = {
+	100: 'Continue',
+	101:	'Switching',
+	102:	'Processing',
+	103:	'Early Hints'
+};
+
+const successResponses = {
 	200: 'OK',
 	201: 'Created',
 	202: 'Accepted',
@@ -16,7 +17,9 @@ const Statuses = {
 	206: 'Partial Content',
 	207: 'Multi-Status',
 	208: 'Already Reported',
-	226: 'IM Used',
+	226: 'IM Used'
+};
+const redirects = {
 	300: 'Multiple Choices',
 	301: 'Moved Permanently',
 	302: 'Found',
@@ -24,7 +27,9 @@ const Statuses = {
 	304: 'Not Modified',
 	305: 'Use Proxy',
 	307: 'Temporary Redirect',
-	308: 'Permanent Redirect',
+	308: 'Permanent Redirect'
+};
+const clientErrors = {
 	400: 'Bad Request',
 	401: 'Unauthorized',
 	402: 'Payment Required',
@@ -52,7 +57,9 @@ const Statuses = {
 	428: 'Precondition Required',
 	429: 'Too Many Requests',
 	431: 'Request Header Fields Too Large',
-	451: 'Unavailable For Legal Reasons',
+	451: 'Unavailable For Legal Reasons'
+};
+const serverErrors = {
 	500: 'Internal Server Error',
 	501: 'Not Implemented',
 	502: 'Bad Gateway',
@@ -66,4 +73,22 @@ const Statuses = {
 	511: 'Network Authentication Required'
 };
 
-export default Statuses;
+const httpStatuses: Record<number, string> = {
+	...informationalResponses,
+	...successResponses,
+	...redirects,
+	...clientErrors,
+	...serverErrors
+};
+
+export declare type DefaultError =
+	| number
+	| {
+		status: number;
+		body: ErrorBody;
+		error?: string;
+		additionalData?: Record<string, unknown>
+	}
+
+
+export default httpStatuses;

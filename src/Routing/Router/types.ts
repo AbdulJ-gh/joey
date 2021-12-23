@@ -3,12 +3,12 @@ import { Router } from './';
 
 /** Request Types */
 export declare interface Req extends Request {
-	authData?: Record<any, any>;
+	authData?: Record<string, unknown>;
 }
 
 /** Auth Types */
-export declare type AuthData = null | false | Record<any, any>;
-export declare type AuthHandler = (req: Request) => AuthData;
+export declare type AuthData = Record<string, unknown> | false | null
+export declare type AuthHandler = (context: Context) => Promise<AuthData | Res | Response> | AuthData | Res | Response;
 
 /** Handler Types  */
 export declare type Context = { req: Req; res: Res };

@@ -1,26 +1,19 @@
 import { ResponseBody, ErrorBody, ErrorType, ResProperties } from './types';
 import httpStatuses from '../../Utilities/general/statuses';
 
-const defaults: ResProperties = {
-	body: {},
-	status: 200,
-	headers: {},
-	pretty: false
-};
-
 export class Res {
-	protected _body: ResponseBody = defaults.body;
-	protected _status: number = defaults.status;
-	protected _headers: Headers = new Headers(defaults.headers);
-	protected _pretty: boolean = defaults.pretty;
+	protected _body: ResponseBody;
+	protected _status;
+	protected _headers: Headers;
+	protected _pretty;
 	protected _error: Error | string | null = null;
 	protected _additionalData: Record<string, unknown> | null = null;
 
 	constructor(body?: ResponseBody, status?: number, headers?: HeadersInit, pretty?: boolean) {
-		this._body = body || defaults.body;
-		this._status = status || defaults.status;
-		this._headers = new Headers(headers) || new Headers(defaults.headers);
-		this._pretty = pretty || defaults.pretty;
+		this._body = body || {};
+		this._status = status || 200;
+		this._headers = new Headers(headers) || new Headers({});
+		this._pretty = pretty || false;
 	}
 
 	public get body(): ResponseBody { return this._body; }
@@ -41,11 +34,10 @@ export class Res {
 	}
 
 	public set(res: Partial<ResProperties>): this {
-		const { body, status, headers, pretty } = res;
-		if (body !== undefined) this._body = body;
-		if (status !== undefined) this._status = status;
-		if (headers !== undefined) this._headers = new Headers(headers);
-		if (pretty !== undefined) this._pretty = pretty;
+		if (res.body !== undefined) this._body = res.body;
+		if (res.status !== undefined) this._status = res.status;
+		if (res.headers !== undefined) this._headers = new Headers(res.headers);
+		if (res.pretty !== undefined) this._pretty = res.pretty;
 		return this;
 	}
 

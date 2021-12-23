@@ -1,31 +1,41 @@
-import { DefaultResponse } from '../../Utilities/general/statuses';
+import { DefaultError } from '../../Utilities/general/statuses';
+import { ResponseBody } from '../Res/types';
 
 export declare interface JoeyConfig {
-	defaultNotFound: DefaultResponse;
-	defaultUnauthorized: DefaultResponse;
-	defaultMethodNotAllowed: DefaultResponse;
-	defaultHandlerDidNotReturn: DefaultResponse;
-	defaultServerError: DefaultResponse;
+	notFound: DefaultError;
+	unauthorized: DefaultError;
+	methodNotAllowed: DefaultError;
+	handlerDidNotReturn: DefaultError;
+	serverError: DefaultError;
 	emitAllowHeader: boolean;
-	defaultHeaders: HeadersInit;
+	status: number;
+	body: ResponseBody;
+	headers: HeadersInit;
+	prettifyJson: boolean;
 }
 
+
 export const baseConfig: JoeyConfig = {
-	defaultNotFound: 404,
-	defaultUnauthorized: 401,
-	defaultMethodNotAllowed: 405,
-	defaultHandlerDidNotReturn: {
+	/** Default errors */
+	notFound: 404,
+	unauthorized: 401,
+	methodNotAllowed: 405,
+	handlerDidNotReturn: {
 		status: 500,
-		message: 'Server did not respond'
+		body: 'Server did not respond'
 	},
-	defaultServerError: 500,
+	serverError: 500,
 	emitAllowHeader: true,
-	defaultHeaders: {
+	/** Default Response */
+	status: 200,
+	body: {},
+	headers: {
 		'Access-Control-Allow-Origin': '*',
 		'Access-Control-Allow-Methods': '*',
 		'Cache-Control': 'no-store',
 		'Content-Type': 'application/json'
-	}
+	},
+	prettifyJson: true
 };
 
-export { default, Router } from './Router';
+export { default, Router } from './router';
