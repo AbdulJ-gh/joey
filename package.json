@@ -4,17 +4,17 @@
   "main": "./Routing/index.js",
   "description": "A framework for Cloudflare Workers",
   "scripts": {
-    "build": "rm -rf ./lib && tsc -p tsconfig-build.json",
-    "prepub": "npm run build && npm version patch && node scripts/create-dist-package-json.js",
+    "build": "npm run cleanup && tsc -p tsconfig-build.json && node scripts/create-dist-package-json.js",
+    "build:prod": "npm run cleanup && tsc -p tsconfig-build.json",
+    "prepub": "npm run build:prod && npm version patch && node scripts/create-dist-package-json.js",
     "pub": "npm publish ./lib",
     "test": "c8 ava",
     "test:watch": "c8 ava --watch",
-    "watch": "watch 'npm run build && node scripts/create-dist-package-json.js' ./src",
+    "watch": "watch 'npm run build' ./src",
     "cleanup": "rm -rf ./lib ./lib-test ./coverage"
   },
   "exports": {
     ".": "./Routing",
-    "./Routing": "./Routing",
     "./Transforms": "./Transforms",
     "./Crypto": "./Crypto",
     "./Utilities": "./Utilities"

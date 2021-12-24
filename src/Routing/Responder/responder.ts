@@ -12,30 +12,32 @@ export class Responder extends Res {
 		return 'json';
 	}
 
-	static handleError(error: Res|Error|unknown): Response {
+	static error(error: Res|Error|unknown): Response {
 		// Do telemetry here
-		if (error instanceof Res) {
-			console.log('Do A');
-		} else if (error instanceof Error) {
-			console.log('Do B');
-		} else {
-			console.log('Do C');
-		}
+		if (error instanceof Res) return new Responder(error).respond();
+		return new Responder(new Res('Server Error', 500)).respond();
+	}
 
-		return new Response();
+	private setContentType(headers: Headers, contentType: string) {
+		if (!headers.has('Content-Type')) {
+			headers.set('Content-Type', contentType);
+		}
 	}
 
 	public respond(): Response {
 		const { body, pretty, status, headers } = this;
 		const bodyType = Responder.getBodyType(body);
 
-		const jsonSend = () => new Response(JSON.stringify(body, null, pretty ? 2 : 0), { status, headers });
+		const jsonSend = () => {
+			this.setContentType(headers, 'application/json');
+			return new Response(JSON.stringify(body, null, pretty ? 2 : 0), { status, headers });
+		};
 		const textSend = () => {
-			headers.set('Content-Type', 'text/plain');
+			this.setContentType(headers, 'text/plain');
 			return new Response(body as string, { status, headers });
 		};
 		const formSend = () => {
-			headers.set('Content-Type', 'multipart/form-data');
+			this.setContentType(headers, 'multipart/form-data');
 			return new Response(body as FormData, { status, headers });
 		};
 

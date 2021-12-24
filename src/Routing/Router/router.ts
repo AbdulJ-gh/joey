@@ -1,29 +1,25 @@
 import { Res } from '../Res';
-import { Responder } from '../Responder';
-import { ErrorType } from '../Res/types';
-import { AuthData, AuthHandler, Context, Handler, Method, Register, Req, ResolvedHandler } from './types';
-import { DefaultError } from '../../Utilities/general/statuses';
+import { AuthHandler, Context, Handler, Method, Register, ResolvedHandler } from './types';
 import { JoeyConfig as Config, baseConfig } from './index';
+import { Dispatcher } from '../Dispatcher';
+import { getRegisteredName, handleError } from './helpers';
+import { Authorizer } from '../Authorizer';
 
 export class Router {
-	private register: Register = { paths: {}, routers: {} };
-	private config: Config = baseConfig;
-	private authData: AuthData = null;
-	private req: Req = new Request('');
-	private res: Res = new Res();
-	private authHandler: AuthHandler = () => null;
+	protected register: Register = { paths: {}, routers: {} };
+	protected config: Config = baseConfig;
+	protected context: Context = { req: new Request(''), res: new Res() };
+	protected authorizer: Authorizer | null = null;
 
 	constructor() {
-		// constructor() {
 		addEventListener('fetch', (event: FetchEvent): void => {
-			this.configure(this.config);
 			const { body, status, headers, prettifyJson } = this.config;
-
-			this.req = event.request;
-			this.res = new Res().set({ body, status, headers, pretty: prettifyJson });
-
-			// Then find the correct handler and context
-			event.respondWith(this.handleResponse(this.resolveHandler(event, this.res)));
+			this.context = {
+				req: event.request,
+				res: new Res().set({ body, status, headers, pretty: prettifyJson })
+			};
+			const resolvedHandler = this.resolveHandler(event, this.context.res);
+			new Dispatcher(this.config, this.context, this.authorizer).dispatch(event, resolvedHandler);
 		});
 	}
 
@@ -33,15 +29,20 @@ export class Router {
 		return this;
 	}
 
-	/** Resolving methods */
-	/** Resolver
-	 * This method finds the handler, first checking an exact path, then the routers
-	 * */
-	private resolveHandler(event: FetchEvent, res: Res, reducer = ''): ResolvedHandler {
+	/** Resolvers */
+	// Regex match request
+	private matchRoute(route: string, isRouter = false) {
+		return Object.keys(this.register[isRouter ? 'routers' : 'paths']).find(path => {
+			const regex = path.replace(/:[^/]+/g, '[^/]+').concat('$');
+			return route.match(regex) || null;
+		});
+	}
+	// This method finds the handler, first checking an exact path, then the routers
+	protected resolveHandler(event: FetchEvent, res: Res, reducer = ''): ResolvedHandler {
 		const { method, url } = event.request;
 		const route = new URL(url).pathname;
 
-		const reducedName = this.getRegisteredName(route.slice(reducer.length));
+		const reducedName = getRegisteredName(route.slice(reducer.length));
 		const exactPathMatch = this.matchRoute(reducedName);
 
 		/** 1. Look for the exact path and method */
@@ -67,124 +68,49 @@ export class Router {
 
 		/** 3. Check if path is valid but method not implemented */
 		if (exactPathMatch) {
-			const methodNotAllowed = this.handleError(this.config.methodNotAllowed);
+			const methodNotAllowed = handleError(this.config.methodNotAllowed);
 			if (this.config.emitAllowHeader) {
 				methodNotAllowed.headers.set('Allow', Object.keys(this.register.paths[exactPathMatch]).join(', '));
 			}
-			return { handler: () => methodNotAllowed, authenticate: false, RouterContext: this };
+			return { handler: () => methodNotAllowed, authenticate: false };
 		}
 
 		/** 4. Return the default */
 		return {
-			handler: () => this.handleError(this.config.notFound),
-			authenticate: false,
-			RouterContext: this
+			handler: () => handleError(this.config.notFound),
+			authenticate: false
 		};
-	}
-
-	private matchRoute(route: string, isRouter = false) {
-		return Object.keys(this.register[isRouter ? 'routers' : 'paths']).find(path => {
-			const regex = path.replace(/:[^/]+/g, '[^/]+').concat('$');
-			return route.match(regex) || null;
-		});
-	}
-
-	// Handle the request
-	// addEventListener cannot have an async handler, therefore this must be encapsulated in an async function and passed to event.respondWith()
-	private handleResponse = async (resolvedHandler: ResolvedHandler): Promise<Response> => {
-		const { handler, authenticate, RouterContext } = resolvedHandler;
-		try {
-			// Get context
-			const context: Context = { req: this.req, res: this.res };
-
-			// Authenticate
-			if (authenticate) {
-				const authenticated = await RouterContext.authenticate();
-				if (authenticated instanceof Response) return authenticated;
-				if (!authenticated) return Responder.handleError(this.handleError(this.config.unauthorized));
-			}
-
-			// Handle the request
-			const handledResponse: Res | Response | void = await handler(context);
-			if (handledResponse === undefined) {
-				return this.handleError(this.config.handlerDidNotReturn);
-			}
-
-			// Return response to event.respondWith
-			if (handledResponse instanceof Res) {
-				return handledResponse.isError
-					? Responder.handleError(handledResponse)
-					: new Responder(handledResponse).respond();
-			}
-			return handledResponse;
-		} catch (error) {
-			return Responder.handleError(error);
-		}
-	};
-
-	private handleError(defaultError: DefaultError, error?: ErrorType, additionalData?: Record<string, unknown>): Response {
-		if (typeof defaultError === 'number') {
-			return Responder.handleError(new Res().error(defaultError));
-		} else {
-			// TODO - unused props
-			const { status, body, error, additionalData } = defaultError;
-			return Responder.handleError(new Res().error(status, body));
-		}
 	}
 
 
 	/** Middleware */
-	public logger(logger: (ctx: Context) => void): this {
-		const consoleLog = console.log;
-		console.log = () => {
-			logger({ req: this.req, res: this.res });
-			consoleLog();
-		};
-
-
-		return this;
-	}
-
-	/** Auth methods */
-	public auth(authHandler: AuthHandler): this {
-		this.authHandler = authHandler;
-		return this;
-	}
-
-	private async authenticate(): Promise<Response | boolean> {
-		try {
-			const authResponse = await this.authHandler({ req: this.req, res: this.res });
-			if (authResponse instanceof Res) return new Responder(authResponse).respond();
-			if (authResponse instanceof Response) return authResponse;
-			this.authData = authResponse;
-			if (this.authData) this.req.authData = this.authData;
-			return this.authData !== false; // If authData === null, this returns true and allows the request to proceed unauthenticated, as wanted
-		} catch (error) {
-			return Responder.handleError(this.handleError(400, error as Error)); // TODO - review
-		}
-	}
-
-	private getRegisteredName(routeName: string): string {
-		if (routeName === '' || routeName === '/') return '__base_route';
-		let route = routeName;
-		if (routeName.endsWith('/')) route = route.slice(0, -1);
-		if (!routeName.startsWith('/')) route = '/'.concat(route);
-		return route;
-	}
-
-	private registerMethod(method: Method, route: string, handler: Handler, authenticate = true) {
-		const registeredName = this.getRegisteredName(route);
-		if (!this.register.paths[registeredName]) this.register.paths[registeredName] = {};
-		this.register.paths[registeredName][method] = { handler, authenticate, RouterContext: this };
-	}
-
 	public route(path: string, router: Router): this {
 		// No error thrown if route already exists, it is overwritten.
 		this.register.routers[path] = router;
 		return this;
 	}
+	public auth(authHandler: AuthHandler): this {
+		this.authorizer = new Authorizer(authHandler, this.context);
+		return this;
+	}
+	public logger(logger: (ctx: Context) => void): this {
+		const consoleLog = console.log;
+		console.log = () => {
+			logger({ req: this.context.req, res: this.context.res });
+			consoleLog();
+		};
+		return this;
+	}
 
-	/** HTTP Method methods */
+
+	/**HTTP Method methods */
+	// REGISTER
+	private registerMethod(method: Method, route: string, handler: Handler, authenticate = true) {
+		const registeredName = getRegisteredName(route);
+		if (!this.register.paths[registeredName]) this.register.paths[registeredName] = {};
+		this.register.paths[registeredName][method] = { handler, authenticate };
+	}
+	// METHOD
 	private method(method: Method, ...args: unknown[]): this {
 		const [route, arg1, arg2] = args;
 		typeof arg1 === 'boolean' ?

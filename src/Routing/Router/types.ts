@@ -15,11 +15,7 @@ export declare type Context = { req: Req; res: Res };
 export declare type SyncHandler = (context: Context) => Response | Res | void;
 export declare type AsyncHandler = (context: Context) => Promise<Response | Res | void>;
 export declare type Handler = SyncHandler | AsyncHandler;
-export declare type ResolvedHandler = {
-	handler: Handler;
-	authenticate: boolean;
-	RouterContext: Router;
-};
+export declare type ResolvedHandler = {	handler: Handler;	authenticate: boolean };
 
 /** Routing Types  */
 export declare type registeredRoutes = { route: string; handler: Handler }[];
