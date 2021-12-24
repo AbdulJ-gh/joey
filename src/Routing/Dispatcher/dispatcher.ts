@@ -31,9 +31,7 @@ export class Dispatcher {
 		try {
 			// Authenticate
 			if (authenticate) {
-				if (!this.authorizer) {
-					return Responder.error(handleError(this.config.serverError));
-				} else {
+				if (this.authorizer !== null) {
 					const authenticated = await this.authorizer.authenticate();
 					if (authenticated instanceof Response) return authenticated;
 					if (!authenticated) {
