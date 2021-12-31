@@ -1,5 +1,6 @@
 import { Res } from '../Res';
-import { BodyType, ResponseBody } from '../Res/types';
+import type { ResponseBody } from '../Res';
+import type { BodyType } from './types';
 
 export class Responder extends Res {
 	constructor(res: Res) {
@@ -7,6 +8,7 @@ export class Responder extends Res {
 	}
 
 	static getBodyType(body: ResponseBody): BodyType {
+		if (body === null) return 'noContent';
 		if (typeof body === 'string') return 'plaintext';
 		if (body instanceof FormData) return 'formData';
 		return 'json';
@@ -18,7 +20,7 @@ export class Responder extends Res {
 		return new Responder(new Res('Server Error', 500)).respond();
 	}
 
-	private setContentType(headers: Headers, contentType: string) {
+	private static setContentType(headers: Headers, contentType: string) {
 		if (!headers.has('Content-Type')) {
 			headers.set('Content-Type', contentType);
 		}
@@ -28,28 +30,18 @@ export class Responder extends Res {
 		const { body, pretty, status, headers } = this;
 		const bodyType = Responder.getBodyType(body);
 
-		const jsonSend = () => {
-			this.setContentType(headers, 'application/json');
-			return new Response(JSON.stringify(body, null, pretty ? 2 : 0), { status, headers });
-		};
-		const textSend = () => {
-			this.setContentType(headers, 'text/plain');
-			return new Response(body as string, { status, headers });
-		};
-		const formSend = () => {
-			this.setContentType(headers, 'multipart/form-data');
-			return new Response(body as FormData, { status, headers });
-		};
-
 		switch (bodyType) {
 			case 'json':
-				return jsonSend();
+				Responder.setContentType(headers, 'application/json;charset=utf-8');
+				return new Response(JSON.stringify(body, null, pretty ? 2 : 0), { status, headers });
 			case 'plaintext':
-				return textSend();
+				Responder.setContentType(headers, 'text/plain;charset=utf-8');
+				return new Response(body as string, { status, headers });
 			case 'formData':
-				return formSend();
+				Responder.setContentType(headers, 'multipart/form-data');
+				return new Response(body as FormData, { status, headers });
 			default:
-				return jsonSend();
+				return new Response(null, { status: status === 200 ? 204 : status, headers });
 		}
 	}
 }

@@ -1,0 +1,14 @@
+{
+  "fileExtensions": ["js", "ts"],
+  "tsConfig": "tsconfig.json",
+  "graphVizOptions": {
+    "G": {
+      "rankdir": "TB"
+    }
+  },
+  "detectiveOptions": {
+    "ts": {
+      "skipTypeImports": true
+    }
+  }
+}

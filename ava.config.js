@@ -8,5 +8,5 @@ export default {
 	verbose: true,
 	cache: false,
 	timeout: '10s',
-	ignoredByWatcher: ['lib/']
+	ignoredByWatcher: ['lib/', 'lib-test/']
 };

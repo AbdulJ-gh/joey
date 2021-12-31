@@ -1,1 +1,0 @@
-export { Authorizer } from './authorizer';

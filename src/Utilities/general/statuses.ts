@@ -1,4 +1,4 @@
-import { ErrorBody } from '../../Routing/Res/types';
+import type { ErrorBody } from '../../Routing/Res';
 
 const informationalResponses = {
 	100: 'Continue',

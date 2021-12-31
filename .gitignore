@@ -1,4 +1,5 @@
 .idea/
+.graphviz/
 lib/
 lib-test/
 node_modules/

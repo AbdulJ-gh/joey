@@ -9,7 +9,7 @@ test('getMultiHeader - Single header', t => {
 });
 
 test('getMultiHeader - Multiple headers', t => {
-	const headers = new Headers();
+	const headers = new Headers;
 	headers.append('Authorization', 'Bearer someToken');
 	headers.append('Authorization', 'Scarer Sullivan');
 	const authorization = headers.get('Authorization') as string;

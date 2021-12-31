@@ -1,16 +1,16 @@
-import { ResponseBody, ErrorBody, ErrorType, ResProperties } from './types';
 import httpStatuses from '../../Utilities/general/statuses';
+import type { ResponseBody, ErrorBody, ErrorType, ResProperties } from './types';
 
 export class Res {
 	protected _body: ResponseBody;
-	protected _status;
+	protected _status: number;
 	protected _headers: Headers;
-	protected _pretty;
+	protected _pretty: boolean;
 	protected _error: Error | string | null = null;
 	protected _additionalData: Record<string, unknown> | null = null;
 
 	constructor(body?: ResponseBody, status?: number, headers?: HeadersInit, pretty?: boolean) {
-		this._body = body || {};
+		this._body = body || null;
 		this._status = status || 200;
 		this._headers = new Headers(headers) || new Headers({});
 		this._pretty = pretty || false;
@@ -26,12 +26,6 @@ export class Res {
 	public setStatus(status: number): this { this._status = status; return this; }
 	public setHeaders(headers: HeadersInit): this { this._headers = new Headers(headers); return this; }
 	public prettify(bool = true): this { this._pretty = bool; return this;}
-
-	public appendHeaders(headers: HeadersInit): this {
-		// This needs some magic to work with the different possible types of HeadersInit
-		console.log(headers);
-		return this;
-	}
 
 	public set(res: Partial<ResProperties>): this {
 		if (res.body !== undefined) this._body = res.body;

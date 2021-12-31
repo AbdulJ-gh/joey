@@ -1,49 +1,57 @@
-import { Res } from '../Res';
-import { AuthHandler, Context, Handler, Method, Register, ResolvedHandler } from './types';
-import { JoeyConfig as Config, baseConfig } from './index';
-import { Dispatcher } from '../Dispatcher';
-import { getRegisteredName, handleError } from './helpers';
-import { Authorizer } from '../Authorizer';
+import { Authenticator } from '../Authenticator';
+import { Register } from '../Register';
+import { handleError } from './helpers';
+import type { AuthHandler } from '../Authenticator';
+import type { ResolvedHandler, Context, Handler, Method } from './types';
+import type { Config } from '../config';
+
 
 export class Router {
-	protected register: Register = { paths: {}, routers: {} };
-	protected config: Config = baseConfig;
-	protected context: Context = { req: new Request(''), res: new Res() };
-	protected authorizer: Authorizer | null = null;
+	protected register: Register = new Register;
+	protected authenticator: Authenticator = new Authenticator;
+	protected config: Partial<Config> = {};
 
-	constructor() {
-		addEventListener('fetch', (event: FetchEvent): void => {
-			const { body, status, headers, prettifyJson } = this.config;
-			this.context = {
-				req: event.request,
-				res: new Res().set({ body, status, headers, pretty: prettifyJson })
-			};
-			const resolvedHandler = this.resolveHandler(event, this.context.res);
-			new Dispatcher(this.config, this.context, this.authorizer).dispatch(event, resolvedHandler);
-		});
-	}
-
-	/** Config */
 	public configure(config: Partial<Config>): this {
-		this.config = { ...baseConfig, ...config };
+		this.config = config;
 		return this;
 	}
 
-	/** Resolvers */
-	// Regex match request
-	private matchRoute(route: string, isRouter = false) {
+	// Middleware
+	public auth(authHandler: AuthHandler): this {
+		this.authenticator.setHandler(authHandler);
+		return this;
+	}
+	public logger(logger: (ctx: Context) => void): this {
+		// const consoleLog = console.log;
+		// console.log = () => {
+		// 	logger({ req: this.context.req, res: this.context.res });
+		// 	consoleLog();
+		// };
+		return this;
+	}
+	public route(path: string, router: Router): this {
+		router.config = { ...this.config, ...router.config };
+		if (!router.authenticator.hasOwnHandler) { router.authenticator = this.authenticator; }
+		// router.context = this.context;
+		this.register.registerRouter(path, router);
+		return this;
+	}
+
+	private matchRoute(route: string, isRouter = false): string | undefined {
 		return Object.keys(this.register[isRouter ? 'routers' : 'paths']).find(path => {
-			const regex = path.replace(/:[^/]+/g, '[^/]+').concat('$');
-			return route.match(regex) || null;
+			const regex = path.replace(/:[^/]+/g, '[^/]+');
+			return route.match(`^${regex}$`);
 		});
 	}
-	// This method finds the handler, first checking an exact path, then the routers
-	protected resolveHandler(event: FetchEvent, res: Res, reducer = ''): ResolvedHandler {
-		const { method, url } = event.request;
-		const route = new URL(url).pathname;
-
-		const reducedName = getRegisteredName(route.slice(reducer.length));
-		const exactPathMatch = this.matchRoute(reducedName);
+	private getName(url: string, reducer: string): string {
+		const registeredName = Register.getRegisteredName(new URL(url).pathname);
+		const reducedName = reducer !== '' ? registeredName.slice(reducer.length) : registeredName;
+		return reducedName === '__base_route' || reducedName === '' ? '__base_route' : reducedName;
+	}
+	protected resolveHandler = (request: Request, routerContext: Router, reducer = ''): ResolvedHandler => {
+		const { method, url } = request;
+		let name = this.getName(url, reducer);
+		const exactPathMatch = this.matchRoute(name);
 
 		/** 1. Look for the exact path and method */
 		if (exactPathMatch && this.register.paths[exactPathMatch][method as Method]) {
@@ -51,14 +59,13 @@ export class Router {
 		}
 
 		/** 2. Check if valid router exists */
-		if (reducedName !== '__base_route') {
-			let name = reducedName;
-
+		if (name !== '__base_route') {
 			while (name.length > 0) {
 				const matchedRouter = this.matchRoute(name, true);
 
-				if (matchedRouter && this.register.routers[matchedRouter]) {
-					return this.register.routers[matchedRouter].resolveHandler(event, res, reducer + name);
+				if (matchedRouter) {
+					const router = this.register.routers[matchedRouter];
+					return router.resolveHandler(request, this, reducer + name);
 				}
 
 				const dirs = name.split('/');
@@ -66,88 +73,76 @@ export class Router {
 			}
 		}
 
-		/** 3. Check if path is valid but method not implemented */
-		if (exactPathMatch) {
-			const methodNotAllowed = handleError(this.config.methodNotAllowed);
-			if (this.config.emitAllowHeader) {
-				methodNotAllowed.headers.set('Allow', Object.keys(this.register.paths[exactPathMatch]).join(', '));
-			}
-			return { handler: () => methodNotAllowed, authenticate: false };
+		/** 3. Check for base route router */
+		if (this.register.routers.__base_route) {
+			const router = this.register.routers.__base_route;
+			return router.resolveHandler(request, this, reducer);
 		}
 
-		/** 4. Return the default */
+
+		/** 4. Check if path is valid but method not implemented */
+		if (exactPathMatch) {
+			// THIS NEEDS TO USE THIS.CONFIG ONLY IF THAT PROP EXISTS LOCALLY, OTHERWISE USE GLOBAL
+			// LIMITATION - ONLY TELLS US ABOUT OTHER METHODS AT THE SAME PATH IN THE CURRENT ROUTER/APP
+			// SOLUTION - HAVE AN ALLOW PROPERTY, ONLY ON THE APP (THE SERVER), WHICH IS AN OBJECT THAT TRACKS GLOBAL AND
+			// REGISTERED NAME LEVEL ALLOW METHODS
+			const methodNotAllowed = handleError((routerContext.config as Config).methodNotAllowed);
+			if (methodNotAllowed.status === 405 && routerContext.config.emitAllowHeader === true) {
+				methodNotAllowed.headers.set('Allow', Object.keys(this.register.paths[exactPathMatch]).join(', '));
+			}
+
+			return {
+				handler: () => methodNotAllowed,
+				authenticate: this.authenticator.hasOwnHandler,
+				routerContext: this
+			};
+		}
+
+
+		/** Return the default */
 		return {
-			handler: () => handleError(this.config.notFound),
-			authenticate: false
+			handler: () => handleError((routerContext.config as Config).notFound), // PLACEHOLDER
+			authenticate: this.authenticator.hasOwnHandler,
+			routerContext: this
 		};
-	}
+	};
 
-
-	/** Middleware */
-	public route(path: string, router: Router): this {
-		// No error thrown if route already exists, it is overwritten.
-		this.register.routers[path] = router;
+	// HTTP Methods
+	private method(method: Method, route: string, ...args: unknown[]): this {
+		const [arg1, arg2] = args;
+		typeof arg1 === 'boolean'
+			? this.register.registerMethod(this, method, route, arg2 as Handler, arg1)
+			: this.register.registerMethod(this, method, route, arg1 as Handler);
 		return this;
 	}
-	public auth(authHandler: AuthHandler): this {
-		this.authorizer = new Authorizer(authHandler, this.context);
-		return this;
-	}
-	public logger(logger: (ctx: Context) => void): this {
-		const consoleLog = console.log;
-		console.log = () => {
-			logger({ req: this.context.req, res: this.context.res });
-			consoleLog();
-		};
-		return this;
-	}
-
-
-	/**HTTP Method methods */
-	// REGISTER
-	private registerMethod(method: Method, route: string, handler: Handler, authenticate = true) {
-		const registeredName = getRegisteredName(route);
-		if (!this.register.paths[registeredName]) this.register.paths[registeredName] = {};
-		this.register.paths[registeredName][method] = { handler, authenticate };
-	}
-	// METHOD
-	private method(method: Method, ...args: unknown[]): this {
-		const [route, arg1, arg2] = args;
-		typeof arg1 === 'boolean' ?
-			this.registerMethod(method, route as string, arg2 as Handler, arg1) :
-			this.registerMethod(method, route as string, arg1 as Handler);
-		return this;
-	}
-	// GET
 	public get(route: string, authenticate: boolean, handler: Handler): this;
 	public get(route: string, handler: Handler): this;
-	public get(...args: unknown[]): this {
-		return this.method('GET', ...args);
+	public get(route: string, ...args: unknown[]) {
+		return this.method('GET', route, ...args);
 	}
-	// POST
 	public post(route: string, authenticate: boolean, handler: Handler): this;
 	public post(route: string, handler: Handler): this;
-	public post(...args: unknown[]): this {
-		return this.method('POST', ...args);
+	public post(route: string, ...args: unknown[]) {
+		return this.method('POST', route, ...args);
 	}
-	// PUT
-	public put(route: string, authenticate: boolean, handler: Handler): this;
-	public put(route: string, handler: Handler): this;
-	public put(...args: unknown[]): this {
-		return this.method('PUT', ...args);
-	}
-	// PATCH
 	public patch(route: string, authenticate: boolean, handler: Handler): this;
 	public patch(route: string, handler: Handler): this;
-	public patch(...args: unknown[]): this {
-		return this.method('PATCH', ...args);
+	public patch(route: string, ...args: unknown[]) {
+		return this.method('PATCH', route, ...args);
 	}
-	// DELETE
 	public delete(route: string, authenticate: boolean, handler: Handler): this;
 	public delete(route: string, handler: Handler): this;
-	public delete(...args: unknown[]): this {
-		return this.method('DELETE', ...args);
+	public delete(route: string, ...args: unknown[]) {
+		return this.method('DELETE', route, ...args);
+	}
+	public put(route: string, authenticate: boolean, handler: Handler): this;
+	public put(route: string, handler: Handler): this;
+	public put(route: string, ...args: unknown[]) {
+		return this.method('PUT', route, ...args);
+	}
+	public options(route: string, authenticate: boolean, handler: Handler): this;
+	public options(route: string, handler: Handler): this;
+	public options(route: string, ...args: unknown[]) {
+		return this.method('OPTIONS', route, ...args);
 	}
 }
-
-export default () => new Router().configure(baseConfig);

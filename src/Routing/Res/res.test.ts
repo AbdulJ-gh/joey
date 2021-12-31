@@ -4,12 +4,12 @@ import { Res } from './res';
 const defaultProperties = {
 	pretty: false,
 	status: 200,
-	body: {},
-	headers: new Headers()
+	body: null,
+	headers: new Headers
 };
 
 test('Res - Default properties', t => {
-	const res = new Res();
+	const res = new Res;
 	t.is(res.pretty, defaultProperties.pretty);
 	t.is(res.status, defaultProperties.status);
 	t.deepEqual(res.body, defaultProperties.body);
@@ -33,20 +33,20 @@ test('Res - Set prettify', t => {
 });
 
 test('Res - setBody', t => {
-	const res = new Res();
+	const res = new Res;
 	const body = { hello: 'world' };
 	res.setBody(body);
 	t.deepEqual(res.body, body);
 });
 
 test('Res - setStatus', t => {
-	const res = new Res();
+	const res = new Res;
 	res.setStatus(500);
 	t.is(res.status, 500);
 });
 
 test('Res - setHeaders', t => {
-	const res = new Res();
+	const res = new Res;
 	const headers1 = { key: 'value1' }; // Type - Record<string, string>
 	const headers2 = [['key', 'value2']] as [string, string][]; // Type - [key: string, value: string][]  OR  [string, string][]
 	const headers3 = new Headers({ key: 'value3' }); // Type - Headers
@@ -62,7 +62,7 @@ test('Res - setHeaders', t => {
 });
 
 test('Res - set', t => {
-	const res = new Res();
+	const res = new Res;
 	const body = { hello: 'world' };
 	const status = 400;
 	const headers = { key: 'value1' };
