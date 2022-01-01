@@ -1,9 +1,8 @@
 import { Res } from '../Res';
 import { Responder } from '../Responder';
-import { Router } from '../Router';
+import { Router, type Context, type ResolvedHandler } from '../Router';
 import { handleError } from '../Router/helpers';
 import type { Config } from '../config';
-import type { Context, ResolvedHandler } from '../Router';
 
 // Object.assign https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/assign
 // "If the source value is a reference to an object, it only copies the reference value."

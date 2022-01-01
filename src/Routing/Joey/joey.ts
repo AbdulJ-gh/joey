@@ -1,8 +1,7 @@
 import { Dispatcher } from '../Dispatcher';
 import { Res } from '../Res';
-import { Router } from '../Router';
+import { Router, type Context } from '../Router';
 import { baseConfig, Config } from '../config';
-import type { Context } from '../Router';
 
 
 class Joey extends Router {

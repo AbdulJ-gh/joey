@@ -1,5 +1,4 @@
-import { Res } from '../Res';
-import type { ResponseBody } from '../Res';
+import { Res, type ResponseBody } from '../Res';
 import type { BodyType } from './types';
 
 export class Responder extends Res {

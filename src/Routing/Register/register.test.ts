@@ -32,7 +32,3 @@ test('Register - registerRouter', t => {
 	register.registerRouter('abc', router);
 	t.is(register.routers['/abc'], router);
 });
-
-test('aaa', t => {
-	t.pass();
-});

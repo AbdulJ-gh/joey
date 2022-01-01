@@ -1,7 +1,6 @@
-import { Authenticator } from '../Authenticator';
+import { Authenticator, type AuthHandler } from '../Authenticator';
 import { Register } from '../Register';
 import { handleError } from './helpers';
-import type { AuthHandler } from '../Authenticator';
 import type { ResolvedHandler, Context, Handler, Method } from './types';
 import type { Config } from '../config';
 

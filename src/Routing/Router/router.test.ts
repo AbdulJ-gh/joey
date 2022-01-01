@@ -1,12 +1,11 @@
 import test from 'ava';
 import { generateMockRequest } from '../../../testUtils/generateMockRequest';
-import { Authenticator } from '../Authenticator';
+import { Authenticator, type AuthHandler } from '../Authenticator';
 import { baseConfig, Config } from '../config';
 import { Register } from '../Register';
 import { Res } from '../Res';
 import { handleError } from './helpers';
 import { Router } from './router';
-import type { AuthHandler } from '../Authenticator';
 
 class TestRouter extends Router {
 	constructor() { super(); }

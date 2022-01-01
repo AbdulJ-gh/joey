@@ -1,7 +1,6 @@
 import test from 'ava';
-import { Res } from '../Res';
+import { Res, type JsonBody } from '../Res';
 import { Responder } from './responder';
-import type { JsonBody } from '../Res';
 
 test('Responder - Send JSON', async t => {
 	const res = new Res({ hello: 'world' }, 201, { someKey: 'someValue' });
