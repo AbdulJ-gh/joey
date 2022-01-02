@@ -56,3 +56,9 @@ test('#getQueryParams - Multiple params with some null value', t => {
 	const params = getQueryParams(url, ['query1', 'query2', 'query3']);
 	t.deepEqual(params, { query1: 'param1', query2: 'param2', query3: null });
 });
+
+test('#getQueryParams - Multiple same params', t => {
+	const url = new URL('http://testurl/com?query1=param1&query1=param2');
+	const params = getQueryParams(url, ['query1', 'query2']);
+	t.deepEqual(params, { query1: ['param1', 'param2'], query2: null });
+});

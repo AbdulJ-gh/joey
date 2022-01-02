@@ -1,5 +1,5 @@
 type QueryParam = null | string | string[];
-type QueryParams = Record<any, QueryParam>;
+type QueryParams = Record<string, QueryParam>;
 
 function returnParam(param: string[]): QueryParam {
 	switch (param.length) {
