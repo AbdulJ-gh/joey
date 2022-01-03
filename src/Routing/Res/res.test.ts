@@ -18,18 +18,50 @@ test('Res - Default properties', t => {
 
 test('Res - Constructed Res', t => {
 	const body = { hello: 'world' };
-	const status = 400;
 	const headers = { key: 'value1' };
-	const res = new Res(body, status, headers);
+	const res = new Res(body, 400, headers, true);
 	t.is(res.status, 400);
 	t.deepEqual(res.body, { hello: 'world' });
 	t.deepEqual(res.headers, new Headers(headers));
+	t.is(res.pretty, true);
 });
 
-test('Res - Set prettify', t => {
+test('Res - prettify', t => {
 	const res = new Res({ hello: 'world' });
+	t.is(res.pretty, false);
 	res.prettify();
 	t.is(res.pretty, true);
+	res.prettify(false);
+	t.is(res.pretty, false);
+});
+
+test('Res - set Body', t => {
+	const res = new Res;
+	const body = { hello: 'world' };
+	res.body = body;
+	t.deepEqual(res.body, body);
+});
+
+test('Res - set Status', t => {
+	const res = new Res;
+	res.status = 500;
+	t.is(res.status, 500);
+});
+
+test('Res - set Headers', t => {
+	const res = new Res;
+	const headers1 = { key: 'value1' }; // Type - Record<string, string>
+	const headers2 = [['key', 'value2']] as [string, string][]; // Type - [key: string, value: string][]  OR  [string, string][]
+	const headers3 = new Headers({ key: 'value3' }); // Type - Headers
+
+	res.headers = new Headers(headers1);
+	t.is(res.headers.get('key'), 'value1');
+
+	res.headers = new Headers(headers2);
+	t.is(res.headers.get('key'), 'value2');
+
+	res.headers = new Headers(headers3);
+	t.is(res.headers.get('key'), 'value3');
 });
 
 test('Res - setBody', t => {
