@@ -11,7 +11,7 @@ class TestAuthenticator extends Authenticator {
 	public getAuthData(): AuthData { return this.authData; }
 }
 
-const mockContext = { req: new Request(''), res: new Res() };
+const context = { req: new Request(''), res: new Res() };
 
 test('Authenticator - Properties', t => {
 	const authHandler = () => null;
@@ -22,43 +22,38 @@ test('Authenticator - Properties', t => {
 
 test('Authenticator - Auth data', async t => {
 	const authenticator = new TestAuthenticator(() => ({ some: 'data' }));
-	await authenticator.authenticate(mockContext);
+	await authenticator.authenticate(context);
 	t.deepEqual(authenticator.getAuthData(), { some: 'data' });
 });
 
 
 test('Authenticator - Authenticate - no/null authHandler', async t => {
 	const authenticator = new TestAuthenticator(() => null);
-	const mockContext = { req: new Request(''), res: new Res() };
-	const result = await authenticator.authenticate(mockContext);
+	const result = await authenticator.authenticate(context);
 	t.true(result);
 });
 
 test('Authenticator - Authenticate - successful authentication', async t => {
 	const authenticator = new TestAuthenticator(() => ({ any: 'data' }));
-	const mockContext = { req: new Request(''), res: new Res() };
-	const result = await authenticator.authenticate(mockContext);
+	const result = await authenticator.authenticate(context);
 	t.true(result);
 });
 //
 test('Authenticator - Authenticate - failed authentication', async t => {
 	const authenticator = new TestAuthenticator(() => false);
-	const mockContext = { req: new Request(''), res: new Res() };
-	const result = await authenticator.authenticate(mockContext);
+	const result = await authenticator.authenticate(context);
 	t.false(result);
 });
 //
 test('Authenticator - Authenticate - Return Response directly', async t => {
 	const mockResponse = new Response();
 	const authenticator = new TestAuthenticator(() => mockResponse);
-	const mockContext = { req: new Request(''), res: new Res() };
-	const result = await authenticator.authenticate(mockContext);
+	const result = await authenticator.authenticate(context);
 	t.is(result, mockResponse);
 });
 //
 test('Authenticator - Authenticate - Return Res directly', async t => {
 	const authenticator = new TestAuthenticator(() => new Res());
-	const mockContext = { req: new Request(''), res: new Res() };
-	const result = await authenticator.authenticate(mockContext);
+	const result = await authenticator.authenticate(context);
 	t.deepEqual(result, new Response(null, { status: 204 }));
 });

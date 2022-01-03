@@ -32,7 +32,6 @@ export class Router {
 	public route(path: string, router: Router): this {
 		router.config = { ...this.config, ...router.config };
 		if (router.authenticator === null) { router.authenticator = this.authenticator; }
-		// router.context = this.context;
 		this.register.registerRouter(path, router);
 		return this;
 	}
@@ -48,7 +47,6 @@ export class Router {
 		const reducedName = reducer !== '' ? registeredName.slice(reducer.length) : registeredName;
 		return reducedName === '__base_route' || reducedName === '' ? '__base_route' : reducedName;
 	}
-
 	protected resolveHandler = (request: Request, reducer = ''): ResolvedHandler => {
 		const { method, url } = request;
 		let name = this.getName(url, reducer);

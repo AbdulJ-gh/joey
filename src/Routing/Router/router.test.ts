@@ -66,18 +66,18 @@ test('Router - Configure', t => {
 	t.deepEqual(config, { emitAllowHeader: false });
 });
 
-// test('Router - Auth', async t => {
-// 	const { router } = setup();
-// 	const authHandler: AuthHandler = () => ({ auth: 'data' });
-// 	router.auth(authHandler);
-// 	const authenticator: Authenticator = router.getAuthenticator() as Authenticator;
-// 	t.deepEqual(authenticator.authHandler, authHandler);
-// 	t.deepEqual(authenticator.authData, null);
-//
-// 	const mockContext = { req: new Request(''), res: new Res() };
-// 	await authenticator.authenticate(mockContext);
-// 	t.deepEqual(authenticator.authData, { auth: 'data' });
-// });
+test('Router - Auth', async t => {
+	const { router } = setup();
+	const authHandler: AuthHandler = () => ({ auth: 'data' });
+	router.auth(authHandler);
+	const authenticator: Authenticator = router.getAuthenticator() as Authenticator;
+	t.deepEqual(authenticator.authHandler, authHandler);
+	t.deepEqual(authenticator.authData, null);
+
+	const context = { req: new Request(''), res: new Res() };
+	await authenticator.authenticate(context);
+	t.deepEqual(authenticator.authData, { auth: 'data' });
+});
 
 test('Router - Route - Attach sub-router', t => {
 	const { router, register } = setup();
@@ -102,26 +102,24 @@ test('Router - Route - Inherit config', t => {
 	t.deepEqual(subRouter.getConfig(), { status: 400, emitAllowHeader: false });
 });
 
-// test('Router - Route - Inherit Authenticator', t => {
-// 	const { router } = setup();
-// 	const context = { req: new Request(''), res: new Res() };
-//
-// 	router.auth(() => ({ some: 'data' }));
-// 	const authenticator: Authenticator = router.getAuthenticator() as Authenticator;
-// 	t.deepEqual(authenticator.authHandler(context), { some: 'data' });
-//
-// 	const sub1 = setup();
-// 	const sub2 = setup();
-// 	sub2.router.auth(() => ({ something: 'else' }));
-//
-// 	router.route('/abc', sub1.router);
-// 	router.route('/xyz', sub2.router);
-//
-// 	t.deepEqual((sub1.router.getAuthenticator() as Authenticator).authHandler(context), { some: 'data' });
-// 	t.deepEqual((sub2.router.getAuthenticator() as Authenticator).authHandler(context), { something: 'else' });
-// 	t.is((sub1.router.getAuthenticator() as Authenticator).hasOwnHandler, true);
-// 	t.is((sub2.router.getAuthenticator() as Authenticator).hasOwnHandler, true);
-// });
+test('Router - Route - Inherit Authenticator', t => {
+	const { router } = setup();
+	const context = { req: new Request(''), res: new Res() };
+
+	router.auth(() => ({ some: 'data' }));
+	const authenticator: Authenticator = router.getAuthenticator() as Authenticator;
+	t.deepEqual(authenticator.authHandler(context), { some: 'data' });
+
+	const sub1 = setup();
+	const sub2 = setup();
+	sub2.router.auth(() => ({ something: 'else' }));
+
+	router.route('/abc', sub1.router);
+	router.route('/xyz', sub2.router);
+
+	t.deepEqual((sub1.router.getAuthenticator() as Authenticator).authHandler(context), { some: 'data' });
+	t.deepEqual((sub2.router.getAuthenticator() as Authenticator).authHandler(context), { something: 'else' });
+});
 
 test('Router - ResolveHandler - default handler', t => {
 	const { router, resolveHandler } = setup();
@@ -352,11 +350,3 @@ test('Router - ResolveHandler - method not allowed, no emit allow', t => {
 	const expectedResponse = handleError(baseConfig.methodNotAllowed);
 	t.deepEqual(response, expectedResponse);
 });
-
-
-/**
- * Not tested yet
- * logger
- * private matchRoute
- * private getName
- * */
