@@ -17,6 +17,3 @@ export declare type ResolvedHandler = {
 
 // export declare type Method = 'CONNECT' | 'DELETE' | 'GET' | 'HEAD' | 'OPTIONS' | 'PATCH' | 'POST' | 'PUT' | 'TRACE';
 export declare type Method = 'DELETE' | 'GET' | 'OPTIONS' | 'PATCH' | 'POST' | 'PUT';
-
-// export declare type RegisteredRoutes = { route: string; handler: Handler }[];
-// export declare type Methods = Record<string, RegisteredRoutes>;

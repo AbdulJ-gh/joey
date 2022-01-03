@@ -7,7 +7,7 @@ import type { Config } from '../config';
 
 export class Router {
 	protected register: Register = new Register;
-	protected authenticator: Authenticator = new Authenticator;
+	protected authenticator: Authenticator | null = null;
 	protected config: Partial<Config> = {};
 
 	public configure(config: Partial<Config>): this {
@@ -17,12 +17,13 @@ export class Router {
 
 	// Middleware
 	public auth(authHandler: AuthHandler): this {
-		this.authenticator.setHandler(authHandler);
+		this.authenticator = new Authenticator(authHandler);
 		return this;
 	}
 	public logger(logger: (ctx: Context) => void): this {
 		// const consoleLog = console.log;
 		// console.log = () => {
+		// 	// actually need to pass event to the logger in case they want to do anything with it
 		// 	logger({ req: this.context.req, res: this.context.res });
 		// 	consoleLog();
 		// };
@@ -30,7 +31,7 @@ export class Router {
 	}
 	public route(path: string, router: Router): this {
 		router.config = { ...this.config, ...router.config };
-		if (!router.authenticator.hasOwnHandler) { router.authenticator = this.authenticator; }
+		if (router.authenticator === null) { router.authenticator = this.authenticator; }
 		// router.context = this.context;
 		this.register.registerRouter(path, router);
 		return this;
@@ -47,7 +48,8 @@ export class Router {
 		const reducedName = reducer !== '' ? registeredName.slice(reducer.length) : registeredName;
 		return reducedName === '__base_route' || reducedName === '' ? '__base_route' : reducedName;
 	}
-	protected resolveHandler = (request: Request, routerContext: Router, reducer = ''): ResolvedHandler => {
+
+	protected resolveHandler = (request: Request, reducer = ''): ResolvedHandler => {
 		const { method, url } = request;
 		let name = this.getName(url, reducer);
 		const exactPathMatch = this.matchRoute(name);
@@ -64,7 +66,7 @@ export class Router {
 
 				if (matchedRouter) {
 					const router = this.register.routers[matchedRouter];
-					return router.resolveHandler(request, this, reducer + name);
+					return router.resolveHandler(request, reducer + name);
 				}
 
 				const dirs = name.split('/');
@@ -75,7 +77,7 @@ export class Router {
 		/** 3. Check for base route router */
 		if (this.register.routers.__base_route) {
 			const router = this.register.routers.__base_route;
-			return router.resolveHandler(request, this, reducer);
+			return router.resolveHandler(request, reducer);
 		}
 
 
@@ -85,14 +87,14 @@ export class Router {
 			// LIMITATION - ONLY TELLS US ABOUT OTHER METHODS AT THE SAME PATH IN THE CURRENT ROUTER/APP
 			// SOLUTION - HAVE AN ALLOW PROPERTY, ONLY ON THE APP (THE SERVER), WHICH IS AN OBJECT THAT TRACKS GLOBAL AND
 			// REGISTERED NAME LEVEL ALLOW METHODS
-			const methodNotAllowed = handleError((routerContext.config as Config).methodNotAllowed);
-			if (methodNotAllowed.status === 405 && routerContext.config.emitAllowHeader === true) {
+			const methodNotAllowed = handleError((this.config as Config).methodNotAllowed);
+			if (methodNotAllowed.status === 405 && this.config.emitAllowHeader === true) {
 				methodNotAllowed.headers.set('Allow', Object.keys(this.register.paths[exactPathMatch]).join(', '));
 			}
 
 			return {
 				handler: () => methodNotAllowed,
-				authenticate: this.authenticator.hasOwnHandler,
+				authenticate: this.authenticator !== null,
 				routerContext: this
 			};
 		}
@@ -100,8 +102,8 @@ export class Router {
 
 		/** Return the default */
 		return {
-			handler: () => handleError((routerContext.config as Config).notFound), // PLACEHOLDER
-			authenticate: this.authenticator.hasOwnHandler,
+			handler: () => handleError((this.config as Config).notFound), // PLACEHOLDER
+			authenticate: this.authenticator !== null,
 			routerContext: this
 		};
 	};

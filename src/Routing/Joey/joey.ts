@@ -17,7 +17,7 @@ class Joey extends Router {
 				res: new Res().set({ body, status, headers, pretty: prettifyJson })
 			};
 
-			const resolvedHandler = this.resolveHandler(event.request, this);
+			const resolvedHandler = this.resolveHandler(event.request);
 			new Dispatcher(resolvedHandler.routerContext).dispatch(event, resolvedHandler, this.context);
 		});
 	}

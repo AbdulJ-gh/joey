@@ -3,3 +3,6 @@ lib
 lib-test
 node_modules
 scripts
+
+ava.config.js
+testUtils/testRuntimeGlobals.js

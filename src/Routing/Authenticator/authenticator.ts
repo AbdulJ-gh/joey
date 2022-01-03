@@ -4,13 +4,11 @@ import type { Context } from '../Router';
 import type { AuthData, AuthHandler } from './types';
 
 export class Authenticator {
-	public authHandler: AuthHandler = () => null;
+	public authHandler: AuthHandler;
 	public authData: AuthData = null;
-	public hasOwnHandler = false;
 
-	public setHandler(authHandler: AuthHandler) {
+	constructor(authHandler: AuthHandler) {
 		this.authHandler = authHandler;
-		this.hasOwnHandler = true;
 	}
 
 	public async authenticate(context: Context): Promise<Response | boolean> {
