@@ -33,6 +33,7 @@
     "framework",
     "kv",
     "backend",
+    "edge",
     "typescript",
     "http",
     "json",

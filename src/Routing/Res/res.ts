@@ -1,68 +1,80 @@
-import httpStatuses from '../../Utilities/general/statuses';
-import type { ResponseBody, ErrorBody, ErrorType, ResProperties } from './types';
-
-/**
- * Allows functional/method chaining, direct property update, or object set
- * */
+import type { ResponseBody, ResProperties, ResGetter } from './types';
 
 export class Res {
-	public body: ResponseBody;
-	public status: number;
+	protected _body: ResponseBody;
+	protected _status: number;
+	protected _pretty: boolean;
 	public headers: Headers;
-	public pretty: boolean;
 
-	constructor(body: ResponseBody = null, status = 200, headers: HeadersInit = {}, pretty = false) {
-		this.body = body;
-		this.status = status;
-		this.headers = new Headers(headers);
-		this.pretty = pretty;
+	constructor(body?: ResponseBody, status?: number, headers?: HeadersInit, pretty?: boolean) {
+		this._body = body || null;
+		this._status = status || 200;
+		this.headers = new Headers(headers || {});
+		this._pretty = pretty === undefined ? false : pretty;
 	}
 
+	protected *[Symbol.iterator](): Iterator<unknown> {
+		yield this._body;
+		yield this._status;
+		yield this.headers;
+		yield this._pretty;
+	}
+
+	/**
+	 * Gets the current values for body, status and pretty.
+	 * Header can be accessed directly through 'RES.headers', where RES is an instance of Res.
+	 * @return {Object} — Contains body, status and pretty
+	 */
+	public get get(): ResGetter {
+		return {
+			body: this._body,
+			status: this._status,
+			pretty: this._pretty
+		};
+	}
+
+	public body(body: ResponseBody): this {
+		this._body = body;
+		return this;
+	}
+	public status(status: number): this {
+		this._status = status;
+		return this;
+	}
 	public prettify(pretty = true): this {
-		this.pretty = pretty;
+		this._pretty = pretty;
 		return this;
 	}
-	public setBody(body: ResponseBody): this {
-		this.body = body;
-		return this;
-	}
-	public setStatus(status: number): this {
-		this.status = status;
-		return this;
-	}
+
+	/**
+	 * Resets headers from a {@link HeadersInit} object.
+	 * For header methods, use 'RES.headers.METHOD', where RES is an instance of Res.
+	 * @param {HeadersInit} headers - Initialized headers
+	 * @return {Res} — this instance for chaining
+	 */
 	public setHeaders(headers: HeadersInit): this {
 		this.headers = new Headers(headers);
 		return this;
 	}
-
+	/**
+	 * Sets the 'content-type' response header.
+	 * @param {string} contentType - header value
+	 * @return {Res} — this instance for chaining
+	 */
+	public contentType(contentType: string): this {
+		this.headers.set('content-type', contentType);
+		return this;
+	}
+	/**
+	 * Sets multiple properties on the current instance in a single method.
+	 * @param {Partial<ResProperties>} res - An object literal containing Res properties
+	 * @return {Res} — this instance for chaining
+	 */
 	public set(res: Partial<ResProperties>): this {
-		if (res.body !== undefined) this.body = res.body;
-		if (res.status !== undefined) this.status = res.status;
+		if (res.body !== undefined) this._body = res.body;
+		if (res.status !== undefined) this._status = res.status;
 		if (res.headers !== undefined) this.headers = new Headers(res.headers);
-		if (res.pretty !== undefined) this.pretty = res.pretty;
+		if (res.pretty !== undefined) this._pretty = res.pretty;
 		return this;
 	}
 }
-
-const a = new Res;
-
-
-// export class Res2 {
-// 	protected _error: Error | string | null = null;
-// 	protected _additionalData: Record<string, unknown> | null = null;
-//
-// 	public get isError(): boolean { return this._error !== null; }
-//
-//
-// 	public error(status: number): this;
-// 	public error(status: number, body: ErrorBody, error?: ErrorType, additionalData?: Record<string, unknown>): this;
-// 	public error(status: number, useDefault: true, error?: ErrorType, additionalData?: Record<string, unknown>): this;
-// 	public error(...args: [ number, (ErrorBody | true)?, (string | Error)?, Record<string, unknown>? ]): this {
-// 		const [status] = args;
-// 		this._status = status;
-// 		this._body = args.length === 1 || args[1] === true ? httpStatuses[status] : args[1] as ResponseBody;
-// 		if (args[2] !== undefined) this._error = args[2];
-// 		if (args[3] !== undefined) this._additionalData = args[3];
-// 		return this;
-// 	}
-// }
