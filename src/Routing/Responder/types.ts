@@ -1,1 +1,1 @@
-export declare type BodyType = 'json' | 'plaintext' | 'formData' | 'noContent';
+export declare type BodyType = 'json' | 'plaintext' | 'formData' | 'arrayBuffer' | 'noContent';
