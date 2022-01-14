@@ -78,14 +78,6 @@ test('Res - set Headers', t => {
 	t.is(res.headers.get('key'), 'value3');
 });
 
-test('Res - set content-type header', t => {
-	const res = new Res;
-	const contentType= 'application/random';
-	res.contentType(contentType).body({ hello: 'world' }).status(401);
-	t.is(res.headers.get('content-type'), contentType);
-});
-
-
 test('Res - set', t => {
 	const res = new Res;
 	const body = { hello: 'world' };
