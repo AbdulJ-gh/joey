@@ -7,7 +7,7 @@ export class Register {
 	public allow: Record<string, Set<Method>> = {};
 
 	public static getRegisteredName(routeName: string): string {
-		if (routeName === '' || routeName === '/') return '__base_route';
+		if (routeName === '' || routeName === '/') return '/';
 		let route = routeName;
 		if (routeName.endsWith('/')) route = route.slice(0, -1);
 		if (!routeName.startsWith('/')) route = '/'.concat(route);

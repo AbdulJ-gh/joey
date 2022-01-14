@@ -11,8 +11,8 @@ test('Register - Properties', t => {
 });
 
 test('Register - getRegisteredName', t => {
-	t.is(Register.getRegisteredName(''), '__base_route');
-	t.is(Register.getRegisteredName('/'), '__base_route');
+	t.is(Register.getRegisteredName(''), '/');
+	t.is(Register.getRegisteredName('/'), '/');
 	t.is(Register.getRegisteredName('abc'), '/abc');
 	t.is(Register.getRegisteredName('/abc'), '/abc');
 	t.is(Register.getRegisteredName('abc/'), '/abc');
