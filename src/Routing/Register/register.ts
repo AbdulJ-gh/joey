@@ -14,6 +14,12 @@ export class Register {
 		return route;
 	}
 
+	public static getName(url: string, reducer: string): string {
+		const registeredName = Register.getRegisteredName(new URL(url).pathname);
+		const reducedName = registeredName.slice(reducer.length);
+		return reducedName === '' ? '/' : reducedName;
+	}
+
 	public registerMethod(routerContext: Router, method: Method, route: string, handler: Handler, authenticate = true) {
 		const name = Register.getRegisteredName(route);
 
@@ -23,5 +29,12 @@ export class Register {
 
 	public registerRouter(route: string, router: Router): void	{
 		this.routers[Register.getRegisteredName(route)] = router;
+	}
+
+	public matchRoute(route: string, isRouter = false): string | undefined {
+		return Object.keys(this[isRouter ? 'routers' : 'paths']).find(path => {
+			const regex = path.replace(/:[^/]+/g, '[^/]+');
+			return route.match(`^${regex}$`);
+		});
 	}
 }
