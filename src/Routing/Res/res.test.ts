@@ -1,49 +1,36 @@
 import test from 'ava';
 import { Res } from './res';
-import { ResProperties } from './types';
-
-const defaultProperties = {
-	body: null,
-	status: 200,
-	headers: new Headers,
-	pretty: false
-};
-
-const getResData = (res: Res): ResProperties => {
-	const [body, status, headers, pretty] = [...res];
-	return { body, status, headers, pretty } as ResProperties;
-};
 
 test('Res - Default properties', t => {
 	const res = new Res;
-	const data = getResData(res);
-	t.deepEqual(data, defaultProperties);
+	t.is(res.get.body, null);
+	t.is(res.get.status, 204);
+	t.is(res.get.pretty, false);
 });
 
 test('Res - Constructed Res', t => {
 	const mockBody = { hello: 'world' };
 	const mockHeaders = { key: 'value1' };
 	const res = new Res(mockBody, 400, mockHeaders, true);
-	const { body, status, headers, pretty } = getResData(res);
 
-	t.deepEqual(body, mockBody);
-	t.is(status, 400);
-	t.deepEqual(headers, new Headers(mockHeaders));
-	t.is(pretty, true);
+	t.deepEqual(res.get.body, mockBody);
+	t.is(res.get.status, 400);
+	t.deepEqual(res.headers, new Headers(mockHeaders));
+	t.is(res.get.pretty, true);
 });
 
 test('Res - prettify', t => {
 	const res = new Res({ hello: 'world' });
 
-	let { pretty } = getResData(res);
+	let { pretty } = res.get;
 	t.is(pretty, false);
 
 	res.prettify();
-	pretty = getResData(res).pretty;
+	pretty = res.get.pretty;
 	t.is(pretty, true);
 
 	res.prettify(false);
-	pretty = getResData(res).pretty;
+	pretty = res.get.pretty;
 	t.is(pretty, false);
 });
 
@@ -51,15 +38,13 @@ test('Res - set Body', t => {
 	const res = new Res;
 	const mockBody = { hello: 'world' };
 	res.body(mockBody);
-	const { body } = getResData(res);
-	t.deepEqual(body, mockBody);
+	t.deepEqual(res.get.body, mockBody);
 });
 
 test('Res - set Status', t => {
 	const res = new Res;
 	res.status(500);
-	const { status } = getResData(res);
-	t.is(status, 500);
+	t.is(res.get.status, 500);
 });
 
 test('Res - set Headers', t => {
@@ -85,33 +70,33 @@ test('Res - set', t => {
 	const headers = { key: 'value1' };
 	const pretty = true;
 
-	res.set({ body });
-	let data = getResData(res);
-	t.deepEqual(data.body, body);
-	t.is(data.status, defaultProperties.status);
-	t.deepEqual(data.headers, defaultProperties.headers);
-	t.is(data.pretty, defaultProperties.pretty);
+	res.set({ pretty });
+	let data = res.get;
+	t.is(data.body, null);
+	t.is(data.status, 204);
+	t.deepEqual(res.headers, new Headers);
+	t.is(data.pretty, true);
 
-	res.set({ body, status });
-	data = getResData(res);
+	res.set({ pretty, body });
+	data = res.get;
+	t.deepEqual(data.body, body);
+	t.is(data.status, 200);
+	t.deepEqual(res.headers, new Headers);
+	t.is(data.pretty, true);
+
+	res.set({ pretty, body, status });
+	data = res.get;
 	t.deepEqual(data.body, body);
 	t.is(data.status, 500);
-	t.deepEqual(data.headers, defaultProperties.headers);
-	t.is(data.pretty, defaultProperties.pretty);
+	t.deepEqual(res.headers, new Headers);
+	t.is(data.pretty, true);
 
-	res.set({ body, status, headers });
-	data = getResData(res);
+	res.set({ pretty, body, status, headers });
+	data = res.get;
 	t.deepEqual(data.body, body);
 	t.is(data.status, 500);
-	t.deepEqual(data.headers, new Headers(headers));
-	t.is(data.pretty, defaultProperties.pretty);
-
-	res.set({ body, status, headers, pretty });
-	data = getResData(res);
-	t.deepEqual(data.body, body);
-	t.is(data.status, 500);
-	t.deepEqual(data.headers, new Headers(headers));
-	t.is(data.pretty, pretty);
+	t.deepEqual(res.headers, new Headers(headers));
+	t.is(data.pretty, true);
 });
 
 
@@ -120,7 +105,7 @@ test('Res - get', t => {
 	const mockBody1 = { hello: 'world' };
 
 	res.body(mockBody1).status(401);
-	let data = getResData(res);
+	let data = res.get;
 	t.deepEqual(data.body, res.get.body);
 	t.deepEqual(res.get.body, mockBody1);
 	t.is(data.status, res.get.status);
@@ -130,7 +115,7 @@ test('Res - get', t => {
 
 	const mockBody2 = { bye: 'world' };
 	res.body(mockBody2).status(200).prettify();
-	data = getResData(res);
+	data = res.get;
 	t.deepEqual(data.body, res.get.body);
 	t.deepEqual(res.get.body, mockBody2);
 	t.is(data.status, res.get.status);
