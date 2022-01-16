@@ -3,10 +3,10 @@ import type { Context } from '../Router';
 import type { AuthHandler } from './types';
 
 export class Authenticator {
-	public authHandler: AuthHandler = () => null;
+	public authHandler: AuthHandler;
 
-	public setHandler(handler: AuthHandler) {
-		this.authHandler = handler;
+	constructor(authHandler: AuthHandler) {
+		this.authHandler = authHandler;
 	}
 
 	public async authenticate(context: Context): Promise<Res | Response | boolean> {
