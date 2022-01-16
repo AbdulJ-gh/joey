@@ -19,6 +19,7 @@ test('Responder - Send JSON', async t => {
 	const response = new Responder(jsonRes).respond();
 
 	t.is(response.status, 201);
+	t.is(response.statusText, 'Created');
 	t.true(response.headers.has('someKey'));
 	t.is(response.headers.get('someKey'), 'someValue');
 	t.is(response.headers.get('Content-Type'), 'application/json');
@@ -32,6 +33,7 @@ test('Responder - Send plain test', async t => {
 	const response = new Responder(textRes).respond();
 
 	t.is(response.status, 200);
+	t.is(response.statusText, 'OK');
 	t.true(response.headers.has('someKey'));
 	t.is(response.headers.get('someKey'), 'someValue');
 	t.is(response.headers.get('Content-Type'), 'text/plain; charset=utf-8');
@@ -46,6 +48,7 @@ test('Responder - Send form data', t => {
 	const response = new Responder(formRes).respond();
 
 	t.is(response.status, 202);
+	t.is(response.statusText, 'Accepted');
 	t.true(response.headers.has('someKey'));
 	t.is(response.headers.get('someKey'), 'someValue');
 	t.is(response.headers.get('Content-Type'), 'multipart/form-data');
@@ -61,6 +64,7 @@ test('Responder - Send array buffer', async t => {
 	const response = new Responder(bufferRes).respond();
 
 	t.is(response.status, 202);
+	t.is(response.statusText, 'Accepted');
 	t.true(response.headers.has('someKey'));
 	t.is(response.headers.get('someKey'), 'someValue');
 	t.is(response.headers.get('Content-Type'), 'application/octet-stream');
@@ -75,6 +79,7 @@ test('Responder - Send no content', t => {
 	const response = new Responder(nullRes).respond();
 
 	t.is(response.status, 204);
+	t.is(response.statusText, 'No Content');
 	t.is(response.headers.get('Content-Type'), null);
 	t.is(response.body, null);
 });
@@ -84,6 +89,7 @@ test('Responder - Send no content, status initialised', t => {
 	const response = new Responder(nullRes).respond();
 
 	t.is(response.status, 200);
+	t.is(response.statusText, 'OK');
 	t.true(response.headers.has('someKey'));
 	t.is(response.headers.get('someKey'), 'someValue');
 	t.is(response.headers.get('Content-Type'), null);
@@ -96,6 +102,7 @@ test('Responder - Send no content, status set manually', t => {
 	const response = new Responder(nullRes).respond();
 
 	t.is(response.status, 202);
+	t.is(response.statusText, 'Accepted');
 	t.is(response.headers.get('Content-Type'), null);
 	t.is(response.body, null);
 });
