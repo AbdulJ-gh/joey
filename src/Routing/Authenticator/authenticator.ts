@@ -9,14 +9,13 @@ export class Authenticator {
 		this.authHandler = authHandler;
 	}
 
-	public async authenticate(context: Context): Promise<Res | Response | boolean> {
+	public async authenticate(context: Context): Promise<Res | Response | void> {
 		const authResponse = await this.authHandler(context);
 
-		if (authResponse instanceof Res || authResponse instanceof Response || typeof authResponse === 'boolean') {
+		if (authResponse instanceof Res || authResponse instanceof Response) {
 			return authResponse;
 		}
 
 		context.req.auth = authResponse;
-		return true;
 	}
 }
