@@ -23,7 +23,7 @@ export class Responder extends Res {
 	public respond(): Response {
 		const { _body, _status, headers } = this;
 		const bodyType = Responder.getBodyType(_body);
-		const init = { status: _status, headers };
+		const init = { status: _status || 200, headers };
 
 		switch (bodyType) {
 			case 'json':
@@ -40,7 +40,7 @@ export class Responder extends Res {
 				return new Response(_body as ArrayBuffer, init);
 			case 'noContent':
 			default:
-				return new Response(null, { status: 204, headers });
+				return new Response(null, { status: this._status ? this._status : 204, headers });
 		}
 	}
 

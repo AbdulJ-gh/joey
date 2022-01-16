@@ -71,12 +71,31 @@ test('Responder - Send array buffer', async t => {
 
 
 test('Responder - Send no content', t => {
-	const nullRes = new Res(null, 200, { someKey: 'someValue' });
+	const nullRes = new Res;
 	const response = new Responder(nullRes).respond();
 
 	t.is(response.status, 204);
+	t.is(response.headers.get('Content-Type'), null);
+	t.is(response.body, null);
+});
+
+test('Responder - Send no content, status initialised', t => {
+	const nullRes = new Res(null, 200, { someKey: 'someValue' });
+	const response = new Responder(nullRes).respond();
+
+	t.is(response.status, 200);
 	t.true(response.headers.has('someKey'));
 	t.is(response.headers.get('someKey'), 'someValue');
+	t.is(response.headers.get('Content-Type'), null);
+	t.is(response.body, null);
+});
+
+test('Responder - Send no content, status set manually', t => {
+	const nullRes = new Res;
+	nullRes.status(202);
+	const response = new Responder(nullRes).respond();
+
+	t.is(response.status, 202);
 	t.is(response.headers.get('Content-Type'), null);
 	t.is(response.body, null);
 });
