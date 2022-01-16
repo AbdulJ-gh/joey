@@ -1,38 +1,54 @@
-import { DefaultError } from '../Utilities/general/statuses';
-import { ResponseBody } from './Res';
+import { ErrorBody, ResponseBody } from './Res';
 
-export declare interface Config {
-	notFound: DefaultError;
-	unauthorized: DefaultError;
-	methodNotAllowed: DefaultError;
-	handlerDidNotReturn: DefaultError;
-	serverError: DefaultError;
-	emitAllowHeader: boolean;
+export declare type DefaultError =
+	| number
+	| {
 	status: number;
-	body: ResponseBody;
-	headers: HeadersInit;
-	prettifyJson: boolean;
+	body: ErrorBody;
 }
 
+export declare type Config = {
+	notFound: DefaultError,
+	methodNotAllowed: DefaultError,
+	internalServerError: DefaultError
+	handlerDidNotReturn: DefaultError;
+	emitAllowHeader: boolean;
+	/** Default Res via handler (Not independent Res) */
+	status: number;
+	body: ResponseBody;
+	prettifyJson: boolean;
+	headers: HeadersInit;
+};
 
-export const baseConfig: Config = {
-	/** Default errors */
-	notFound: 404,
-	unauthorized: 401,
-	methodNotAllowed: 405,
-	handlerDidNotReturn: {
-		status: 500,
-		body: 'Server did not respond'
+const http = {
+	notFound: {
+		status: 404,
+		body: { message: 'The requested resource does not exist' }
 	},
-	serverError: 500,
-	emitAllowHeader: true,
-	/** Default Response */
-	status: 200,
+	methodNotAllowed: {
+		status: 405,
+		body: { message: 'HTTP method not allowed' }
+	},
+	internalServerError: {
+		status: 500,
+		body: { message: 'An unexpected error occurred' }
+	}
+};
+
+const res = {
+	status: 404,
 	body: null,
+	prettifyJson: false,
 	headers: {
 		'Access-Control-Allow-Origin': '*',
 		'Access-Control-Allow-Methods': '*',
 		'Cache-Control': 'no-store'
-	},
-	prettifyJson: true
+	}
+};
+
+export const baseConfig: Config = {
+	...http,
+	handlerDidNotReturn: http.internalServerError,
+	emitAllowHeader: true,
+	...res
 };
