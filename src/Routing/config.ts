@@ -5,6 +5,7 @@ export declare type DefaultError =
 	| {
 	status: number;
 	body: ErrorBody;
+	headers?: HeadersInit;
 }
 
 export declare type Config = {
@@ -13,6 +14,7 @@ export declare type Config = {
 	internalServerError: DefaultError
 	handlerDidNotReturn: DefaultError;
 	emitAllowHeader: boolean;
+	defaultHeadersOnSystemErrors: boolean;
 	/** Default Res via handler (Not independent Res) */
 	status: number;
 	body: ResponseBody;
@@ -50,5 +52,6 @@ export const baseConfig: Config = {
 	...http,
 	handlerDidNotReturn: http.internalServerError,
 	emitAllowHeader: true,
+	defaultHeadersOnSystemErrors: false,
 	...res
 };
