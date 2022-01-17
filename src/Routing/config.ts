@@ -1,4 +1,4 @@
-import { ErrorBody, ResponseBody } from './Res';
+import { ErrorBody } from './Res';
 
 export declare type DefaultError =
 	| number
@@ -16,8 +16,6 @@ export declare type Config = {
 	emitAllowHeader: boolean;
 	defaultHeadersOnSystemErrors: boolean;
 	/** Default Res via handler (Not independent Res) */
-	status: number;
-	body: ResponseBody;
 	prettifyJson: boolean;
 	headers: HeadersInit;
 };
@@ -38,8 +36,6 @@ const http = {
 };
 
 const res = {
-	status: 404,
-	body: null,
 	prettifyJson: false,
 	headers: {
 		'Access-Control-Allow-Origin': '*',
