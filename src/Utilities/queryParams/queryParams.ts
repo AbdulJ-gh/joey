@@ -1,5 +1,5 @@
-type QueryParam = null | string | string[];
-type QueryParams = Record<string, QueryParam>;
+export declare type QueryParam = null | string | string[];
+export declare type QueryParams = Record<string, QueryParam>;
 
 function returnParam(param: string[]): QueryParam {
 	switch (param.length) {
@@ -22,6 +22,19 @@ export function getQueryParams(url: URL, params: string[]): QueryParams {
 
 	params.forEach(key => {
 		obj[key] = returnParam(queryParams.getAll(key));
+	});
+
+	return obj;
+}
+
+export function getAllQueryParams(url: URL): QueryParams {
+	const queryParams = new URLSearchParams(url.search);
+	const obj: QueryParams = {};
+
+	queryParams.forEach((value, key) => {
+		if (!obj[key]) {
+			obj[key] = returnParam(queryParams.getAll(key));
+		}
 	});
 
 	return obj;
