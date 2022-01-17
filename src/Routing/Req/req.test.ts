@@ -7,6 +7,7 @@ test('Req - Properties', t => {
 	req.something = { some: 'data' };
 	t.is(req.auth, null);
 	t.deepEqual(req.pathParams, {});
+	t.deepEqual(req.queryParams, {});
 	t.deepEqual(req.something, { some: 'data' });
 });
 

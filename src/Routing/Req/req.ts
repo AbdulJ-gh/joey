@@ -1,9 +1,11 @@
 import { AuthData } from '../Authenticator';
 import type { PathParams } from './types';
+import type { QueryParams } from '../../Utilities/queryParams/queryParams';
 
 export class Req extends Request {
 	public auth: AuthData = null;
 	public pathParams: PathParams = {};
+	public queryParams: QueryParams = {};
 	[key: string]: unknown
 
 	constructor(request: Request) {
