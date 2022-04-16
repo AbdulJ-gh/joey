@@ -12,12 +12,16 @@ function returnParam(param: string[]): QueryParam {
 	}
 }
 
-export function getQueryParam(url: URL, param: string): QueryParam {
-	const queryParams = new URLSearchParams(url.search);
+function getParamsInstance(url: URL|string) {
+	return url instanceof URL ? url.searchParams : new URL(url).searchParams;
+}
+
+export function getQueryParam(url: URL|string, param: string): QueryParam {
+	const queryParams = getParamsInstance(url);
 	return returnParam(queryParams.getAll(param));
 }
-export function getQueryParams(url: URL, params: string[]): QueryParams {
-	const queryParams = new URLSearchParams(url.search);
+export function getQueryParams(url: URL|string, params: string[]): QueryParams {
+	const queryParams = getParamsInstance(url);
 	const obj: QueryParams = {};
 
 	params.forEach(key => {
@@ -27,8 +31,8 @@ export function getQueryParams(url: URL, params: string[]): QueryParams {
 	return obj;
 }
 
-export function getAllQueryParams(url: URL): QueryParams {
-	const queryParams = new URLSearchParams(url.search);
+export function getAllQueryParams(url: URL|string): QueryParams {
+	const queryParams = getParamsInstance(url);
 	const obj: QueryParams = {};
 
 	queryParams.forEach((value, key) => {
