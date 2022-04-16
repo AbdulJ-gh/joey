@@ -1,5 +1,6 @@
 import { Res } from '../Res';
 import type { Context } from '../Router';
+import type { Logger } from '../../Logger';
 import type { AuthHandler } from './types';
 
 export class Authenticator {
@@ -9,8 +10,8 @@ export class Authenticator {
 		this.authHandler = authHandler;
 	}
 
-	public async authenticate(context: Context): Promise<Res | Response | void> {
-		const authResponse = await this.authHandler(context);
+	public async authenticate(context: Context, logger: Logger): Promise<Res | Response | void> {
+		const authResponse = await this.authHandler(context, logger);
 
 		if (authResponse instanceof Res || authResponse instanceof Response) {
 			return authResponse;
