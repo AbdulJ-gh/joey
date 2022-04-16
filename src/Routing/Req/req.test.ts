@@ -12,9 +12,8 @@ test('Req - Properties', t => {
 });
 
 test('Req - path params', t => {
-	const baseRequest = new Request(
-		'https:/example.com/wasabi/cool/123/banana/icecream/sundae/flower?abcd=123#subheading#subheading2'
-	);
+	const url = 'https:/example.com/wasabi/cool/123/banana/icecream/sundae/flower?abcd=123#subheading#subheading2';
+	const baseRequest = new Request(url);
 	const req = new Req(baseRequest);
 	Req.getPathParams(req, '/wasabi/:name/:id/banana/icecream/:desert/flower');
 	t.deepEqual(req.pathParams, { name: 'cool', id: '123', desert: 'sundae' });
