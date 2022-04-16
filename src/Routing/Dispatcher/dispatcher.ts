@@ -1,12 +1,8 @@
-import { Res } from '../Res';
-import { Responder } from '../Responder';
-import { Router, type Context, type ResolvedHandler } from '../Router';
-import { handleError } from '../Router/helpers';
+import type { Logger } from '../../Logger';
+import { asyncPollResponse, handleSystemError } from '../helpers';
+import { Req } from '../Req';
+import { Router, type ResolvedHandler, Context } from '../Router';
 import type { Config } from '../config';
-
-// Object.assign https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/assign
-// "If the source value is a reference to an object, it only copies the reference value."
-// Register and Authorizer are copied by reference. Config is copied by value.
 
 
 export class Dispatcher extends Router {
@@ -15,38 +11,68 @@ export class Dispatcher extends Router {
 		Object.assign(this, routerContext);
 	}
 
-	public dispatch(event: FetchEvent, resolvedHandler: ResolvedHandler, context: Context): void {
-		event.respondWith(this.handleResponse(resolvedHandler, context));
+	public dispatch(event: FetchEvent, resolvedHandler: ResolvedHandler, context: Context, logger: Logger): void {
+		event.respondWith(this.handleResponse(event, resolvedHandler, context, logger));
 	}
 
 	// addEventListener cannot have an async handler, therefore this must be encapsulated in an async function and passed to event.respondWith()
-	public handleResponse = async (resolvedHandler: ResolvedHandler, context: Context): Promise<Response> => {
-		const { handler, authenticate } = resolvedHandler;
+	public handleResponse = async (
+		event: FetchEvent,
+		resolvedHandler: ResolvedHandler,
+		context: Context,
+		logger: Logger
+	): Promise<Response> => {
+		const config = this.config as Required<Config>;
 		try {
-			// Authenticate
-			if (authenticate) {
-				if (this.authenticator !== null) {
-					const authenticated = await this.authenticator.authenticate(context);
-					if (authenticated instanceof Response) return authenticated;
-					if (!authenticated) { return handleError((this.config as Config).unauthorized); }
+			const { handler, authenticate } = resolvedHandler;
+			const handlerConfig = resolvedHandler.config;
+
+			/** Do Middleware stuff - Untested */
+			if (this.middleware.length > 0) {
+				console.log('MIDDLEWARE IS', this.middleware);
+				for (const ware of this.middleware) {
+					const response = await asyncPollResponse(
+						async () => await ware(context, logger), logger, context.waitUntil
+					);
+					if (response) return response;
 				}
 			}
 
-			// Handle the request
-			const handledResponse: Res | Response | void = await handler(context);
-			if (handledResponse === undefined) {
-				return handleError((this.config as Config).handlerDidNotReturn);
+			/** Do Authentication if needed */
+			if (authenticate) {
+				if (this.authenticator !== undefined) {
+					const { authenticator }	= this;
+					const authResponse = await asyncPollResponse(
+						async () => await authenticator.authenticate(context, logger),
+						logger,
+						context.waitUntil
+					);
+					if (authResponse) return authResponse;
+				}
 			}
 
-			// Return response for `event.respondWith`
-			if (handledResponse instanceof Res) {
-				return handledResponse.isError
-					? Responder.error(handledResponse)
-					: new Responder(handledResponse).respond();
+			/** Handle the request */
+			if (handlerConfig?.extractBody !== false && config.extractBody) {
+				if (config.extractBody !== 'content-type') {
+					await Req.extractBody(context.req, config.extractBody);
+				} else {
+					const contentType = context.req.headers.get('content-type');
+				}
 			}
-			return handledResponse;
-		} catch (error) {
-			return handleError((this.config as Config).serverError);
+			const handledResponse = await asyncPollResponse(
+				async () => await handler(context, logger), logger, context.waitUntil
+			);
+			if (handledResponse) return handledResponse;
+
+			/** If handler did not return a response */
+			return handleSystemError(
+				context.waitUntil,
+				config,
+				logger,
+				new Error('Handler did not return a valid response')
+			);
+		} catch (err) {
+			return handleSystemError(context.waitUntil, config, logger, err);
 		}
 	};
 }
