@@ -2,6 +2,8 @@ import test from 'ava';
 import { Router } from '../Router';
 import { Register } from './register';
 
+// Todo - Add tests for pathMethods
+
 test('Register - Properties', t => {
 	const register = new Register;
 	t.assert(Object.hasOwnProperty.call(register, 'paths'));
@@ -18,17 +20,15 @@ test('Register - getRegisteredName', t => {
 });
 
 test('Register - getName', t => {
-	const url = 'https://example.com';
-	t.is(Register.getName(url + '', ''), '/');
-	t.is(Register.getName(url + '/', ''), '/');
-	t.is(Register.getName(url + '/abc', ''), '/abc');
-	t.is(Register.getName(url + '/abc/', ''), '/abc');
-	t.is(Register.getName(url + '/abc', '/a'), 'bc');
-	t.is(Register.getName(url + '/abc', '/abc'), '/');
-	t.is(Register.getName(url + '/abc/', '/abc'), '/');
-	t.is(Register.getName(url + '/abc/xyz', '/abc'), '/xyz');
-	t.is(Register.getName(url + '/abc/xyz', '/abc/xyz'), '/');
-	t.pass();
+	t.is(Register.getName('', ''), '/');
+	t.is(Register.getName('/', ''), '/');
+	t.is(Register.getName('/abc', ''), '/abc');
+	t.is(Register.getName('/abc/', ''), '/abc');
+	t.is(Register.getName('/abc', '/a'), 'bc');
+	t.is(Register.getName('/abc', '/abc'), '/');
+	t.is(Register.getName('/abc/', '/abc'), '/');
+	t.is(Register.getName('/abc/xyz', '/abc'), '/xyz');
+	t.is(Register.getName('/abc/xyz', '/abc/xyz'), '/');
 });
 
 test('Register - registerMethod', t => {

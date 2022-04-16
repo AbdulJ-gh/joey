@@ -4,7 +4,6 @@ import type { Paths } from './types';
 export class Register {
 	public paths: Paths = {};
 	public routers: Record<string, Router> = {};
-	public allow: Record<string, Set<Method>> = {};
 
 	public static getRegisteredName(routeName: string): string {
 		if (routeName === '' || routeName === '/') return '/';
@@ -14,8 +13,8 @@ export class Register {
 		return route;
 	}
 
-	public static getName(url: string, reducer: string): string {
-		const registeredName = Register.getRegisteredName(new URL(url).pathname);
+	public static getName(pathname: string, reducer: string): string {
+		const registeredName = Register.getRegisteredName(pathname);
 		const reducedName = registeredName.slice(reducer.length);
 		return reducedName === '' ? '/' : reducedName;
 	}
