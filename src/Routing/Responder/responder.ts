@@ -1,9 +1,11 @@
+import { isTypedArray } from '../helpers';
 import { Res, type ResponseBody } from '../Res';
-import type { BodyType } from './types';
+import type { BodyType, TypedArray } from './types';
 
 export class Responder extends Res {
 	constructor(res: Res) {
-		super(...res as unknown as [ResponseBody, number, Headers, boolean]);
+		super();
+		Object.assign(this, res);
 	}
 
 	private static getBodyType(body: ResponseBody): BodyType {
@@ -11,12 +13,13 @@ export class Responder extends Res {
 		if (typeof body === 'string') return 'plaintext';
 		if (body instanceof FormData || body instanceof URLSearchParams) return 'formData';
 		if (body instanceof ArrayBuffer) return 'arrayBuffer';
+		if (isTypedArray(body)) return 'typedArray';
 		return 'json';
 	}
 
 	private static setContentType(headers: Headers, contentType: string) {
-		if (!headers.has('Content-Type')) {
-			headers.set('Content-Type', contentType);
+		if (!headers.has('content-type')) {
+			headers.set('content-type', contentType);
 		}
 	}
 
@@ -38,21 +41,11 @@ export class Responder extends Res {
 			case 'arrayBuffer':
 				Responder.setContentType(headers, 'application/octet-stream');
 				return new Response(_body as ArrayBuffer, init);
+			case 'typedArray':
+				return new Response((_body as TypedArray).buffer, init);
 			case 'noContent':
 			default:
 				return new Response(null, { status: this._status ? this._status : 204, headers });
 		}
-	}
-
-	// Todo - review
-	public isError() {
-		const status = this.status.toString();
-		return status.startsWith('4') || status.startsWith('5');
-	}
-
-	// Todo - review
-	static error(error: Res|Error|unknown): Response {
-		if (error instanceof Res) return new Responder(error).respond();
-		return new Responder(new Res('Server Error', 500)).respond();
 	}
 }

@@ -22,7 +22,7 @@ test('Responder - Send JSON', async t => {
 	t.is(response.statusText, 'Created');
 	t.true(response.headers.has('someKey'));
 	t.is(response.headers.get('someKey'), 'someValue');
-	t.is(response.headers.get('Content-Type'), 'application/json');
+	t.is(response.headers.get('content-type'), 'application/json');
 
 	const json: JsonBody = await response.json();
 	t.deepEqual(json, { hello: 'world' });
@@ -36,7 +36,7 @@ test('Responder - Send plain test', async t => {
 	t.is(response.statusText, 'OK');
 	t.true(response.headers.has('someKey'));
 	t.is(response.headers.get('someKey'), 'someValue');
-	t.is(response.headers.get('Content-Type'), 'text/plain; charset=utf-8');
+	t.is(response.headers.get('content-type'), 'text/plain; charset=utf-8');
 
 	const text: string = await response.text();
 	t.deepEqual(text, 'hello world');
@@ -51,7 +51,7 @@ test('Responder - Send form data', t => {
 	t.is(response.statusText, 'Accepted');
 	t.true(response.headers.has('someKey'));
 	t.is(response.headers.get('someKey'), 'someValue');
-	t.is(response.headers.get('Content-Type'), 'multipart/form-data');
+	t.is(response.headers.get('content-type'), 'multipart/form-data');
 
 	// const form: FormData = await response.formData();
 	// t.deepEqual(form, formData);
@@ -67,7 +67,7 @@ test('Responder - Send array buffer', async t => {
 	t.is(response.statusText, 'Accepted');
 	t.true(response.headers.has('someKey'));
 	t.is(response.headers.get('someKey'), 'someValue');
-	t.is(response.headers.get('Content-Type'), 'application/octet-stream');
+	t.is(response.headers.get('content-type'), 'application/octet-stream');
 
 	const buf: ArrayBuffer = await response.arrayBuffer();
 	t.deepEqual(buf, buffer);
@@ -80,7 +80,7 @@ test('Responder - Send no content', t => {
 
 	t.is(response.status, 204);
 	t.is(response.statusText, 'No Content');
-	t.is(response.headers.get('Content-Type'), null);
+	t.is(response.headers.get('content-type'), null);
 	t.is(response.body, null);
 });
 
@@ -92,7 +92,7 @@ test('Responder - Send no content, status initialised', t => {
 	t.is(response.statusText, 'OK');
 	t.true(response.headers.has('someKey'));
 	t.is(response.headers.get('someKey'), 'someValue');
-	t.is(response.headers.get('Content-Type'), null);
+	t.is(response.headers.get('content-type'), null);
 	t.is(response.body, null);
 });
 
@@ -103,6 +103,6 @@ test('Responder - Send no content, status set manually', t => {
 
 	t.is(response.status, 202);
 	t.is(response.statusText, 'Accepted');
-	t.is(response.headers.get('Content-Type'), null);
+	t.is(response.headers.get('content-type'), null);
 	t.is(response.body, null);
 });
