@@ -1,10 +1,11 @@
-import type { ResponseBody, ResProperties, ResGetter } from './types';
+import { cookie, CookieOptions } from '../../Utilities/headers/';
+import type { ResponseBody, ResProperties, ResGetter, ErrorBody } from './types';
 
 export class Res {
 	protected _body: ResponseBody;
 	protected _status: number | null;
-	protected _statusChanged = false;
 	protected _pretty: boolean;
+	protected _error: unknown = null;
 	public headers: Headers;
 
 	constructor(body?: ResponseBody, status?: number, headers?: HeadersInit, pretty?: boolean) {
@@ -12,13 +13,6 @@ export class Res {
 		this._status = status || null;
 		this.headers = new Headers(headers || {});
 		this._pretty = pretty === undefined ? false : pretty;
-	}
-
-	protected* [Symbol.iterator](): Iterator<unknown> {
-		yield this._body;
-		yield this._status;
-		yield this.headers;
-		yield this._pretty;
 	}
 
 	/**
@@ -31,13 +25,15 @@ export class Res {
 			return {
 				body: this._body,
 				status: this._status ? this._status : 200,
-				pretty: this._pretty
+				pretty: this._pretty,
+				error: this._error
 			};
 		}
 		return {
 			body: this._body,
 			status: this._status ? this._status : 204,
-			pretty: this._pretty
+			pretty: this._pretty,
+			error: this._error
 		};
 	}
 
@@ -48,9 +44,6 @@ export class Res {
 
 	public status(status: number): this {
 		this._status = status;
-		if (!this._statusChanged) {
-			this._statusChanged = true;
-		}
 		return this;
 	}
 
@@ -80,6 +73,33 @@ export class Res {
 		if (res.status !== undefined) this.status(res.status);
 		if (res.headers !== undefined) this.setHeaders(res.headers);
 		if (res.pretty !== undefined) this.prettify(res.pretty);
+		if (res.error !== undefined) this._error = res.error;
+		return this;
+	}
+
+	public get cookie() {
+		return {
+			set: (name: string, value: string, options?: CookieOptions) => {
+				cookie.set(this.headers, name, value, options);
+			},
+			clear: (name: string, options?: Pick<CookieOptions, 'domain' | 'path'>) => {
+				cookie.clear(this.headers, name, options);
+			}
+		};
+	}
+
+	public error(status: number, body?: ErrorBody, error?: unknown): this {
+		this.status(status);
+		body ? this.body(body) : this.body(null);
+		if (error) this._error = error;
 		return this;
 	}
 }
+
+
+/* Can be handled natively via return Response.redirect(url, status); */
+// public redirect(url: string, status?: number):Response {
+// 	let num = status || 307;
+// 	if (num < 300 || num > 308) {	num = 307; }
+// 	return Response.redirect(url, num);
+// }
