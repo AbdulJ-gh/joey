@@ -64,6 +64,7 @@ rules:
   spaced-comment: off
   space-in-parens: warn
   generator-star-spacing: off
+  guard-for-in: off
 
 
 

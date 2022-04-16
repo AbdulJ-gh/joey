@@ -16,6 +16,7 @@
   },
   "exports": {
     ".": "./Routing",
+    "./Logger": "./Logger",
     "./Transforms": "./Transforms",
     "./Crypto": "./Crypto",
     "./Utilities": "./Utilities"

@@ -1,53 +1,70 @@
-import { ErrorBody } from './Res';
+import type { BodyType } from './Req/types';
+import type { ErrorBody } from './Res';
 
 export declare type DefaultError =
 	| number
 	| {
-	status: number;
-	body: ErrorBody;
-	headers?: HeadersInit;
-}
+			status: number;
+			body: ErrorBody;
+			headers?: HeadersInit;
+		};
 
 export declare type Config = {
-	notFound: DefaultError,
-	methodNotAllowed: DefaultError,
-	internalServerError: DefaultError
-	handlerDidNotReturn: DefaultError;
-	emitAllowHeader: boolean;
-	defaultHeadersOnSystemErrors: boolean;
+	notFound?: DefaultError;
+	methodNotAllowed?: DefaultError;
+	internalServerError?: DefaultError;
+	urlTooLong?: DefaultError;
+	queryTooLong?: DefaultError;
+	emitAllowHeader?: boolean;
+	defaultHeadersOnErrors?: boolean;
+	extractPathParams?: boolean;
+	extractQueryParams?: boolean;
+	extractBody?: BodyType | 'content-type' | false;
 	/** Default Res via handler (Not independent Res) */
-	prettifyJson: boolean;
-	headers: HeadersInit;
+	prettifyJson?: boolean;
+	// Only used when handlers are hit
+	headers?: HeadersInit;
+	maxUrlLength?: number;
+	maxQueryLength?: number;
 };
 
-const http = {
+
+export const baseConfig: Required<Config> = {
 	notFound: {
 		status: 404,
-		body: { message: 'The requested resource does not exist' }
+		body: { message: 'The requested resource does not exist' },
+		headers: { 'cache-control': 'max-age=3600' } // 1 hr
 	},
 	methodNotAllowed: {
 		status: 405,
-		body: { message: 'HTTP method not allowed' }
+		body: { message: 'HTTP method not allowed' },
+		headers: { 'cache-control': 'max-age=3600' } // 1 hr
+	},
+	urlTooLong: {
+		status: 414,
+		body: { message: 'Request-URI too long' },
+		headers: { 'cache-control': 'max-age=86400' } // 24 hrs
+	},
+	queryTooLong: {
+		status: 414,
+		body: { message: 'Request query too long' },
+		headers: { 'cache-control': 'max-age=86400' } // 24 hrs
 	},
 	internalServerError: {
 		status: 500,
 		body: { message: 'An unexpected error occurred' }
-	}
-};
-
-const res = {
-	prettifyJson: false,
-	headers: {
-		'Access-Control-Allow-Origin': '*',
-		'Access-Control-Allow-Methods': '*',
-		'Cache-Control': 'no-store'
-	}
-};
-
-export const baseConfig: Config = {
-	...http,
-	handlerDidNotReturn: http.internalServerError,
+	},
 	emitAllowHeader: true,
-	defaultHeadersOnSystemErrors: false,
-	...res
+	defaultHeadersOnErrors: false,
+	extractPathParams: true,
+	extractQueryParams: true,
+	extractBody: null,
+	prettifyJson: false,
+	maxUrlLength: 2048,
+	maxQueryLength: 1024,
+	headers: {
+		'access-control-allow-origin': '*',
+		'access-control-allow-methods': '*',
+		'cache-control': 'no-store'
+	}
 };
