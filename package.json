@@ -1,6 +1,6 @@
 {
   "name": "joeycf",
-  "version": "0.1.41",
+  "version": "0.1.42",
   "main": "./Routing/index.js",
   "description": "A framework for Cloudflare Workers",
   "scripts": {
