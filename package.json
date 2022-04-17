@@ -1,5 +1,5 @@
 {
-  "name": "@marsupialdev/joey",
+  "name": "joeycf",
   "version": "0.1.41",
   "main": "./Routing/index.js",
   "description": "A framework for Cloudflare Workers",
@@ -23,10 +23,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@gitlab.com/marsupialdev/joey.git"
+    "url": "git+ssh://git@gitlab.com/Abdul-Jabbar/joeycf.git"
   },
   "publishConfig": {
-    "@marsupialdev:registry": "https://gitlab.com/api/v4/projects/30124177/packages/npm/"
+    "registry": ""
   },
   "keywords": [
     "cloudflare",
@@ -43,9 +43,9 @@
   "author": "Abdul Jabbar",
   "license": "MIT",
   "bugs": {
-    "url": "https://gitlab.com/marsupialdev/joey/issues"
+    "url": "https://gitlab.com/Abdul-Jabbar/joeycf/issues"
   },
-  "homepage": "https://gitlab.com/marsupialdev/joey#readme",
+  "homepage": "https://gitlab.com/Abdul-Jabbar/joeycf#readme",
   "devDependencies": {
     "@ava/typescript": "^2.0.0",
     "@cloudflare/workers-types": "^3.2.0",
