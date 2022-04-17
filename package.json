@@ -25,9 +25,6 @@
     "type": "git",
     "url": "git+ssh://git@gitlab.com/Abdul-Jabbar/joeycf.git"
   },
-  "publishConfig": {
-    "registry": ""
-  },
   "keywords": [
     "cloudflare",
     "workers",
