@@ -1,6 +1,6 @@
 # Joey
 
-A framework for Cloudflare workers
+A framework for Cloudflare workers.
 
 ## Getting started
 
