@@ -11,13 +11,13 @@ export class Dispatcher extends Router {
 		Object.assign(this, routerContext);
 	}
 
-	public dispatch(event: FetchEvent, resolvedHandler: ResolvedHandler, context: Context, logger: Logger): void {
-		event.respondWith(this.handleResponse(event, resolvedHandler, context, logger));
-	}
+	// public dispatch(resolvedHandler: ResolvedHandler, context: Context, logger: Logger): Promise<Response> {
+	// 	return this.handleResponse(resolvedHandler, context, logger);
+	// }
 
 	// addEventListener cannot have an async handler, therefore this must be encapsulated in an async function and passed to event.respondWith()
+
 	public handleResponse = async (
-		event: FetchEvent,
 		resolvedHandler: ResolvedHandler,
 		context: Context,
 		logger: Logger
@@ -29,7 +29,6 @@ export class Dispatcher extends Router {
 
 			/** Do Middleware stuff - Untested */
 			if (this.middleware.length > 0) {
-				console.log('MIDDLEWARE IS', this.middleware);
 				for (const ware of this.middleware) {
 					const response = await asyncPollResponse(
 						async () => await ware(context, logger), logger, context.waitUntil

@@ -9,7 +9,7 @@
     "prepub": "npm run build:prod && npm version patch && node scripts/create-dist-package-json.js",
     "prepub:minor": "npm run build:prod && npm version minor && node scripts/create-dist-package-json.js",
     "pub": "npm publish ./lib",
-    "pub:minor": "npm publish ./lib",
+    "pub:minor": "npm pub",
     "test": "c8 ava",
     "test:watch": "c8 ava --watch",
     "watch": "watch 'npm run build' ./src",
@@ -17,11 +17,11 @@
     "madge": "npm run build && npm run test && madge --image .graphviz/src.svg src && madge --image .graphviz/lib-test.svg lib-test && madge --image .graphviz/lib.svg lib"
   },
   "exports": {
-    ".": "./Routing",
-    "./Logger": "./Logger",
-    "./Transforms": "./Transforms",
-    "./Crypto": "./Crypto",
-    "./Utilities": "./Utilities"
+    ".": "./Routing/index.js",
+    "./Logger": "./Logger/index.js",
+    "./Transforms": "./Transforms/index.js",
+    "./Crypto": "./Crypto/index.js",
+    "./Utilities": "./Utilities/index.js"
   },
   "repository": {
     "type": "git",
@@ -65,6 +65,7 @@
     "madge": "^5.0.1",
     "prettier": "^2.5.1",
     "typescript": "^4.5.4",
-    "watch": "^0.13.0"
+    "watch": "^0.13.0",
+    "wrangler": "^0.0.26"
   }
 }

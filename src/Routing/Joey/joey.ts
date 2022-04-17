@@ -1,7 +1,8 @@
 import { Logger } from '../../Logger';
 import { Dispatcher } from '../Dispatcher';
-import { createContext, handleSystemError } from '../helpers';
+import { createContext, handleSystemError, sizeLimit } from '../helpers';
 import { Req } from '../Req';
+// import { Method } from '../Router';
 import { Method, Router } from '../Router';
 import { baseConfig, type Config } from '../config';
 import { Register } from '../Register';
@@ -13,38 +14,40 @@ class Joey extends Router {
 	private Logger?: Logger;
 	private routeMap: RouteMap = {};
 
-	constructor() {
-		super();
-		addEventListener('fetch', (event: FetchEvent): void => {
-			try {
-				if (!this.Logger) {
-					this.Logger = new Logger({ logLevel: 'error', preserveAllTail: true });
-				}
-				const req = new Req(event.request);
-				const resolvedHandler = this.resolveHandler(req, this.config, this.routeMap);
-				const context = createContext(
-					event,
-					req,
-					resolvedHandler.config as Required<Config>,
-					resolvedHandler.absolutePath
-				);
-				Logger.event(this.Logger, event);
-				try {
-					event.passThroughOnException();
-					new Dispatcher(resolvedHandler.routerContext).dispatch(
-						event,
-						resolvedHandler,
-						context,
-						this.Logger
-					);
-				} catch (err) {
-					event.respondWith(handleSystemError(context.waitUntil, this.config, this.Logger, err as Error));
-				}
-			} catch (err) {
-				event.respondWith(new Response(null, { status: 500 })); // Fallback
+	public async fetch(request: Request, env: any, ctx: ExecutionContext) {
+		ctx.passThroughOnException();
+		try {
+			if (!this.Logger) {
+				this.Logger = new Logger({ logLevel: 'error', preserveAllTail: true });
 			}
-		});
-	}
+			const req = new Req(request);
+
+			const limit = sizeLimit(req.URL, this.config);
+			if (limit) return limit;
+
+			this.start();
+
+			const resolvedHandler = this.resolveHandler(req, this.config, this.routeMap);
+			const context = createContext(
+				ctx,
+				req,
+				resolvedHandler.config as Required<Config>,
+				resolvedHandler.absolutePath
+			);
+			Logger.event(this.Logger as Logger, request, ctx);
+			try {
+				return await new Dispatcher(resolvedHandler.routerContext).handleResponse(
+					resolvedHandler,
+					context,
+					this.Logger as Logger
+				);
+			} catch (err) {
+				return handleSystemError(context.waitUntil, this.config, this.Logger as Logger, err as Error);
+			}
+		} catch (err) {
+			return new Response(null, { status: 500 }); // Fallback
+		}
+	};
 
 	/* Config */
 	public configure(config: Config): this {
