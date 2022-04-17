@@ -16,6 +16,9 @@
     "cleanup": "rm -rf ./lib ./lib-test ./coverage",
     "madge": "npm run build && npm run test && madge --image .graphviz/src.svg src && madge --image .graphviz/lib-test.svg lib-test && madge --image .graphviz/lib.svg lib"
   },
+  "bin": {
+    "joeycf": "./bin/joeycf"
+  },
   "exports": {
     ".": "./Routing/index.js",
     "./Logger": "./Logger/index.js",
