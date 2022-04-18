@@ -3,8 +3,8 @@
     "target": "esnext",
     "module": "commonjs",
     "lib": ["esnext"],
-    "declaration": true,
-    "outDir": "lib-test",
+    "declaration": false,
+    "outDir": "lib/bin",
     "strict": true,
     "esModuleInterop": true,
     "moduleResolution": "node",
@@ -13,9 +13,9 @@
     "noImplicitAny": true,
     "preserveConstEnums": true,
     "sourceMap": false,
-    "types": ["@cloudflare/workers-types", "@types/node"] // "@types/node" required for ./bin for IDE
+    "typeRoots": ["node_modules/@types"],
+    "types": ["@types/node"],
+    "removeComments": true
   },
-  "include": ["src", "testUtils"],
-  "exclude": ["bin"]
+  "include": ["bin"]
 }
-
