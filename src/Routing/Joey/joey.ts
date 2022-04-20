@@ -62,8 +62,8 @@ class Joey extends Router {
 	}
 
 	public start(): void {
-		// TODO - Add CORS stuff here?? Or now that I have the routeMap object, this can be done at run time?
-		const recursiveStitchApp = (router: Router = this, globalPrefix = '') => {
+		// TODO - Add CORS stuff here?? Or now that I have the routeMap object, this can be done at initial run time?
+		const stitchApp = (router: Router = this, globalPrefix = '') => {
 			const register = router['register'];
 			const middleware = router['middleware'];
 			const authenticator = router['authenticator'];
@@ -96,10 +96,10 @@ class Joey extends Router {
 					register.routers[routerKey]['authenticator'] = authenticator;
 				}
 
-				recursiveStitchApp(register.routers[routerKey], Register.getRegisteredName(globalPrefix + routerKey));
+				stitchApp(register.routers[routerKey], Register.getRegisteredName(globalPrefix + routerKey));
 			}
 		};
-		recursiveStitchApp();
+		stitchApp();
 	}
 }
 
