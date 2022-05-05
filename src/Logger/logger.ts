@@ -4,8 +4,9 @@ type LoggerOptions = {
 	preserveTail?: boolean;
 	preserveAllTail?: boolean;
 	captureClientErrors?: boolean;
-}
-type Options = Required<LoggerOptions>
+};
+
+type Options = Required<LoggerOptions>;
 
 const defaultOptions: Options = {
 	logLevel: 'log',
@@ -28,9 +29,14 @@ export class Logger {
 	private readonly levelIndex: number;
 	private readonly levels: LogLevel[] = ['off', 'debug', 'info', 'log', 'warn', 'error'];
 	private ctx: ExecutionContext = {} as ExecutionContext;
-	private incomingEventHandler: IncomingEventHandler = async () => {/**/};
-	private logHandler: LogHandler = async () => {/**/};
-	private exceptionHandler: ExceptionHandler = async (error: unknown) => this.defaultExceptionHandler(error);
+	private incomingEventHandler: IncomingEventHandler = async () => {
+		/**/
+	};
+	private logHandler: LogHandler = async () => {
+		/**/
+	};
+	private exceptionHandler: ExceptionHandler = async (error: unknown) =>
+		this.defaultExceptionHandler(error);
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	[key: string]: any;
 
@@ -76,9 +82,19 @@ export class Logger {
 			this.tail(logLevel, ...args);
 		}
 	}
-	public error(...args: unknown[]) { this.levelLog(5, ...args); }
-	public warn(...args: unknown[]) { this.levelLog(4, ...args); }
-	public log(...args: unknown[]) { this.levelLog(3, ...args); }
-	public info(...args: unknown[]) { this.levelLog(2, ...args); }
-	public debug(...args: unknown[]) { this.levelLog(1, ...args); }
+	public error(...args: unknown[]) {
+		this.levelLog(5, ...args);
+	}
+	public warn(...args: unknown[]) {
+		this.levelLog(4, ...args);
+	}
+	public log(...args: unknown[]) {
+		this.levelLog(3, ...args);
+	}
+	public info(...args: unknown[]) {
+		this.levelLog(2, ...args);
+	}
+	public debug(...args: unknown[]) {
+		this.levelLog(1, ...args);
+	}
 }

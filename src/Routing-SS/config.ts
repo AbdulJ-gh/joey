@@ -7,7 +7,7 @@ export declare type DefaultError =
 			status: number;
 			body: ErrorBody;
 			headers?: HeadersInit;
-		};
+	};
 
 export declare type Config = {
 	notFound?: DefaultError;
@@ -26,13 +26,15 @@ export declare type Config = {
 	headers?: HeadersInit;
 	maxUrlLength?: number;
 	maxQueryLength?: number;
+	middlewareOnNotFound?: boolean;
+	authOnNotFound?: boolean;
+	baseHeadersOnNotFound?: boolean;
 };
-
 
 export const baseConfig: Required<Config> = {
 	notFound: {
 		status: 404,
-		body: { message: 'The requested resource does not exist' },
+		body: { message: 'The requested resource does not exist' }, // These should default to something less opinionated such a string
 		headers: { 'cache-control': 'max-age=3600' } // 1 hr
 	},
 	methodNotAllowed: {
@@ -62,6 +64,9 @@ export const baseConfig: Required<Config> = {
 	prettifyJson: false,
 	maxUrlLength: 2048,
 	maxQueryLength: 1024,
+	middlewareOnNotFound: false,
+	authOnNotFound: false,
+	baseHeadersOnNotFound: false,
 	headers: {
 		'access-control-allow-origin': '*',
 		'access-control-allow-methods': '*',

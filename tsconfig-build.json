@@ -3,6 +3,7 @@
     "target": "esnext",
     "module": "esnext",
     "lib": ["esnext"],
+    "skipLibCheck": true,
     "declaration": true,
     "outDir": "lib",
     "strict": true,
@@ -13,9 +14,9 @@
     "noImplicitAny": true,
     "preserveConstEnums": true,
     "sourceMap": false,
-    "types": ["@cloudflare/workers-types"],
     "removeComments": true,
+    "types": ["@cloudflare/workers-types"]
   },
   "include": [ "src" ],
-  "exclude": [ "src/**/*.test.ts" ]
+  "exclude": [ "src/**/*.test.ts", "src/example", "src/Routing-SS" ]
 }

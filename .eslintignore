@@ -1,4 +1,5 @@
 coverage
+bin
 lib
 lib-test
 node_modules

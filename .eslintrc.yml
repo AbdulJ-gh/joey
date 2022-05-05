@@ -1,24 +1,18 @@
 env:
   browser: true
-  es2021: true
+  es2022: true
   node: false
   serviceworker: true
 extends:
-  - eslint:recommended
-  - google
+  - standard
   - plugin:@typescript-eslint/recommended
   - plugin:@typescript-eslint/recommended-requiring-type-checking
-  - plugin:import/recommended
-  - plugin:import/typescript
-#  - prettier
 parser: '@typescript-eslint/parser'
 parserOptions:
   ecmaVersion: latest
   sourceType: module
   project:
     - './tsconfig.json'
-#globals:
-#  ENV: readonly
 plugins:
   - '@typescript-eslint'
 rules:
@@ -39,46 +33,34 @@ rules:
     - error
     - tab
     - SwitchCase: 1
-  no-tabs: off
-  default-case: warn
-  require-jsdoc: off
-  valid-jsdoc: warn
-  block-spacing: off
-  arrow-parens: off
-  operator-linebreak: off
-  no-duplicate-imports: warn
-  comma-dangle:
-    - warn
-    - never
-  object-curly-newline:
-    - warn
-    - multiline: true
-  object-curly-spacing:
+  semi:
     - warn
     - always
+  no-tabs: off
   space-before-function-paren:
     - warn
     - anonymous: never
       named: never
       asyncArrow: always
-  spaced-comment: off
+  default-case: warn
+  generator-star-spacing:
+    - warn
+    - before: false
+      after: true
+  object-curly-newline:
+    - warn
+    - multiline: true
   space-in-parens: warn
-  generator-star-spacing: off
-  guard-for-in: off
+  require-jsdoc: off
+  valid-jsdoc: warn
+  spaced-comment: off
+  "@typescript-eslint/no-unsafe-assignment":
+    - warn
 
 
 
 # Docs
+# Rules & Fixable errors - https://eslint.org/docs/rules/
 # ESLint TypeScript - https://typescript-eslint.io/docs/
-# Fixable ESLint errors - https://eslint.org/docs/rules/
+# Plugin: Import - https://github.com/import-js/eslint-plugin-import
 # JSDoc - https://jsdoc.app/index.html
-#
-# # RULES
-# Indent - https://eslint.org/docs/rules/indent
-# Max length - https://eslint.org/docs/rules/max-len#enforce-a-maximum-line-length-max-len
-#
-
-
-
-
-

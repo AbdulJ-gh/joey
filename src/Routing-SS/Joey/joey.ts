@@ -7,7 +7,7 @@ import { Method, Router } from '../Router';
 import { baseConfig, type Config } from '../config';
 import { Register } from '../Register';
 
-export type RouteMap = Record<string, Set<Method>>
+export type RouteMap = Record<string, Set<Method>>;
 
 class Joey extends Router {
 	protected config: Required<Config> = baseConfig;
@@ -47,7 +47,7 @@ class Joey extends Router {
 		} catch (err) {
 			return new Response(null, { status: 500 }); // Fallback
 		}
-	};
+	}
 
 	/* Config */
 	public configure(config: Config): this {
@@ -74,7 +74,9 @@ class Joey extends Router {
 				if (path.endsWith('/')) path = path.slice(0, -1);
 				if (path.startsWith('//')) path = path.slice(1, path.length);
 
-				if (!this.routeMap[path]) { this.routeMap[path] = new Set; }
+				if (!this.routeMap[path]) {
+					this.routeMap[path] = new Set();
+				}
 				methods.forEach(method => this.routeMap[path].add(method));
 			}
 
@@ -104,7 +106,6 @@ class Joey extends Router {
 }
 
 export default () => new Joey();
-
 
 // ERROR
 function err(err: Error) {

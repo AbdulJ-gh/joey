@@ -20,6 +20,8 @@ export function getQueryParam(url: URL|string, param: string): QueryParam {
 	const queryParams = getParamsInstance(url);
 	return returnParam(queryParams.getAll(param));
 }
+
+// For specifying a list of expected query params
 export function getQueryParams(url: URL|string, params: string[]): QueryParams {
 	const queryParams = getParamsInstance(url);
 	const obj: QueryParams = {};

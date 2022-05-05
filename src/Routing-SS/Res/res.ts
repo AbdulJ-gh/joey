@@ -90,12 +90,16 @@ export class Res {
 
 	public error(status: number, body?: ErrorBody, error?: unknown): this {
 		this.status(status);
-		body ? this.body(body) : this.body(null);
+		this.body(body || null);
+		// this.body(body ? body : null);
 		if (error) this._error = error;
 		return this;
 	}
 }
 
+const a = new Res();
+
+console.log(a.headers);
 
 /* Can be handled natively via return Response.redirect(url, status); */
 // public redirect(url: string, status?: number):Response {

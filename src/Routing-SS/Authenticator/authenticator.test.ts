@@ -7,6 +7,10 @@ test('Authenticator - PASS', t => {
 	t.pass();
 });
 
+
+// test -- haaaaaa
+
+
 // test('Authenticator - Properties', t => {
 // 	const authHandler = () => null;
 // 	const authenticator = new Authenticator(authHandler);
