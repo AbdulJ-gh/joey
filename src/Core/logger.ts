@@ -6,6 +6,8 @@
 // 	public error: (...args: any[]) => void = () => {};
 // }
 
+// TODO
+
 type LogLevel = 'off' | 'debug' | 'info' | 'log' | 'warn' | 'error';
 type LoggerOptions = {
 	logLevel?: LogLevel;

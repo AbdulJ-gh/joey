@@ -2,12 +2,8 @@ import type Context from './context';
 import type { Config } from './config';
 import { Res, ResponseBody } from './res';
 
-
 export type DeserialisedJson = Record<string, unknown> | unknown[];
 export type Method = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'OPTIONS'; // Missing 'CONNECT' | 'HEAD' | 'TRACE';
-
-
-/** Body */
 
 /** Response */
 export type ResponseObject = {

@@ -1,6 +1,6 @@
-import { AsyncHandler, Handler, Logger, SyncHandler } from '../joeycf';
+import { Handler, Req } from '../Core';
+import { Logger } from '../Logger';
 import functionName from './exampleHandler';
-import { Req } from '../Routing/Req';
 
 // 	req: Req;
 // 	headers: Headers;

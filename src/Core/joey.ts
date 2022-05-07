@@ -2,11 +2,9 @@ import Register, { type Paths } from './register';
 import Dispatcher from './dispatcher';
 import { Req } from './Req';
 import Context from './context';
-import { Logger } from './logger';
-import type { ResolvedHandler, MiddlewareHandler, Handler } from './types';
-import { Config, defaultConfig } from './config';
-
-export type { Handler }; //This should be exported from index.ts?
+import type { Logger } from './logger';
+import type { ResolvedHandler, MiddlewareHandler } from './types';
+import { type Config, defaultConfig } from './config';
 
 export default class Joey {
 	public readonly register: Register<ResolvedHandler>;

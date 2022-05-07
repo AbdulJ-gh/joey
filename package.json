@@ -1,7 +1,7 @@
 {
   "name": "joeycf",
   "version": "0.2.0",
-  "main": "./Core/joey.js",
+  "main": "./Core/index.js",
   "description": "A framework for Cloudflare Workers",
   "scripts": {
     "build": "npm run cleanup && tsc -p tsconfig-build.json && tsc -p tsconfig-bin.json && node scripts/create-dist-package-json.js",
@@ -22,7 +22,7 @@
     "joeycf": "./bin/joeycf"
   },
   "exports": {
-    ".": "./Core/joey.js",
+    ".": "./Core/index.js",
     "./Logger": "./Logger/index.js",
     "./Transforms": "./Transforms/index.js",
     "./Crypto": "./Crypto/index.js",
