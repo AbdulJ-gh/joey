@@ -14,7 +14,9 @@
     "test:watch": "c8 ava --watch",
     "watch": "watch 'npm run build' ./src",
     "cleanup": "rm -rf ./lib ./lib-test ./coverage",
-    "madge": "npm run build && npm run test && madge --image .graphviz/src.svg src && madge --image .graphviz/lib-test.svg lib-test && madge --image .graphviz/lib.svg lib"
+    "madge": "npm run build && mkdir -p .graphviz && madge --image .graphviz/src.svg --exclude '^(test)\\.ts$' src",
+    "madge:lib": "npm run build && mkdir -p .graphviz && madge --extensions js --image .graphviz/lib.svg lib",
+    "madge:lib-dts": "npm run build && mkdir -p .graphviz && madge --extensions ts --image .graphviz/lib-dts.svg lib"
   },
   "bin": {
     "joeycf": "./bin/joeycf"
