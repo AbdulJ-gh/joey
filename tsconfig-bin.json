@@ -13,9 +13,9 @@
     "noImplicitAny": true,
     "preserveConstEnums": true,
     "sourceMap": false,
+    "removeComments": true,
     "typeRoots": ["node_modules/@types"],
-    "types": ["@types/node"],
-    "removeComments": true
+    "types": ["@types/node"]
   },
   "include": ["bin"]
 }
