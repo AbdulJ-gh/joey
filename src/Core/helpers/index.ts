@@ -1,2 +1,2 @@
 export { sizeLimit } from './sizeLimit';
-export { isTypedArray } from './isTypedArray';
+export { isTypedArray, TypedArray } from './isTypedArray';
