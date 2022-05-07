@@ -6,8 +6,6 @@
 // 	public error: (...args: any[]) => void = () => {};
 // }
 
-import { write } from 'fs';
-
 type LogLevel = 'off' | 'debug' | 'info' | 'log' | 'warn' | 'error';
 type LoggerOptions = {
 	logLevel?: LogLevel;
