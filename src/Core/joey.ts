@@ -32,7 +32,7 @@ export default class Joey {
 			const req = new Req(request);
 			const resolvedHandler = this.resolve(req);
 			const context = new Context(ctx, req, env, this.logger);
-			return await Dispatcher.respond(req, resolvedHandler, context as Context, this.config);
+			return await Dispatcher.respond(req, resolvedHandler, context as Context, this.config, this.middleware);
 		} catch (err) {
 			const { status, body, headers } = this.config.internalServerError;
 			return new Response((body || null) as BodyInit, { status, headers }); // Messy, abstract
@@ -48,33 +48,26 @@ export default class Joey {
 				handler: () => this.config.notFound,
 				path: '',
 				config: this.config,
-				middleware: []
+				middleware: this.middleware
 			};
 		}
 
 		if (typeof lookup === 'string') {
-			const methods = this.register.methods(lookup);
-			const headers = this.config.emitAllowHeader
-				? { ...this.config.notFound.headers, allow: methods.join(', ') }
-				: this.config.notFound.headers;
+			const headers = this.config.notFound.headers || {};
+			if (this.config.emitAllowHeader) {
+				const methods = this.register.methods(lookup);
+				headers.allow = methods.join(', ');
+			}
 
 			return {
 				handler: () => ({ ...this.config.notFound, headers }),
 				path: '',
 				config: this.config,
-				middleware: []
+				middleware: this.middleware
 			};
 		}
 
-		return {
-			...lookup,
-			config: {
-				...this.config,
-				...lookup.config,
-				headers: { ...this.config.headers, ...lookup.config.headers }
-			},
-			middleware: [...this.middleware, ...lookup.middleware]
-		};
+		return lookup;
 	}
 }
 
