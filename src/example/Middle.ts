@@ -1,4 +1,4 @@
-import { MiddlewareHandler } from '../types';
+import { MiddlewareHandler } from '../Core/types';
 
 type Env = { a: number }
 type Deps = { fauna: string }
@@ -15,7 +15,7 @@ const MiddleName: MiddlewareHandler<Env, Deps, T> = ({
 	deps: { fauna } = { fauna: 'djklhjklsd' }
 }) => {
 	console.log(fauna, res, env);
-	req.customFields = {
+	req.additionalFields = {
 		auth: 100,
 		clientId: 'string'
 	};

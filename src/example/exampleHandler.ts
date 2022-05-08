@@ -1,7 +1,7 @@
-import { Handler } from '../types';
+import { Handler } from '../Core';
 import { Env } from './env.types';
 // import { cookie } from '../../Utilities/headers';
-import { generateToken } from '../../Crypto';
+import { generateToken } from '../Crypto';
 import { dependencies, Deps } from './deps';
 // Need a link to the types file in the package.json, and those types must not use the export keyword
 
@@ -22,8 +22,8 @@ type Req = {
 const functionName: Handler<Env, Deps, Req> = ({
 	req,
 	res,
-	logger,
 	env,
+	logger,
 	deps: { cache, fauna } = dependencies
 }) => {
 	console.log(req, logger, res);
@@ -32,11 +32,11 @@ const functionName: Handler<Env, Deps, Req> = ({
 	const { auth: { clientId } } = req.additionalFields;
 
 	req.additionalFields.clientId = '100';
-
 	// const Authorization = req.cookie.get('Authorization')
 	// req.random = 100
-
 	headers.append('hello', 'world');
+
+	console.log(req.body.field);
 
 	const {
 		auth: ReqAuth,

@@ -4,20 +4,20 @@ import { getAllQueryParams } from '../Utilities/queryParams/queryParams';
 import Path from './path';
 
 /* TYPES */
-
 type UnknownRecord = Record<string, unknown>
 type PathParams = Record<string, string | string[]>;
 type RequestBody = null | string | DeserialisedJson | ArrayBuffer | Blob;
 export type RequestBodyStream = null | 'plaintext' | 'json' | 'formData' | 'buffer' | 'blob';
 /* TYPES */
 
-// Can access clone from request.clone()
-
 /* MAIN */
-
 class BaseRequest {
-	readonly request: Request;
-	constructor(request: Request) { this.request = request; }
+	public readonly request: Request;
+
+	constructor(request: Request) {
+		this.request = request;
+	}
+
 	get bodyUsed() { return this.request.bodyUsed; }
 	get cf(): IncomingRequestCfProperties { return this.request.cf as IncomingRequestCfProperties; }
 	get method(): Method { return this.request.method as Method; }
@@ -31,11 +31,13 @@ class BaseRequest {
 
 
 export class Req<T = UnknownRecord> extends BaseRequest {
-	readonly url: URL;
-	readonly cookies: Record<string, string> = {};
-	readonly headers: Record<string, string> = {};
-	readonly queryParams: QueryParams = {};
-	readonly pathParams: PathParams = {};
+	public readonly url: URL;
+	public readonly cookies: Record<string, string> = {};
+	public readonly headers: Record<string, string> = {};
+	public readonly queryParams: QueryParams = {};
+	public readonly pathParams: PathParams = {};
+	public validators: Record<string, (...args: unknown[]) => unknown> = {};
+	public route = '';
 	public body: RequestBody = null;
 	public additionalFields = <T>{}; // fields, data, props, custom, customData, customFields, middleware, middlewareData, additionalData, additionalFields
 
@@ -67,10 +69,11 @@ export class Req<T = UnknownRecord> extends BaseRequest {
 	}
 
 	public parseQueryParams(): void {
-		const obj = getAllQueryParams(this.url);
+		const obj = getAllQueryParams(this.url); // todo optimise
 		for (const key in obj) {
 			this.queryParams[key] = obj[key];
 		}
+		// this.queryParams = getAllQueryParams(this.url);
 	}
 
 	public static async parseBody(req: Req, type: RequestBodyStream): Promise<void> {
@@ -122,6 +125,7 @@ export class Req<T = UnknownRecord> extends BaseRequest {
 	}
 
 	public static parsePathParams(req: Req, parameterisedPath: string): void {
+		req.route = parameterisedPath;
 		const path = req.url.pathname;
 
 		if (Path.pathHasParams(parameterisedPath)) {

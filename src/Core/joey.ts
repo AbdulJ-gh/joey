@@ -3,25 +3,28 @@ import Dispatcher from './dispatcher';
 import { Req } from './Req';
 import Context from './context';
 import type { Logger } from './logger';
-import type { ResolvedHandler, MiddlewareHandler } from './types';
+import type { ResolvedHandler, MiddlewareHandler, Validator } from './types';
 import { type Config, defaultConfig } from './config';
 
 export default class Joey {
-	public readonly register: Register<ResolvedHandler>;
-	public readonly middleware: MiddlewareHandler[];
-	public readonly config: Config;
-	public readonly logger?: Logger;
+	readonly register: Register<ResolvedHandler>;
+	readonly middleware: MiddlewareHandler[];
+	readonly config: Config;
+	readonly logger?: Logger;
+	readonly validators: Validator[];
 
 	constructor(
 		paths: Paths<ResolvedHandler>,
 		config?: Partial<Config>,
 		middleware?: MiddlewareHandler[],
-		logger?: Logger
+		logger?: Logger,
+		validators?: Validator[]
 	) {
 		this.register = new Register(paths);
 		this.config = { ...defaultConfig, ...config };
 		this.middleware = middleware || [];
 		this.logger = logger;
+		this.validators = validators || [];
 	}
 
 	public fetch: ExportedHandlerFetchHandler = async (request, env, ctx) => {
@@ -29,11 +32,11 @@ export default class Joey {
 		try {
 			const req = new Req(request);
 			const resolvedHandler = this.resolve(req);
-			const context = new Context(ctx, req, env, this.logger);
+			const context = new Context(ctx, req, env, this.validators, this.logger);
 			return await Dispatcher.respond(req, resolvedHandler, context as Context, this.config, this.middleware);
 		} catch (err) {
 			const { status, body, headers } = this.config.internalServerError;
-			return new Response((body || null) as BodyInit, { status, headers }); // Messy, abstract
+			return new Response((body || null) as BodyInit, { status, headers });
 		}
 	};
 

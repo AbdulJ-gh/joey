@@ -9,7 +9,7 @@ export type Method = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'OPTIONS'; //
 export type ResponseObject = {
 	status?: number; // defaults to 200 if handler found, or 204 if handler found with no body, else 404 or config value
 	body?: ResponseBody; // defaults to null if handler found, else config
-	headers?: Record<string, string>; // HeadersInit; // defaults to config headers if handler found, else empty + not found config + allow header config
+	headers?: Headers | Record<string, string>; // HeadersInit; // defaults to config headers if handler found, else empty + not found config + allow header config
 };
 
 export type ResponseLike = Response | ResponseObject | Res;
@@ -26,6 +26,7 @@ export type MiddlewareHandler<ENV = unknown, DEPS = unknown, REQ = unknown> =
 
 export type SyncHandler<ENV = unknown, DEPS = unknown, REQ = unknown> =
 	(ctx: Context<ENV, DEPS, REQ>) => ResponseLike;
+
 export type AsyncHandler<ENV = unknown, DEPS = unknown, REQ = unknown> =
 	(ctx: Context<ENV, DEPS, REQ>) => Promise<ResponseLike>;
 
@@ -38,3 +39,6 @@ export type ResolvedHandler = {
 	config: Partial<Config>;
 	middleware: MiddlewareHandler[];
 };
+
+/** Schemas */
+export type Validator = (...args: unknown[]) => unknown;
