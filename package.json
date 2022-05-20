@@ -57,7 +57,8 @@
     "@cloudflare/workers-types": "^3.9",
     "ajv-cli": "^5.0.0",
     "ajv-formats": "^2.1",
-    "esbuild": "^0.14"
+    "esbuild": "^0.14",
+    "lodash": "^4.0.0"
   },
   "devDependencies": {
     "@ava/typescript": "^2.0.0",
