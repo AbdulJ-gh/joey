@@ -80,6 +80,8 @@ export default function main() {
 
 	if (logger) {
 		app.write(`import logger from '${'./' + join(src, logger)}'`)
+	} else {
+		app.write('let logger')
 	}
 
 	if (schemas) {
