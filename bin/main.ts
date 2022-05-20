@@ -66,7 +66,7 @@ export default function main() {
 	app.write(`import Joey from 'joeycf'`)
 
 	const handlerNames = Object.keys(handlers);
-	const middlewareNames = Object.keys(middleware);
+	const middlewareNames = Object.keys(middleware || {});
 
 	handlerNames.forEach(handlerName => {
 		const handlerFile = './' + join(src, handlersRoot, handlers[handlerName].src)
