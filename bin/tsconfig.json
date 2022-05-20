@@ -4,7 +4,7 @@
     "module": "commonjs",
     "lib": ["esnext"],
     "declaration": false,
-    "outDir": "lib/bin",
+    "outDir": "../lib/bin",
     "strict": true,
     "esModuleInterop": true,
     "moduleResolution": "node",
@@ -16,6 +16,5 @@
     "removeComments": true,
     "typeRoots": ["node_modules/@types"],
     "types": ["@types/node"]
-  },
-  "include": ["bin"]
+  }
 }

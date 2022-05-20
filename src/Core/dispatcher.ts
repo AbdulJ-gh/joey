@@ -2,7 +2,7 @@ import type { AsyncHandler, Handler, MiddlewareHandler, ResolvedHandler, Respons
 import { Res, type ResponseBody } from './res';
 import { isTypedArray, sizeLimit, type TypedArray } from './helpers';
 import type Context from './context';
-import { Req } from './Req';
+import { Req } from './req';
 import type { Config } from './config';
 
 type BodyType =
@@ -37,7 +37,6 @@ export default class Dispatcher {
 					contentType = 'application/json';
 					break;
 				case 'plaintext':
-					// This is a default if it's not set, If you want text/html for example, set it via the header
 					contentType = 'text/plain; charset=utf-8';
 					break;
 				case 'formData':
@@ -53,6 +52,8 @@ export default class Dispatcher {
 				case 'noContent':
 				default:
 					break;
+			// For any response, manually setting the content type header will override these defaults. For example `text/html` for plaintext content.
+			// Essentially the default content types will match the data correctly, but might not be specific enough for your needs.
 			}
 		}
 		if (contentType) {
@@ -117,21 +118,23 @@ export default class Dispatcher {
 	): Promise<Response> {
 		const { handler, path, config, middleware } = resolvedHandler;
 
-		const conf: Config = {
-			...globalConfig,
-			...config,
-			headers: { ...globalConfig.headers, ...config.headers }
-		};
+		const combinedConfig = !config
+			? globalConfig
+			: {
+				...globalConfig,
+				...config,
+				headers: { ...globalConfig.headers, ...(config?.headers || {}) }
+			};
 
-		const middle = [...globalMiddleware, ...middleware];
+		const middle = middleware ? [...globalMiddleware, ...middleware] : globalMiddleware;
 
-		let handlerResponse = sizeLimit(req.url, conf);
+		let handlerResponse = sizeLimit(req.url, combinedConfig);
 		if (!handlerResponse) {
 			Req.parsePathParams(req, path);
-			conf.parseBody && (await Req.parseBody(req, conf.parseBody));
+			combinedConfig.parseBody && (await Req.parseBody(req, combinedConfig.parseBody));
 			handlerResponse = await this.executeHandlers(context, handler, middle);
 		}
 
-		return this.generateResponse(handlerResponse, conf.prettifyJson);
+		return this.generateResponse(handlerResponse, combinedConfig.prettifyJson);
 	}
 }

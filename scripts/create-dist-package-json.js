@@ -1,4 +1,4 @@
-const { readFileSync, writeFileSync, copyFileSync, renameSync } = require('fs');
+const { readFileSync, writeFileSync, copyFileSync, renameSync, mkdirSync, readdirSync  } = require('fs');
 
 const packageJson = JSON.parse(readFileSync('./package.json', { encoding: 'utf8' }));
 
@@ -9,3 +9,11 @@ delete packageJson.publishConfig;
 writeFileSync('./lib/package.json', JSON.stringify(packageJson, null, 2));
 copyFileSync('README.md', './lib/README.md')
 renameSync('./lib/bin/joeycf.js', './lib/bin/joeycf')
+
+// Fs schemas
+mkdirSync('./lib/bin/schemas/refs', { recursive: true })
+const refs = readdirSync('./bin/schemas/refs')
+refs.forEach(ref => {
+	copyFileSync(`./bin/schemas/refs/${ref}`, `./lib/bin/schemas/refs/${ref}`)
+})
+copyFileSync('./bin/schemas/worker.json', './lib/bin/schemas/worker.json')

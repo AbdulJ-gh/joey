@@ -1,6 +1,6 @@
 import type { DeserialisedJson, Method } from './types';
 import type { QueryParams } from '../Utilities/queryParams/queryParams';
-import { getAllQueryParams } from '../Utilities/queryParams/queryParams';
+import { getAllQueryParams } from '../Utilities/queryParams';
 import Path from './path';
 
 /* TYPES */
@@ -57,12 +57,11 @@ export class Req<T = UnknownRecord> extends BaseRequest {
 
 	private parseCookies(headers: Headers): void {
 		const string = headers.get('Cookie');
-		// then do some cookie parsing, need to check encoding // Todo
 		if (string) {
 			const split = string.split(';');
 			for (const cookie of split) {
 				const [key, value] = cookie.trim().split('=');
-				// URL decode here ??? // Todo
+				// Cookie parsing, URL decode?, need to check encoding // Todo
 				this.cookies[key] = value;
 			}
 		}

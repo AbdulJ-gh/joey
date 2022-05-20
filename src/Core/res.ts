@@ -85,3 +85,23 @@ export class Res {
 		return Response.redirect(url, num);
 	}
 }
+
+// const defaultResponseObject = (
+// 	status: number,
+// 	body?: ResponseBody,
+// 	headers?: HeadersInit
+// ): ResponseObject => ({ status, body: body || null, headers: headers || {} });
+//
+// const NotFound = defaultResponseObject(404, { message: 'Resource not found' });
+// const BadRequest = defaultResponseObject(400, { message: 'Bad Request' });
+// const InternalServerError = defaultResponseObject(500, { message: 'Internal Server Error' });
+//
+// const server = { InternalServerError };
+// const client = { NotFound, BadRequest };
+// const errors = { server, client };
+// const defaultResponse = { errors };
+// console.log(defaultResponse);
+//
+// const r = new Res();
+//
+// r.set(errors.client.BadRequest);

@@ -1,0 +1,53 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "worker",
+  "type": "object",
+  "required": [ "src", "handlersRoot", "handlers"],
+  "additionalProperties": false,
+  "properties": {
+    "version":  { "type": "string" },
+    "random": { "type": "string" },
+    "src":  { "type": "string" },
+    "handlersRoot":  { "type": "string" },
+    "logger":  { "type": "string" },
+    "schemas":  { "type": "string" },
+    "middleware":  { "$ref": "https://example.com/schema/keyValueStringObject" },
+    "baseConfig":  {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "options": { "$ref": "https://example.com/schema/options" },
+        "middleware": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "handlers": {
+      "type": "object",
+      "patternProperties": {
+        "^.*$": {
+          "type": "object",
+          "required": ["route", "method", "src"],
+          "additionalProperties": false,
+          "properties": {
+            "route": { "type": "string" },
+            "method": {
+              "enum": [
+                "GET", "Get", "get", "POST", "Post", "post", "PUT", "Put", "put", "PATCH",
+                "Patch","patch", "DELETE", "Delete", "delete", "OPTIONS", "Options", "options"
+              ]
+            },
+            "src": { "type": "string" },
+            "options": { "$ref": "https://example.com/schema/options" },
+            "middleware": {
+              "type": "array",
+              "items": { "type": "string" }
+            }
+          }
+        }
+      }
+    }
+  }
+}

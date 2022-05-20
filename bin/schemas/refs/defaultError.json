@@ -1,0 +1,18 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://example.com/schema/defaultError",
+  "type": "object",
+  "properties": {
+    "status": { "type": "number" },
+    "body": {
+      "type": [
+        "null",
+        "string",
+        "object"
+      ]
+    },
+    "headers": { "$ref": "https://example.com/schema/keyValueStringObject" }
+  },
+  "required": ["status"],
+  "additionalProperties": false
+}

@@ -1,0 +1,18 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://example.com/schema/options",
+  "type": "object",
+  "properties": {
+    "emitAllowHeader": { "type": "boolean" },
+    "parseBody": { "enum": [ false, null, "plaintext", "json", "formData", "buffer", "blob" ] },
+    "prettifyJson": { "type": "boolean" },
+    "maxUrlLength": { "type": "integer" },
+    "maxQueryLength": { "type": "integer" },
+    "headers": { "type": "object" },
+    "notFound": { "$ref": "https://example.com/schema/defaultError" },
+    "methodNotAllowed": { "$ref": "https://example.com/schema/defaultError" },
+    "urlTooLong": { "$ref": "https://example.com/schema/defaultError" },
+    "queryTooLong": { "$ref": "https://example.com/schema/defaultError" },
+    "internalServerError": { "$ref": "https://example.com/schema/defaultError" }
+  }
+}

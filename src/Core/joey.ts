@@ -1,44 +1,59 @@
 import Register, { type Paths } from './register';
 import Dispatcher from './dispatcher';
-import { Req } from './Req';
+import { Req } from './req';
 import Context from './context';
-import type { Logger } from './logger';
-import type { ResolvedHandler, MiddlewareHandler, Validator } from './types';
-import { type Config, defaultConfig } from './config';
+import type { Logger } from '../logger';
+import type { ResolvedHandler, MiddlewareHandler, Validators } from './types';
+import { type Config } from './config';
+
+type LoggerInit = (logger: Logger, request: Request, ctx: ExecutionContext, env: unknown) => void;
 
 export default class Joey {
 	readonly register: Register<ResolvedHandler>;
 	readonly middleware: MiddlewareHandler[];
 	readonly config: Config;
+	readonly validators: Validators;
 	readonly logger?: Logger;
-	readonly validators: Validator[];
+	readonly loggerInit?: LoggerInit;
 
 	constructor(
 		paths: Paths<ResolvedHandler>,
-		config?: Partial<Config>,
+		config: Config,
 		middleware?: MiddlewareHandler[],
+		validators?: Validators,
 		logger?: Logger,
-		validators?: Validator[]
+		loggerInit?: LoggerInit
 	) {
 		this.register = new Register(paths);
-		this.config = { ...defaultConfig, ...config };
+		this.config = config;
 		this.middleware = middleware || [];
+		this.validators = validators || {};
 		this.logger = logger;
-		this.validators = validators || [];
+		this.loggerInit = loggerInit;
 	}
 
 	public fetch: ExportedHandlerFetchHandler = async (request, env, ctx) => {
 		ctx.passThroughOnException(); // The pass through server needs to be defined somewhere?
 		try {
+			this.logger && this.loggerInit && this.initLogger(this.loggerInit, this.logger, request, ctx, env);
 			const req = new Req(request);
 			const resolvedHandler = this.resolve(req);
 			const context = new Context(ctx, req, env, this.validators, this.logger);
 			return await Dispatcher.respond(req, resolvedHandler, context as Context, this.config, this.middleware);
-		} catch (err) {
-			const { status, body, headers } = this.config.internalServerError;
-			return new Response((body || null) as BodyInit, { status, headers });
+		} catch (err: unknown) {
+			try {
+				this.logger && ctx.waitUntil(this.logger['exceptionHandler'](err) as Promise<void>);
+				const { status, body, headers } = this.config.internalServerError;
+				return new Response((body || null) as BodyInit, { status, headers });
+			} catch (e) {
+				return new Response(null, { status: 500 });
+			}
 		}
 	};
+
+	public initLogger(loggerInit: LoggerInit, ...args: [Logger, Request, ExecutionContext, unknown]): void {
+		loggerInit(...args);
+	}
 
 	private resolve(req: Req): ResolvedHandler {
 		const [path, method] = [req.url.pathname, req.method];
@@ -54,14 +69,14 @@ export default class Joey {
 		}
 
 		if (typeof lookup === 'string') {
-			const headers = this.config.notFound.headers || {};
+			const headers = this.config.methodNotAllowed.headers || {};
 			if (this.config.emitAllowHeader) {
 				const methods = this.register.methods(lookup);
 				headers.allow = methods.join(', ');
 			}
 
 			return {
-				handler: () => ({ ...this.config.notFound, headers }),
+				handler: () => ({ ...this.config.methodNotAllowed, headers }),
 				path: '',
 				config: this.config,
 				middleware: this.middleware

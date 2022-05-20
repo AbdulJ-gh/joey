@@ -41,4 +41,5 @@ export type ResolvedHandler = {
 };
 
 /** Schemas */
-export type Validator = (...args: unknown[]) => unknown;
+type Validator = (...args: unknown[]) => unknown;
+export type Validators = Record<string, Validator>;

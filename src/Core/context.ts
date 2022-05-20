@@ -1,7 +1,7 @@
-import type { Req } from './Req';
-import type { Logger } from './logger';
+import type { Req } from './req';
+import type { Logger } from '../logger';
 import { Res } from './res';
-import type { Validator } from './types';
+import type { Validators } from './types';
 
 
 interface Context<ENV = unknown, DEPS = unknown, REQ = unknown> extends ExecutionContext {
@@ -10,7 +10,7 @@ interface Context<ENV = unknown, DEPS = unknown, REQ = unknown> extends Executio
 	logger: Logger;
 	env: ENV;
 	deps?: DEPS;
-	validators: Validator[];
+	validators: Validators;
 }
 
 class Context<ENV = unknown, DEPS = unknown, REQ = unknown> {
@@ -19,9 +19,9 @@ class Context<ENV = unknown, DEPS = unknown, REQ = unknown> {
 	env: ENV;
 	deps?: DEPS;
 	logger: Logger;
-	validators: Validator[];
+	validators: Validators;
 
-	constructor(ctx: ExecutionContext, req: Req<REQ>, env: ENV, validators: Validator[], logger?: Logger) {
+	constructor(ctx: ExecutionContext, req: Req<REQ>, env: ENV, validators: Validators, logger?: Logger) {
 		Object.setPrototypeOf(this, ctx);
 		this.req = req;
 		this.res = new Res();
