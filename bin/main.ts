@@ -82,40 +82,46 @@ export default function main() {
 		app.write(`import logger from '${'./' + join(src, logger)}'`)
 	}
 
-	// AJV
-	// check docs to see how we can use custom formats
-	// https://github.com/ajv-validator/ajv-cli#-c---custom-keywordsformats-definitions
-	const schemasProcess = spawnSync('ajv', [
-		'compile',
-		'-r', './' + join(src, schemas, 'refs/*.json'),
-		'-s', './' + join(src, schemas, '/*.json'),
-		'--use-defaults',
-		'--all-errors',
-		`-o`
-	]);
-	// Error handle ?
-	// if (schemasProcess.status !== 0) {
-	// 	console.log('Exited with code', schemasProcess.status)
-	// 	console.log(`Check the schema for ${join(schemas, file)}`);
-	// 	console.log(validateWorker.stderr.toString('utf8'))
-	// 	process.exit(1)
-	// }
+	if (schemas) {
+		// AJV
+		// check docs to see how we can use custom formats
+		// https://github.com/ajv-validator/ajv-cli#-c---custom-keywordsformats-definitions
+		const schemasProcess = spawnSync('ajv', [
+			'compile',
+			'-r', './' + join(src, schemas, 'refs/*.json'),
+			'-s', './' + join(src, schemas, '/*.json'),
+			'--use-defaults',
+			'--all-errors',
+			`-o`
+		]);
+		// Error handle ?
+		// if (schemasProcess.status !== 0) {
+		// 	console.log('Exited with code', schemasProcess.status)
+		// 	console.log(`Check the schema for ${join(schemas, file)}`);
+		// 	console.log(validateWorker.stderr.toString('utf8'))
+		// 	process.exit(1)
+		// }
 
-	const validators = schemasProcess.stdout.toString('utf8')
-	const tempSchemasFile = new TempFile(tmpDir, 'schemas.js', validators)
-	const schemaFiles = readdirSync('./' + join(src, schemas)).filter(file => file.endsWith('.json'))
+		const validators = schemasProcess.stdout.toString('utf8')
+		const tempSchemasFile = new TempFile(tmpDir, 'schemas.js', validators)
+		const schemaFiles = readdirSync('./' + join(src, schemas)).filter(file => file.endsWith('.json'))
 
-	// This will use the $id name first if it exists, if not it will use the file name.
-	// Need to make sure top level schemas (non refs) are named appropriately
-	if (schemaFiles.length === 1) {
-		const schema = JSON.parse(readFileSync('./' + join(src, schemas, schemaFiles[0]), 'utf8'))
-		const name = schema['$id'] ? schema['$id'] : schemaFiles[0].replace('.json', '')
-		app.write(`import __validator from '${tempSchemasFile.path}'`, ';\n')
-		app.write(`const validators = { ${name}: __validator }`)
-	} else if (schemaFiles.length > 1) {
-		app.write(`import * as validators from '${tempSchemasFile.path}'`, ';\n')
+		// This will use the $id name first if it exists, if not it will use the file name.
+		// Need to make sure top level schemas (non refs) are named appropriately
+		if (schemaFiles.length === 1) {
+			const schema = JSON.parse(readFileSync('./' + join(src, schemas, schemaFiles[0]), 'utf8'))
+			const name = schema['$id'] ? schema['$id'] : schemaFiles[0].replace('.json', '')
+			app.write(`import __validator from '${tempSchemasFile.path}'`, ';\n')
+			app.write(`const validators = { ${name}: __validator }`)
+		} else if (schemaFiles.length > 1) {
+			app.write(`import * as validators from '${tempSchemasFile.path}'`, ';\n')
+		}
+		// ^^ AJV
+
+	} else {
+		app.write(`const validators = {}`)
 	}
-	// ^^ AJV
+
 
 
 	const globalMiddleware: string[] = [];
