@@ -2,6 +2,7 @@ import { join } from 'path';
 import { readdirSync, readFileSync } from 'fs';
 import { parse as parseYaml } from 'yaml';
 import applyDefault from './applyDefaults';
+import { defaultConfig } from '../config';
 
 
 export default function getWorkerConfig () {

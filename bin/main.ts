@@ -6,7 +6,6 @@ import getWorkerConfig from './helpers/getWorkerConfig';
 import TempFile from './helpers/tempFile';
 import { tmpdir } from 'os';
 import AppBuilder from './helpers/compileApp'; // Todo - move here, and realign use of config and options words
-import { defaultConfig } from './config';
 
 export default function main() {
 	// Args
@@ -15,7 +14,7 @@ export default function main() {
 	const buildArgs = cli ? argv.slice(3) : [join(cwd(), argv[2])]; // build.js arg must be relative to package.json dir
 
 	// Parse yaml
-	const worker = { ...defaultConfig, ...getWorkerConfig() }; // JS object
+	const worker = getWorkerConfig(); // JS object
 	const tmpDir = mkdtempSync(tmpdir() + sep)
 	const workerFile = new TempFile(tmpDir, 'worker.json', JSON.stringify(worker))
 	// console.log('SAVED CONFIG TO', workerFile.path);
@@ -51,13 +50,13 @@ export default function main() {
 		middleware: string[]
 	}
 
-	const { src, handlersRoot, logger, schemas, handlers, middleware, config }: {
+	const { src, handlersRoot, logger, schemas, handlers, middleware, baseConfig }: {
 		src: string,
 		handlersRoot: string,
 		logger: string,
 		schemas: string,
 		middleware: Record<string, string>,
-		config: {
+		baseConfig: {
 			middleware: string[],
 			options: Record<string, unknown>
 		}
@@ -131,7 +130,7 @@ export default function main() {
 
 	const globalMiddleware: string[] = [];
 
-	(config?.middleware || []).forEach(middlewareName => {
+	(baseConfig?.middleware || []).forEach(middlewareName => {
 		globalMiddleware.push(`__UNSAFE_MIDDLEWARE_NAME__${middlewareName}`)
 	})
 
@@ -150,7 +149,8 @@ export default function main() {
 
 	app.write(`const middleware = ${JSON.stringify(globalMiddleware)}`, ';\n')
 	app.write(`const paths = ${JSON.stringify(paths)}`, ';\n')
-	app.write(`const config = ${JSON.stringify(config.options)}`, ';\n')
+	app.write(`const config = ${JSON.stringify(baseConfig.options)}`, ';\n')
+	// Todo - standardise the use of config vs options, and route vs path
 
 
 
