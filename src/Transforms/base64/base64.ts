@@ -32,7 +32,7 @@ export function encodeUriSafe(string: string): string {
 export function decodeUriSafe(base64String: string): string {
 	const map: Record<string, string> = {
 		'-': '+',
-		'_': '/'
+		_: '/'
 	};
 	let decoded = base64String.replace(/[-_]/g, match => map[match]);
 	while (decoded.length % 4) {
@@ -46,7 +46,7 @@ export function fromBytes(array: Uint8Array, uriSafe = false): string {
 	return uriSafe ? encodeUriSafe(string) : encode(string);
 }
 
-export function toBytes(base64String: string, uriSafe= false): Uint8Array {
+export function toBytes(base64String: string, uriSafe = false): Uint8Array {
 	const string = uriSafe ? decodeUriSafe(base64String) : decode(base64String);
 	return Uint8Array.from(string, char => char.charCodeAt(0));
 }

@@ -12,8 +12,8 @@ function getExpires(date: EpochOrFromNow) {
 function mapOptionsToString(options: CookieOptions) {
 	const { expires, maxAge, domain, path, secure, httpOnly, sameSite } = options;
 	let opt = '';
-	if (expires) { opt += ` ${getExpires(expires)};`;}
-	if (maxAge) { opt += ` ${getMaxAge(maxAge)};`;}
+	if (expires) { opt += ` ${getExpires(expires)};`; }
+	if (maxAge) { opt += ` ${getMaxAge(maxAge)};`; }
 	if (domain) { opt += ` Domain=${domain};`; }
 	if (path) { opt += ` Path=${path};`; }
 	if (secure) { opt += ' Secure;'; }
@@ -28,7 +28,7 @@ function mapOptionsToString(options: CookieOptions) {
 
 const cookie = {
 	set: (headers: Headers, name: string, value: string, options?: CookieOptions) => {
-		let cookie = `${name}=${value};`;
+		let cookie = `${name}=${encodeURIComponent(value)};`;
 		if (options) { cookie += mapOptionsToString(options); }
 		headers.append('set-cookie', cookie);
 	},
