@@ -6,7 +6,7 @@ export default function applyDefault(obj: any): any {
 	}
 
 	function applyOptions(prop: string, value: any) {
-		if (!obj.config[prop]) { obj.config[prop] = value }
+		if (!obj.baseConfig[prop]) { obj.baseConfig[prop] = value }
 	}
 
 	apply('src', './src')
@@ -14,9 +14,9 @@ export default function applyDefault(obj: any): any {
 	applyOptions('middleware', [])
 
 
-	obj.config.options = {
+	obj.baseConfig.options = {
 		...defaultConfig,
-		...obj.config.options
+		...obj.baseConfig.options
 	}
 
 	return obj;
