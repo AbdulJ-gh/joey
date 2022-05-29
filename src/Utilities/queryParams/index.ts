@@ -1,1 +1,1 @@
-export { getQueryParam, getQueryParams, getAllQueryParams } from './queryParams';
+export { getQueryParam, getQueryParams, getAllQueryParams, transformParam } from './queryParams';
