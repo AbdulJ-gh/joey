@@ -61,7 +61,7 @@ export class Req<T = UnknownRecord> extends BaseRequest {
 			const split = string.split(';');
 			for (const cookie of split) {
 				const [key, value] = cookie.trim().split('=');
-				this.cookies[key] = decodeURIComponent(value);
+				this.cookies[decodeURIComponent(key)] = decodeURIComponent(value);
 			}
 		}
 	}

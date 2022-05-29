@@ -28,12 +28,12 @@ function mapOptionsToString(options: CookieOptions) {
 
 const cookie = {
 	set: (headers: Headers, name: string, value: string, options?: CookieOptions) => {
-		let cookie = `${name}=${encodeURIComponent(value)};`;
+		let cookie = `${encodeURIComponent(name)}=${encodeURIComponent(value)};`;
 		if (options) { cookie += mapOptionsToString(options); }
 		headers.append('set-cookie', cookie);
 	},
 	clear: (headers: Headers, name: string, options?: Pick<CookieOptions, 'domain' | 'path'>) => {
-		let cookie = `${name}=; ${getExpires(0)};`;
+		let cookie = `${encodeURIComponent(name)}=; ${getExpires(0)};`;
 		if (options) { cookie += mapOptionsToString(options); }
 		headers.append('set-cookie', cookie);
 	}
