@@ -55,7 +55,7 @@ export function transformParam(param: string): string | boolean | number {
 		case 'FALSE':
 			return false;
 		default:
-			return param;
+			return decodeURIComponent(param);
 	}
 }
 
