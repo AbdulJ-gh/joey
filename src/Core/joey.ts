@@ -3,7 +3,7 @@ import Dispatcher from './dispatcher';
 import { Req } from './req';
 import Context from './context';
 import type { Logger } from '../logger';
-import type { ResolvedHandler, MiddlewareHandler, Validators } from './types';
+import type { ResolvedHandler, MiddlewareHandler } from './types';
 import { type Config } from './config';
 
 type LoggerInit = (logger: Logger, request: Request, ctx: ExecutionContext, env: unknown) => void;
@@ -12,7 +12,6 @@ export default class Joey {
 	readonly register: Register<ResolvedHandler>;
 	readonly middleware: MiddlewareHandler[];
 	readonly config: Config;
-	readonly validators: Validators;
 	readonly logger?: Logger;
 	readonly loggerInit?: LoggerInit;
 
@@ -20,14 +19,12 @@ export default class Joey {
 		paths: Paths<ResolvedHandler>,
 		config: Config,
 		middleware?: MiddlewareHandler[],
-		validators?: Validators,
 		logger?: Logger,
 		loggerInit?: LoggerInit
 	) {
 		this.register = new Register(paths);
 		this.config = config;
 		this.middleware = middleware || [];
-		this.validators = validators || {};
 		this.logger = logger;
 		this.loggerInit = loggerInit;
 	}
@@ -38,7 +35,7 @@ export default class Joey {
 			this.logger && this.loggerInit && this.initLogger(this.loggerInit, this.logger, request, ctx, env);
 			const req = new Req(request);
 			const resolvedHandler = this.resolve(req);
-			const context = new Context(ctx, req, env, this.validators, this.logger);
+			const context = new Context(ctx, req, env, this.logger);
 			return await Dispatcher.respond(req, resolvedHandler, context as Context, this.config, this.middleware);
 		} catch (err: unknown) {
 			try {
@@ -46,6 +43,7 @@ export default class Joey {
 				const { status, body, headers } = this.config.internalServerError;
 				return new Response((body || null) as BodyInit, { status, headers });
 			} catch (e) {
+				console.log('ERROR:', e);
 				return new Response(null, { status: 500 });
 			}
 		}
@@ -86,6 +84,3 @@ export default class Joey {
 		return lookup;
 	}
 }
-
-
-export {};

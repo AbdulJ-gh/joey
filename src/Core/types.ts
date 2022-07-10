@@ -39,7 +39,3 @@ export type ResolvedHandler = {
 	config: Partial<Config>;
 	middleware: MiddlewareHandler[];
 };
-
-/** Schemas */
-type Validator = (...args: unknown[]) => unknown;
-export type Validators = Record<string, Validator>;
