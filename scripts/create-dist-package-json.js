@@ -17,3 +17,4 @@ refs.forEach(ref => {
 	copyFileSync(`./bin/schemas/refs/${ref}`, `./lib/bin/schemas/refs/${ref}`)
 })
 copyFileSync('./bin/schemas/worker.json', './lib/bin/schemas/worker.json')
+copyFileSync('./bin/buildOptions.js', './lib/bin/buildOptions.js')
