@@ -3,21 +3,14 @@ import type { QueryParams } from '../Utilities/queryParams/queryParams';
 import { getAllQueryParams } from '../Utilities/queryParams';
 import Path from './path';
 
-/* TYPES */
 type UnknownRecord = Record<string, unknown>
 type PathParams = Record<string, string | string[]>;
 type RequestBody = null | string | DeserialisedJson | ArrayBuffer | Blob;
 export type RequestBodyStream = null | 'plaintext' | 'json' | 'formData' | 'buffer' | 'blob';
-/* TYPES */
 
-/* MAIN */
 class BaseRequest {
 	public readonly request: Request;
-
-	constructor(request: Request) {
-		this.request = request;
-	}
-
+	constructor(request: Request) { this.request = request; }
 	get bodyUsed() { return this.request.bodyUsed; }
 	get cf(): IncomingRequestCfProperties { return this.request.cf as IncomingRequestCfProperties; }
 	get method(): Method { return this.request.method as Method; }
@@ -36,10 +29,9 @@ export class Req<T = UnknownRecord> extends BaseRequest {
 	public readonly headers: Record<string, string> = {};
 	public readonly queryParams: QueryParams = {};
 	public readonly pathParams: PathParams = {};
-	public validators: Record<string, (...args: unknown[]) => unknown> = {};
 	public route = '';
 	public body: RequestBody = null;
-	public additionalFields = <T>{}; // fields, data, props, custom, customData, customFields, middleware, middlewareData, additionalData, additionalFields
+	public additionalFields = <T>{}; // fields, data, props, custom, customData, customFields, additionalData, additionalFields
 
 	constructor(request: Request) {
 		super(request);
@@ -51,9 +43,23 @@ export class Req<T = UnknownRecord> extends BaseRequest {
 
 	private parseHeaders(headers: Headers): void {
 		for (const [key, value] of headers.entries()) {
-			this.headers[key] = value;
+			let finalVal = value;
+
+			if ((
+				value.startsWith('{"') && value.endsWith('}')) ||
+        (value.startsWith('[') && value.endsWith(']'))
+			) {
+				try {
+					const parse = JSON.parse(value);
+					finalVal = parse;
+				} catch {
+				}
+			}
+
+			this.headers[key] = finalVal;
 		}
 	}
+
 
 	private parseCookies(headers: Headers): void {
 		const string = headers.get('Cookie');
@@ -138,4 +144,3 @@ export class Req<T = UnknownRecord> extends BaseRequest {
 		}
 	}
 }
-/* MAIN */
