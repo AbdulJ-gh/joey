@@ -13,11 +13,7 @@ export type RequestBodyStream = null | 'plaintext' | 'json' | 'formData' | 'buff
 /* MAIN */
 class BaseRequest {
 	public readonly request: Request;
-
-	constructor(request: Request) {
-		this.request = request;
-	}
-
+	constructor(request: Request) { this.request = request; }
 	get bodyUsed() { return this.request.bodyUsed; }
 	get cf(): IncomingRequestCfProperties { return this.request.cf as IncomingRequestCfProperties; }
 	get method(): Method { return this.request.method as Method; }
@@ -36,10 +32,9 @@ export class Req<T = UnknownRecord> extends BaseRequest {
 	public readonly headers: Record<string, string> = {};
 	public readonly queryParams: QueryParams = {};
 	public readonly pathParams: PathParams = {};
-	public validators: Record<string, (...args: unknown[]) => unknown> = {};
 	public route = '';
 	public body: RequestBody = null;
-	public additionalFields = <T>{}; // fields, data, props, custom, customData, customFields, middleware, middlewareData, additionalData, additionalFields
+	public additionalFields = <T>{}; // fields, data, props, custom, customData, customFields, additionalData, additionalFields
 
 	constructor(request: Request) {
 		super(request);

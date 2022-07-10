@@ -4,6 +4,7 @@ import { isTypedArray, sizeLimit, type TypedArray } from './helpers';
 import type Context from './context';
 import { Req } from './req';
 import type { Config } from './config';
+import { Validator } from './types';
 
 type BodyType =
 	| 'noContent'
@@ -83,14 +84,14 @@ export default class Dispatcher {
 		if (response instanceof Response) { return response; }
 
 		const { body, status } = response instanceof Res ? response.get : response;
-		const { headers } = response;
+		const { headers } = response; // Will this cause issues if I use the ResponseObject interface and don't provide headers?
 		const bodyType = this.getBodyType(body || null);
 		this.setContentType(bodyType, headers || {});
 		return new Response(
 			this.transformBody(body || null, bodyType, prettifyJson),
 			{
 				status: bodyType === 'noContent' && !status ? 204 : status || 200,
-				headers
+				headers // TODO - We're not setting headers from combinedConfig here
 			}
 		);
 	}
@@ -109,21 +110,61 @@ export default class Dispatcher {
 		return await (<AsyncHandler>handler)(context);
 	}
 
+	// TODO - create separate file
+	validateHandler(
+		data: unknown,
+		type: 'query'|'path'|'body',
+		validator: (data: unknown) => boolean,
+		config: Config,
+		res: Res
+	): Res|void {
+		// TODO - BAD BAD - need to specify where in the request this error is coming from
+		// THIS IS GETTING TOO OPINIONATED
+		const validation = validator(data);
+		if (!validation) {
+			res.status(config.validationError.status);
+			switch (config.validationErrors) {
+				case false:
+					return res;
+				case 'plaintext':
+					/* eslint-disable */
+					// @ts-ignore
+					return res.body(`Could not process request due to the following errors in the ${type}: ${validator.errors}`); // Needs some mapping
+        /* eslint-enable */
+				case 'json': {
+					let body = {};
+					if (typeof config.validationError.body === 'object') {
+						body = config.validationError.body as Record<string, unknown>;
+					}
+					// @ts-ignore
+					body.errors = validator.errors;
+					return res.body(body);
+				}
+				default:
+					break;
+			}
+		}
+	}
+
 	public static async respond(
 		req: Req,
 		resolvedHandler: ResolvedHandler,
 		context: Context,
 		globalConfig: Config,
-		globalMiddleware: MiddlewareHandler[]
-	): Promise<Response> {
-		const { handler, path, config, middleware } = resolvedHandler;
+		globalMiddleware: MiddlewareHandler[],
+		validators?: Record<string, Validator>/* Return validation error/success as string? */)
+	: Promise<Response> {
+		const { handler, path, config, middleware, validator } = resolvedHandler;
+
+		console.log(validators, validator);
+		// TODO - validate query params here if validator
 
 		const combinedConfig = !config
 			? globalConfig
 			: {
 				...globalConfig,
 				...config,
-				headers: { ...globalConfig.headers, ...(config?.headers || {}) }
+				headers: { ...globalConfig.headers, ...(config?.headers || {}) } // Use Object.assign?
 			};
 
 		const middle = middleware ? [...globalMiddleware, ...middleware] : globalMiddleware;
@@ -131,7 +172,9 @@ export default class Dispatcher {
 		let handlerResponse = sizeLimit(req.url, combinedConfig);
 		if (!handlerResponse) {
 			Req.parsePathParams(req, path);
+			// TODO - validate path params here if validator
 			combinedConfig.parseBody && (await Req.parseBody(req, combinedConfig.parseBody));
+			// TODO - validate body here if parsed, and if validator, and if JSON/FormData, and if
 			handlerResponse = await this.executeHandlers(context, handler, middle);
 		}
 

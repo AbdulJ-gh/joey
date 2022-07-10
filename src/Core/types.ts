@@ -33,13 +33,26 @@ export type AsyncHandler<ENV = unknown, DEPS = unknown, REQ = unknown> =
 export type Handler<ENV = unknown, DEPS = unknown, REQ = unknown> =
 	SyncHandler<ENV, DEPS, REQ> | AsyncHandler<ENV, DEPS, REQ>;
 
+
+/** Validators */
+type ValidatorFn<DATA> = (data: DATA) => boolean; // Validator returns a boolean but create an errors property within the function
+type PathValidator = ValidatorFn<Record<string, string>>;
+type QueryValidator = ValidatorFn<Record<string, string>>;
+type JsonBodyValidator = ValidatorFn<DeserialisedJson>;
+
+export type Validator = {
+  path?: PathValidator,
+  query?: QueryValidator,
+  body?: JsonBodyValidator, // Only supports JSON body validation if
+}
+
 export type ResolvedHandler = {
 	handler: Handler;
 	path: string;
 	config: Partial<Config>;
 	middleware: MiddlewareHandler[];
+  validator: Validator;
 };
 
-/** Schemas */
-type Validator = (...args: unknown[]) => unknown;
-export type Validators = Record<string, Validator>;
+// type Validator = (...args: unknown[]) => unknown;
+// export type Validators = Record<string, Validator>;
