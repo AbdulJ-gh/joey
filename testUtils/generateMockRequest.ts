@@ -1,11 +1,10 @@
-import { JsonBody } from '../src/Routing/Res';
-import { Method } from '../src/Routing/Router';
+import { DeserialisedJson, Method } from '../src/Core/types';
 
 // Path must be blank or start with / for this util
 export function generateMockRequest(
 	path = '',
 	method: Method = 'GET',
-	body: JsonBody | string | null = null,
+	body: DeserialisedJson | string | null = null,
 	headers: HeadersInit = {}
 ) {
 	let reqBody;
