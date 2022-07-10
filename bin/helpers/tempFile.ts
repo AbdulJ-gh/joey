@@ -8,7 +8,7 @@ export default class TempFile {
 		this.tmpDir = tmpDir;
 		this.path = `${tmpDir}/${filename}`;
 		if (initialWrite) {
-			this.write(initialWrite)
+			this.overwrite(initialWrite)
 		}
 	};
 

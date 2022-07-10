@@ -4,14 +4,8 @@
   "type": "object",
   "properties": {
     "status": { "type": "number" },
-    "body": {
-      "type": [
-        "null",
-        "string",
-        "object"
-      ]
-    },
-    "headers": { "$ref": "https://example.com/schema/keyValueStringObject" }
+    "body": { "type": [ "null", "string", "object" ], "default": null },
+    "headers": { "$ref": "https://example.com/schema/keyValueStringObject", "default": {} }
   },
   "required": ["status"],
   "additionalProperties": false

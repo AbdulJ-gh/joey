@@ -4,5 +4,6 @@
   "type": "object",
   "patternProperties": {
     "^.*$": { "type": "string"}
-    }
+  },
+  "default": {}
 }

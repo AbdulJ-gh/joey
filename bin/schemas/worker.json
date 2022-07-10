@@ -2,51 +2,30 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "worker",
   "type": "object",
-  "required": [ "src", "handlersRoot", "handlers"],
+  "required": [ "version", "handlers"],
   "additionalProperties": false,
   "properties": {
     "version":  { "type": "string" },
-    "random": { "type": "string" },
-    "src":  { "type": "string" },
-    "handlersRoot":  { "type": "string" },
+    "src":  { "type": "string", "default": "./src" },
+    "handlersRoot":  { "type": "string", "default": "/handlers"  },
     "logger":  { "type": "string" },
     "schemas":  { "type": "string" },
-    "middleware":  { "$ref": "https://example.com/schema/keyValueStringObject" },
+    "build": { "$ref": "https://example.com/schema/build", "default": {} },
+    "middleware":  { "$ref": "https://example.com/schema/keyValueStringObject", "default": {} },
     "baseConfig":  {
       "type": "object",
       "additionalProperties": false,
+      "default": {},
       "properties": {
-        "options": { "$ref": "https://example.com/schema/options" },
-        "middleware": {
-          "type": "array",
-          "uniqueItems": true,
-          "items": { "type": "string" }
-        }
+        "options": { "$ref": "https://example.com/schema/options", "default": {} },
+        "middleware": { "type": "array", "items": { "type": "string" }, "default": [] }
       }
     },
     "handlers": {
       "type": "object",
+      "minProperties": 1,
       "patternProperties": {
-        "^.*$": {
-          "type": "object",
-          "required": ["route", "method", "src"],
-          "additionalProperties": false,
-          "properties": {
-            "route": { "type": "string" },
-            "method": {
-              "enum": [
-                "GET", "Get", "get", "POST", "Post", "post", "PUT", "Put", "put", "PATCH",
-                "Patch","patch", "DELETE", "Delete", "delete", "OPTIONS", "Options", "options"
-              ]
-            },
-            "src": { "type": "string" },
-            "options": { "$ref": "https://example.com/schema/options" },
-            "middleware": {
-              "type": "array",
-              "items": { "type": "string" }
-            }
-          }
-        }
+        "^.*$": { "$ref": "https://example.com/schema/handler" }
       }
     }
   }

@@ -1,25 +1,23 @@
 import { join } from 'path';
 import { readdirSync, readFileSync } from 'fs';
 import { parse as parseYaml } from 'yaml';
-import applyDefault from './applyDefaults';
-import { defaultConfig } from '../config';
+import { getBuildArgs, throwError, ERRORS } from './';
+import { Worker } from '../types';
+const { argv, cwd } = process;
 
 
 export default function getWorkerConfig () {
-	const { stderr, cwd, exit } = process;
+  const buildArgs = getBuildArgs(argv);
+  const dir = cwd();
 
-	const configs = readdirSync(join(cwd())).filter(file => file.startsWith('worker.'));
+	const configs = readdirSync(dir)
+    .filter(file => file.startsWith('worker.'));
 
-	function missingConfig() {
-		stderr.write('Joeycf error: Expected a worker.yaml or worker.yml or worker.json file in project root\n');
-		exit(1);
-	}
-
-	if (configs.length === 0) { missingConfig(); }
-
+	if (configs.length === 0) { throwError(ERRORS.NO_FILE); }
 
 	if (configs.includes('worker.json')) {
-		return applyDefault(JSON.parse(readFileSync(join(cwd(), 'worker.json'), 'utf8')));
+    const config = JSON.parse(readFileSync(join(cwd(), 'worker.json'), 'utf8'));
+    return Object.assign(config, buildArgs);
 	}
 
 
@@ -28,9 +26,9 @@ export default function getWorkerConfig () {
 			cwd(),
 			configs.includes('worker.yaml') ? 'worker.yaml' : 'worker.yml'
 		), 'utf8');
-		return applyDefault(parseYaml(yaml).worker);
+
+		return Object.assign(parseYaml(yaml), buildArgs);
 	}
 
-	missingConfig()
+  throwError(ERRORS.NO_FILE)
 }
-
