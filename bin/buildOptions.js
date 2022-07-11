@@ -34,7 +34,7 @@ const getOptions = (data) => {
     minify: true,
     color: true,
     logLevel: 'debug',
-    tsconfig: 'tsconfig.ava.json',
+    // tsconfig: 'tsconfig.json', // Add option?
     // logLimit: 10,
 		watch: overrides.watch
 			? { onRebuild(error) { error ? console.error(error) : logBuildSuccess(); } }

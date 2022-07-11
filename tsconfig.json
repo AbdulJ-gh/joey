@@ -1,10 +1,11 @@
 {
   "compilerOptions": {
     "target": "esnext",
-    "module": "commonjs",
+    "module": "esnext",
     "lib": ["esnext"],
+    "skipLibCheck": true,
     "declaration": true,
-    "outDir": "lib-test",
+    "outDir": "lib",
     "strict": true,
     "esModuleInterop": true,
     "moduleResolution": "node",
@@ -13,7 +14,8 @@
     "noImplicitAny": true,
     "preserveConstEnums": true,
     "sourceMap": false,
-    "types": ["@cloudflare/workers-types", "@types/node"] // "@types/node" required for ./bin for IDE
+    "removeComments": true,
+    "types": ["@cloudflare/workers-types"]
   },
   "include": ["src", "testUtils"],
   "exclude": ["bin"]

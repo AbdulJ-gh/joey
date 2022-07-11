@@ -1,4 +1,4 @@
-const { readFileSync, writeFileSync, copyFileSync, renameSync, mkdirSync, readdirSync  } = require('fs');
+import { readFileSync, writeFileSync, copyFileSync, renameSync, mkdirSync, readdirSync } from 'fs';
 
 const packageJson = JSON.parse(readFileSync('./package.json', { encoding: 'utf8' }));
 

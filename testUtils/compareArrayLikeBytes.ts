@@ -1,4 +1,4 @@
-import { isEqual } from 'lodash';
+import _ from 'lodash';
 
 type IntArrayLike = Array<number> | ArrayBuffer;
 
@@ -8,5 +8,5 @@ type IntArrayLike = Array<number> | ArrayBuffer;
 // Create a TypedArray from a typed array and then converts to plain array
 
 export default function bytesAreEqual(a: IntArrayLike, b: IntArrayLike): boolean {
-	return isEqual(Array.from(new Uint8Array(a)), Array.from(new Uint8Array(b)));
+	return _.isEqual(Array.from(new Uint8Array(a)), Array.from(new Uint8Array(b)));
 }

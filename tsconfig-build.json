@@ -18,5 +18,5 @@
     "types": ["@cloudflare/workers-types"]
   },
   "include": [ "src" ],
-  "exclude": [ "src/**/*.test.ts", "src/example", "src/Routing-SS" ]
+  "exclude": [ "src/**/*.test.ts"]
 }

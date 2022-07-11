@@ -1,12 +1,13 @@
 export default {
-	require: ['esm', './testUtils/testRuntimeGlobals.js'],
-	files: ['src/**/*.test.*'],
+	require: ['./testUtils/testRuntimeGlobals.js'],
+	files: ['src/**/*.test.ts'],
 	typescript: {
-		rewritePaths: { 'src/': 'lib-test/src/' },
+		rewritePaths: { 'src/': 'lib/src/' },
 		compile: 'tsc'
 	},
 	verbose: true,
 	cache: false,
 	timeout: '10s',
-	ignoredByWatcher: ['lib/', 'lib-test/']
+	ignoredByWatcher: ['lib/**/*'],
+	nodeArguments: ['--experimental-specifier-resolution=node']
 };
