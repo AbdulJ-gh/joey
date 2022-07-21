@@ -4,16 +4,15 @@ import _ from 'lodash';
 import { TempFile, throwError, ERRORS } from './';
 import { Worker } from '../types';
 const { stderr } = process;
-// TODO - THIS SHOULD BE A SEPARATE FUNCTION
 
-type DUH = {
+type ReturnType = {
   handlerNames: string[];
   middlewareNames: string[];
 }
 
 type Change = { op: string, path: string, value: any };
 
-export default function validateWorker(worker: Worker, tmpDir: string): DUH {
+export default function validateWorker(worker: Worker, tmpDir: string): ReturnType {
   const workerFile = new TempFile(tmpDir, 'worker.json', JSON.stringify(worker))
 
   const validateWorker = spawnSync('ajv', [
@@ -45,12 +44,6 @@ export default function validateWorker(worker: Worker, tmpDir: string): DUH {
       _.set(worker, paths, value)
     }
   })
-
-  /** DEBUG */
-  console.log('WORKER ISSSSS', worker);
-  console.log('HANDLER IS', worker.handlers);
-  console.log('CONFIG IS', worker.baseConfig);
-  /** DEBUG */
 
   return {
     handlerNames: Object.keys(worker.handlers),
