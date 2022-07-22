@@ -79,7 +79,7 @@ export default class Dispatcher {
 	public static generateResponse(response: ResponseLike, config: Config): Response {
 		if (response instanceof Response) { return response; }
 		const { body, status } = response instanceof Res ? response.get : response;
-		const headers = getHeadersObject(response.headers || {});
+		const headers =	 getHeadersObject(response.headers || {});
 		const bodyType = this.getBodyType(body || null);
 		this.setContentType(bodyType, headers);
 		return new Response(

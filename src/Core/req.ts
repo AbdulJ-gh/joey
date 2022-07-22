@@ -47,6 +47,12 @@ export class Req<T = UnknownRecord> extends BaseRequest {
 		}
 	}
 
+	public parseQueryParams(): void {
+		const obj = getAllQueryParams(this.url);
+		for (const key in obj) {
+			this.queryParams[key] = obj[key];
+		}
+	}
 
 	private parseCookies(headers: Headers): void {
 		const string = headers.get('Cookie');
@@ -59,13 +65,6 @@ export class Req<T = UnknownRecord> extends BaseRequest {
 		}
 	}
 
-	public parseQueryParams(): void {
-		const obj = getAllQueryParams(this.url); // todo optimise
-		for (const key in obj) {
-			this.queryParams[key] = obj[key];
-		}
-		// this.queryParams = getAllQueryParams(this.url);
-	}
 
 	public static async parseBody(req: Req, type: RequestBodyStream): Promise<void> {
 		try {
