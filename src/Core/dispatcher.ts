@@ -4,6 +4,7 @@ import { isTypedArray, sizeLimit, type TypedArray } from './helpers';
 import type Context from './context';
 import { Req } from './req';
 import type { Config } from './config';
+import { getHeadersObject, getHeadersInstance } from '../Utilities';
 
 type BodyType =
 	| 'noContent'
@@ -29,9 +30,11 @@ export default class Dispatcher {
 
 	private static setContentType(bodyType: BodyType, headers: Headers|Record<string, string>): void {
 		// Cannot set content type for Response type because body is already transformed
+		// For any response, manually setting the content type header will override these defaults. For example `text/html` for plaintext content.
+		// Essentially the default content types will match the data correctly, but might not be specific enough for your needs.
 		let contentType;
-		const headersInstance = headers instanceof Headers ? headers : new Headers(headers || {});
-		if (!headersInstance.has('content-type')) {
+
+		if (!getHeadersInstance(headers || {}).has('content-type')) {
 			switch (bodyType) {
 				case 'json':
 					contentType = 'application/json';
@@ -52,8 +55,6 @@ export default class Dispatcher {
 				case 'noContent':
 				default:
 					break;
-			// For any response, manually setting the content type header will override these defaults. For example `text/html` for plaintext content.
-			// Essentially the default content types will match the data correctly, but might not be specific enough for your needs.
 			}
 		}
 		if (contentType) {
@@ -71,26 +72,21 @@ export default class Dispatcher {
 		if (bodyType === 'json') {
 			return JSON.stringify(body, null, prettifyJson ? 2 : 0);
 		}
-
-		if (bodyType === 'typedArray') {
-			return (body as TypedArray).buffer;
-		}
-
+		if (bodyType === 'typedArray') { return (body as TypedArray).buffer; }
 		return body as BodyInit;
 	}
 
-	public static generateResponse(response: ResponseLike, prettifyJson: boolean): Response {
+	public static generateResponse(response: ResponseLike, config: Config): Response {
 		if (response instanceof Response) { return response; }
-
 		const { body, status } = response instanceof Res ? response.get : response;
-		const { headers } = response;
+		const headers = getHeadersObject(response.headers || {});
 		const bodyType = this.getBodyType(body || null);
-		this.setContentType(bodyType, headers || {});
+		this.setContentType(bodyType, headers);
 		return new Response(
-			this.transformBody(body || null, bodyType, prettifyJson),
+			this.transformBody(body || null, bodyType, config.prettifyJson),
 			{
 				status: bodyType === 'noContent' && !status ? 204 : status || 200,
-				headers
+				headers: { ...headers, ...config.headers }
 			}
 		);
 	}
@@ -113,28 +109,32 @@ export default class Dispatcher {
 		req: Req,
 		resolvedHandler: ResolvedHandler,
 		context: Context,
-		globalConfig: Config,
-		globalMiddleware: MiddlewareHandler[]
+		config: Config,
+		middleware: MiddlewareHandler[]
 	): Promise<Response> {
-		const { handler, path, config, middleware } = resolvedHandler;
+		const { handler, path, config: handlerConfig, middleware: handlerMiddleware } = resolvedHandler;
 
-		const combinedConfig = !config
-			? globalConfig
+		const combinedHeaders = handlerConfig?.headers
+			? { ...config.headers, ...handlerConfig.headers }
+			: config.headers;
+
+		const combinedConfig = !handlerConfig
+			? config
 			: {
-				...globalConfig,
 				...config,
-				headers: { ...globalConfig.headers, ...(config?.headers || {}) }
+				...handlerConfig,
+				headers: combinedHeaders
 			};
 
-		const middle = middleware ? [...globalMiddleware, ...middleware] : globalMiddleware;
+		const combinedMiddleware = handlerMiddleware ? [...middleware, ...handlerMiddleware] : middleware;
 
 		let handlerResponse = sizeLimit(req.url, combinedConfig);
 		if (!handlerResponse) {
 			Req.parsePathParams(req, path);
 			combinedConfig.parseBody && (await Req.parseBody(req, combinedConfig.parseBody));
-			handlerResponse = await this.executeHandlers(context, handler, middle);
+			handlerResponse = await this.executeHandlers(context, handler, combinedMiddleware);
 		}
 
-		return this.generateResponse(handlerResponse, combinedConfig.prettifyJson);
+		return this.generateResponse(handlerResponse, combinedConfig);
 	}
 }

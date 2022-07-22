@@ -43,20 +43,7 @@ export class Req<T = UnknownRecord> extends BaseRequest {
 
 	private parseHeaders(headers: Headers): void {
 		for (const [key, value] of headers.entries()) {
-			let finalVal = value;
-
-			if ((
-				value.startsWith('{"') && value.endsWith('}')) ||
-        (value.startsWith('[') && value.endsWith(']'))
-			) {
-				try {
-					const parse = JSON.parse(value);
-					finalVal = parse;
-				} catch {
-				}
-			}
-
-			this.headers[key] = finalVal;
+			this.headers[key] = value;
 		}
 	}
 
