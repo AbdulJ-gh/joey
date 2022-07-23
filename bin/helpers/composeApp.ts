@@ -44,6 +44,6 @@ export default class Composer {
     REPLACE_UNSAFE_MIDDLEWARE_NAME: (name: string) => {
       this.replace(`"__UNSAFE_MIDDLEWARE_NAME__${name}"`, _.camelCase(name))
     },
-    EXPORT: () => this.write('\nexport default new Joey(paths,config,middleware,validators,logger,loggerInit)')
+    EXPORT: () => this.write('\nexport default new Joey(paths,config,middleware,logger,loggerInit)')
   }
 };

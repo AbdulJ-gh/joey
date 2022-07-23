@@ -12,7 +12,7 @@ export default function main() {
   const worker = <Worker>getWorkerConfig();
   const tempDir = mkdtempSync(tmpdir() + sep);
   const { handlerNames, middlewareNames } = validateWorker(worker, tempDir);
-  const { src, handlersRoot, logger, schemas, build, handlers, middleware, baseConfig } = worker;
+  const { src, handlersRoot, logger, build, handlers, middleware, baseConfig } = worker;
 
   const app = new Composer(tempDir);
   app.steps.IMPORT_JOEY();
@@ -38,12 +38,7 @@ export default function main() {
 
   const paths: Record<string, any> = {};
   handlerNames.forEach((name) => {
-    const { route, method, options, middleware, schema } = handlers[name];
-
-    let validator: Record<string, unknown> = {};
-    for (const prop in schema) {
-      validator[prop] = `__UNSAFE_VALIDATOR_NAME__${schemas[prop]}`; // when adding validators, make sure they exist
-    }
+    const { route, method, options, middleware } = handlers[name];
 
     if (!paths[route]) { paths[route] = {}; }
 
@@ -66,6 +61,11 @@ export default function main() {
   logger ? app.steps.DECLARE_LOGGER_INIT() : app.steps.NO_LOGGER();
   app.steps.EXPORT();
 
+	const finalApp = app.read();
+	if (finalApp.includes('__UNSAFE_MIDDLEWARE_NAME__')) {
+		throwError(ERRORS.MISSING_MIDDLEWARE_DECLARATION);
+	}
+
 
   /** ES BUILD */
   const tmpBuildDir = join(cwd(), build.outDir, 'tmp');
@@ -75,15 +75,14 @@ export default function main() {
   buildJs.write(`overrides.outfile = '${join(cwd(), build.outDir, build.filename)}';`);
   buildJs.write(`overrides.sourcemap = ${build.sourcemaps};`);
   if (build.watch) { buildJs.write('overrides.watch = true') }
-	buildJs.write(`import { build } from 'esbuild';`);
-  buildJs.write(`process.stdin.on('data',async data=>{ runBuild(data) }`);
+  buildJs.write(`process.stdin.on('data',async data=>{ runBuild(data) })`);
   /** ES BUILD */
 
   // Compiled app and Execute esbuild
   const buildProcess = spawn('node', [buildJs.path]);
   buildProcess.stdout.pipe(stdout); // Pipes child process stdout to process.stdout
   buildProcess.stderr.pipe(stderr);  // Pipes child process stderr to process.stderr
-  buildProcess.stdin.write(app.read()); // Streams the `app` file to the stdin of the child process
+  buildProcess.stdin.write(finalApp); // Streams the `app` file to the stdin of the child process
   buildProcess.stdin.end(); // Ends the stdin to child process
 
   // Todo

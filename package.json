@@ -23,11 +23,11 @@
     "joeycf": "./bin/joeycf"
   },
   "exports": {
-    ".": "./Core/index.js",
-    "./Logger": "./Logger/index.js",
-    "./Transforms": "./Transforms/index.js",
-    "./Crypto": "./Crypto/index.js",
-    "./Utilities": "./Utilities/index.js"
+    ".": "./src/Core/index.js",
+    "./Logger": "./src/Logger/index.js",
+    "./Transforms": "./src/Transforms/index.js",
+    "./Crypto": "./src/Crypto/index.js",
+    "./Utilities": "./src/Utilities/index.js"
   },
   "repository": {
     "type": "git",
