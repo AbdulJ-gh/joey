@@ -3,8 +3,8 @@ import type { QueryParams } from '../Utilities/queryParams/queryParams';
 import { getAllQueryParams } from '../Utilities/queryParams';
 import Path from './path';
 
-type UnknownRecord = Record<string, unknown>
-type PathParams = Record<string, string | string[]>;
+export type UnknownRecord = Record<string, unknown>;
+export type PathParams = Record<string, string | string[]>;
 type RequestBody = null | string | DeserialisedJson | ArrayBuffer | Blob;
 export type RequestBodyStream = null | 'plaintext' | 'json' | 'formData' | 'buffer' | 'blob';
 

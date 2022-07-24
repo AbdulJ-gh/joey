@@ -30,13 +30,13 @@ export default class Joey {
 	}
 
 	public fetch: ExportedHandlerFetchHandler = async (request, env, ctx) => {
-		ctx.passThroughOnException(); // The pass through server needs to be defined somewhere?
+		ctx.passThroughOnException();
 		try {
 			this.logger && this.loggerInit && this.initLogger(this.loggerInit, this.logger, request, ctx, env);
 			const req = new Req(request);
 			const resolvedHandler = this.resolve(req);
 			const context = new Context(ctx, req, env, this.logger);
-			return await Dispatcher.respond(req, resolvedHandler, context as Context, this.config, this.middleware);
+			return await Dispatcher.respond(resolvedHandler, context, this.config, this.middleware);
 		} catch (err: unknown) {
 			try {
 				this.logger && ctx.waitUntil(this.logger['exceptionHandler'](err) as Promise<void>);
@@ -58,12 +58,7 @@ export default class Joey {
 		const lookup = this.register.lookup(path, method);
 
 		if (lookup === null) {
-			return {
-				handler: () => this.config.notFound,
-				path: '',
-				config: this.config,
-				middleware: this.middleware
-			};
+			return { handler: () => this.config.notFound, path: '' };
 		}
 
 		if (typeof lookup === 'string') {
@@ -73,12 +68,7 @@ export default class Joey {
 				headers.allow = methods.join(', ');
 			}
 
-			return {
-				handler: () => ({ ...this.config.methodNotAllowed, headers }),
-				path: '',
-				config: this.config,
-				middleware: this.middleware
-			};
+			return { handler: () => ({ ...this.config.methodNotAllowed, headers }), path: '' };
 		}
 
 		return lookup;

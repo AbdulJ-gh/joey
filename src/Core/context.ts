@@ -1,9 +1,9 @@
-import type { Req } from './req';
+import type { Req, UnknownRecord } from './req';
 import type { Logger } from '../logger';
 import { Res } from './res';
 
 
-interface Context<ENV = unknown, DEPS = unknown, REQ = unknown> extends ExecutionContext {
+interface Context<ENV = unknown, DEPS = unknown, REQ = UnknownRecord> extends ExecutionContext {
 	req: Req<REQ>;
 	res: Res;
 	logger: Logger|Console;
@@ -11,7 +11,7 @@ interface Context<ENV = unknown, DEPS = unknown, REQ = unknown> extends Executio
 	deps?: DEPS;
 }
 
-class Context<ENV = unknown, DEPS = unknown, REQ = unknown> {
+class Context<ENV = unknown, DEPS = unknown, REQ = UnknownRecord> {
 	constructor(
 		ctx: ExecutionContext,
     public req: Req<REQ>,
