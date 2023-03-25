@@ -12,8 +12,9 @@ export default class Register<T> {
 
 	// Path found but not method will return array of allowed methods
 	public lookup(path: string, method: Method): T | Method[] | null {
-		const normalisedPath = Path.normalise(path);
-		const foundPath = Object.keys(this.paths).find(p => Path.match(normalisedPath, p));
+		const foundPath = Object
+			.keys(this.paths)
+			.find(p => Path.match(path, p));
 
 		return foundPath
 			? this.paths[foundPath][method] || this.methods(path)
