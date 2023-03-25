@@ -3,46 +3,15 @@
   "$id": "https://example.com/schema/options",
   "type": "object",
   "properties": {
-    "emitAllowHeader": { "type": "boolean", "default": true },
-    "parseBody": { "enum": [ false, null, "plaintext", "json", "formData", "buffer", "blob" ], "default": "json" },
-    "prettifyJson": { "type": "boolean", "default": false },
-    "maxUrlLength": { "type": "integer", "default": 2048 },
-    "maxQueryLength": { "type": "integer", "default": 1024 },
     "headers": { "type": "object", "default": {} },
-    "notFound": {
-      "$ref": "https://example.com/schema/defaultError",
-      "default": {
-        "status": 404,
-        "body": "Resource not found"
-      }
-    },
-    "methodNotAllowed":{
-      "$ref": "https://example.com/schema/defaultError",
-      "default": {
-        "status": 405,
-        "body": "Method not allowed"
-      }
-    },
-    "urlTooLong": {
-      "$ref": "https://example.com/schema/defaultError",
-      "default": {
-        "status": 414,
-        "body": "Request URI too long"
-      }
-    },
-    "queryTooLong": {
-      "$ref": "https://example.com/schema/defaultError",
-      "default": {
-        "status": 414,
-        "body": "Request query too long"
-      }
-    },
-    "internalServerError": {
-      "$ref": "https://example.com/schema/defaultError",
-        "default": {
-        "status": 500,
-        "body": "An unexpected error occurred"
-      }
-    }
+    "parsePath": { "type": "boolean", "default": true },
+    "parseQuery": { "type": "boolean", "default": true },
+    "maxUrlLength": { "type": "integer", "default": 2048 },
+    "prettifyJson": { "type": "boolean", "default": false },
+    "maxQueryLength": { "type": "integer", "default": 1024 },
+    "emitAllowHeader": { "type": "boolean", "default": true },
+    "allValidationErrors": { "type": "boolean", "default": false },
+    "validationErrors": { "enum": [ false, "plaintext", "json" ], "default": "json" },
+    "parseBody": { "enum": [ false, null, "plaintext", "json", "formData", "buffer", "blob" ], "default": "json" }
   }
 }

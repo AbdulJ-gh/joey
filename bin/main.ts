@@ -1,10 +1,13 @@
-import { mkdtempSync, mkdirSync, readFileSync, existsSync, rmSync } from 'fs';
+import { mkdtempSync, mkdirSync, readFileSync, existsSync, rmSync  } from 'fs';
 import { spawn } from 'child_process';
 import { join, sep } from 'path';
 import { tmpdir } from 'os';
+import fg from 'fast-glob';
+import Ajv, { JSONSchemaType } from 'ajv';
+import standaloneCode from 'ajv/dist/standalone';
 
-import { Composer, TempFile, getWorkerConfig, validateWorker, throwError, ERRORS } from './helpers';
-import { Worker } from './types'
+import { Composer, TempFile, getWorkerConfig, validateWorker, throwError, ERRORS } from './helpers/index.js';
+import type { Worker } from './types.js'
 
 const { cwd, stdout, stderr } = process;
 
@@ -12,33 +15,80 @@ export default function main() {
   const worker = <Worker>getWorkerConfig();
   const tempDir = mkdtempSync(tmpdir() + sep);
   const { handlerNames, middlewareNames } = validateWorker(worker, tempDir);
-  const { src, handlersRoot, logger, build, handlers, middleware, baseConfig } = worker;
+  const { handlersRoot, middlewareRoot, logger, schemas, build, handlers, middleware, baseConfig } = worker;
 
+	// TODO - Do schema files need to be .mts
   const app = new Composer(tempDir);
   app.steps.IMPORT_JOEY();
 
   handlerNames.forEach(name => {
-    app.steps.IMPORT_HANDLER(name, './' + join(src, handlersRoot, handlers[name].src));
+    app.steps.IMPORT_HANDLER(name, './' + join(handlersRoot, handlers[name].src));
   });
 
   middlewareNames.forEach(name => {
-    app.steps.IMPORT_HANDLER(name, './' + join(src, middleware[name]));
+    app.steps.IMPORT_HANDLER(name, './' + join(middlewareRoot, middleware[name]));
   });
 
   if (logger) {
     app.steps.IMPORT_LOGGER_INTERFACE();
-    app.steps.IMPORT_LOGGER('./' + join(src, logger));
+    app.steps.IMPORT_LOGGER('./' + join(logger));
   }
 
-  app.steps.DECLARE_CONFIG(baseConfig.options);
+	app.steps.DECLARE_CONFIG({ ...baseConfig.options, ...baseConfig.defaultResponses});
+  app.steps.DECLARE_MIDDLEWARE(baseConfig.middleware.map(middlewareName =>
+		`__UNSAFE_MIDDLEWARE_NAME__${middlewareName}`
+	));
 
-  const mapUnsafeMiddleware = (middleware: string[]) => middleware.map(name => `__UNSAFE_MIDDLEWARE_NAME__${name}`);
-  const globalMiddleware = mapUnsafeMiddleware(baseConfig.middleware);
-  app.steps.DECLARE_MIDDLEWARE(globalMiddleware);
+	// AJV
+	// check docs to see how we can use custom formats
+	// https://github.com/ajv-validator/ajv-cli#-c---custom-keywordsformats-definitions
+	// TODO - Pass any ajv option as per here https://ajv.js.org/options.html
+	// Todo - what if !validation or schemas not defined (has to throw error) or no refs (is optional)
+	// TODO - Need to be clear that every schema file has to `export default { .... }`
+	// Todo - assumes cwd is the root of the project??
+	// THE NAMES OF THE SCHEMAS MUST MUST MUST BE VALID KEYS.
+
+	// Recursively get file paths for all schema files based on `schemas` glob
+	const importedSchemas: JSONSchemaType<unknown>[] = [];
+	const schemaPaths = fg.sync(schemas, {
+		// gitignore: true,
+		ignore: [ '!node_modules', 'package.json', 'package-lock.json'],
+		absolute: true,
+	});
+
+	console.log('schemaPaths', schemaPaths)
+	//
+	// const tempValidatorsCompilerFile = new TempFile(tempDir, 'ajvcompile.js');
+	//
+	// schemaPaths.forEach((schemaPath, i) => {
+	// 	import(schemaPath).then((fileSchemas) => {
+	// 		console.log('importing schema', fileSchemas);
+	// 		importedSchemas.push(...fileSchemas)
+	// 	})
+	// 	// tempValidatorsCompilerFile.write(`import file${i} from '${schemaPath}';`)
+	// })
+	//
+	// // console.log('AAAAAA', tempValidatorsCompilerFile.read());
+	//
+
+	for (const path of schemaPaths) {
+		console.log('TRYING TO DYNAMICALLY IMPORT', path);
+		import(path).then((fileSchemas) => {
+			console.log('importing schema', fileSchemas);
+			importedSchemas.push(...fileSchemas)
+		});
+	}
+
+	console.log("--> importedSchemas", importedSchemas);
+	// @ts-ignore
+	const ajv = new Ajv({schemas: importedSchemas , code: { source: true, esm: true }});
+	// @ts-ignore
+	const tempValidatorsFile = new TempFile(tempDir, 'ajv.js', standaloneCode(ajv));
+	app.steps.IMPORT_VALIDATORS(tempValidatorsFile.path);
 
   const paths: Record<string, any> = {};
   handlerNames.forEach((name) => {
-    const { route, method, options, middleware } = handlers[name];
+    const { route, method, options, middleware: handlerMiddleware, schema } = handlers[name];
 
     if (!paths[route]) { paths[route] = {}; }
 
@@ -46,16 +96,34 @@ export default function main() {
       throwError(ERRORS.DUPLICATE_HANDLER(`${method.toUpperCase()} ${route}`));
     }
 
+		// TODO - here check if the relevant schema exists (path, query, body), else throw a Joey error
+		// ^^^ tested, it must be done
+		// {
+		// 		query:validators.${schema?.query},
+		// 		path:validators.${schema?.path},
+		// 		body:validators.${schema?.body}
+		// }
+
+		let validator = '__UNSAFE_VALIDATOR_REF__{';
+		if (schema) { // TODO - Should the schema for `handler.schema` have no default as opposed to "default": {}
+			for (const key in schema) {
+				validator += `${key}:validators.${schema[key as 'path'|'query'|'body']}`
+			}
+		}
+		validator += '}__UNSAFE_VALIDATOR_REF__'
+		console.log('--> Schema and validator are', schema, validator);
+
     paths[route][method] = {
       handler: `__UNSAFE_HANDLER_NAME__${name}`,
       path: route,
       config: options,
-      middleware: mapUnsafeMiddleware(middleware)
+      middleware: handlerMiddleware.map(middlewareName => `__UNSAFE_MIDDLEWARE_NAME__${middlewareName}`),
+			validator
     };
   })
+
   app.steps.DECLARE_PATHS(paths);
-
-
+	app.steps.REPLACE_UNSAFE_VALIDATOR_REFS();
   handlerNames.forEach(name => app.steps.REPLACE_UNSAFE_HANDLER_NAME(name));
   middlewareNames.forEach(name => app.steps.REPLACE_UNSAFE_MIDDLEWARE_NAME(name));
   logger ? app.steps.DECLARE_LOGGER_INIT() : app.steps.NO_LOGGER();
@@ -63,8 +131,10 @@ export default function main() {
 
 	const finalApp = app.read();
 	if (finalApp.includes('__UNSAFE_MIDDLEWARE_NAME__')) {
+		// TODO, add for other unsafe types too? or are they not needed? If not make a comment
 		throwError(ERRORS.MISSING_MIDDLEWARE_DECLARATION);
 	}
+	console.log(finalApp);
 
 
   /** ES BUILD */
@@ -72,11 +142,13 @@ export default function main() {
   mkdirSync(tmpBuildDir, { recursive: true });
   const buildJs = new TempFile(tmpBuildDir, 'build.js', readFileSync(join(__dirname, 'buildOptions.js')).toString());
 
-  buildJs.write(`overrides.outfile = '${join(cwd(), build.outDir, build.filename)}';`);
-  buildJs.write(`overrides.sourcemap = ${build.sourcemaps};`);
-  if (build.watch) { buildJs.write('overrides.watch = true') }
+  buildJs.write(`options.outfile = '${join(cwd(), build.outDir, build.filename)}';`);
+  buildJs.write(`options.sourcemap = ${build.sourcemaps};`);
+  if (build.watch) { buildJs.write('options.watch = true') }
+	if (!build.minify) { buildJs.write('options.minify = false') }
   buildJs.write(`process.stdin.on('data',async data=>{ runBuild(data) })`);
   /** ES BUILD */
+
 
   // Compiled app and Execute esbuild
   const buildProcess = spawn('node', [buildJs.path]);
@@ -87,7 +159,7 @@ export default function main() {
 
   // Todo
   // No dist/index.js file already, Wrangler shows an error to say it couldn't find the file. Could confuse users
-  // Trying to set a --verbose flag or option?
+  // or maybe search for one and create it if it doesn't exist
 
   const clearTmpData = () => {
     if (existsSync(tempDir)) { rmSync(tempDir, { recursive: true }); }

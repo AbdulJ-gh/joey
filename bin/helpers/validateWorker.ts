@@ -1,8 +1,8 @@
 import { spawnSync } from 'child_process';
 import { join } from 'path';
 import _ from 'lodash';
-import { TempFile, throwError, ERRORS } from './';
-import { Worker } from '../types';
+import { TempFile, throwError, ERRORS } from './index.js';
+import type { Worker } from '../types.js';
 const { stderr } = process;
 
 type ReturnType = {
@@ -21,6 +21,7 @@ export default function validateWorker(worker: Worker, tmpDir: string): ReturnTy
     '-s', join(__dirname, '../schemas/worker.json'),
     '-d', workerFile.path,
     '--use-defaults',
+		'--strict=false',
     '--allow-matching-properties',
     '--all-errors',
     '--errors=json',

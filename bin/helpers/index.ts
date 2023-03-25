@@ -1,9 +1,9 @@
-import Composer from './composeApp';
-import getBuildArgs from './getBuildArgs';
-import getWorkerConfig from './getWorkerConfig';
-import TempFile from './tempFile';
-import validateWorker from './validateWorker';
-import { throwError, ERRORS } from './errors';
+import Composer from './Composer.js';
+import getBuildArgs from './getBuildArgs.js';
+import getWorkerConfig from './getWorkerConfig.js';
+import TempFile from './tempFile.js';
+import validateWorker from './validateWorker.js';
+import { throwError, ERRORS } from './errors.js';
 
 
 export {

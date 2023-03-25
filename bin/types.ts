@@ -4,19 +4,24 @@ export type Handler = {
   src: string;
   options?: Record<string, string>;
   middleware: string[];
-  schema: string[];
+	schema?: {
+		path?: string;
+		query?: string;
+		body?: string;
+	};
 }
 
 export type Worker = {
-  src: string,
   handlersRoot: string,
-  logger: string,
-  schemas: string,
-  build: { outDir: string, filename: string, sourcemaps: boolean, watch: boolean }
+	middlewareRoot: string,
+  logger: string
+	schemas: string,
+  build: { outDir: string, filename: string, sourcemaps: boolean, watch: boolean, minify: boolean }
   middleware: Record<string, string>,
   baseConfig: {
     middleware: string[],
-    options: Record<string, unknown>
+    options: Record<string, unknown>,
+		defaultResponses: Record<string, unknown>,
   }
   handlers: Record<string, Handler>
 }

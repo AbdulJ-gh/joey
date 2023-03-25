@@ -13,10 +13,11 @@ async function runBuild(data){
 	}
 }
 
-const overrides = {
+const options = {
 	outfile: 'dist/index.js',
 	sourcemap: false,
 	watch: false,
+	minify: true
 }
 
 const getOptions = (data) => {
@@ -29,14 +30,14 @@ const getOptions = (data) => {
     bundle: true,
     format: 'esm',
     target: 'esnext',
-    outfile: overrides.outfile,
-    sourcemap: overrides.sourcemap,
-    minify: true,
+    outfile: options.outfile,
+    sourcemap: options.sourcemap,
+    minify: options.minify,
     color: true,
-    logLevel: 'debug',
+    // logLevel: 'debug',
     // tsconfig: 'tsconfig.json', // Add option?
     // logLimit: 10,
-		watch: overrides.watch
+		watch: options.watch
 			? { onRebuild(error) { error ? console.error(error) : logBuildSuccess(); } }
 			: false,
   }

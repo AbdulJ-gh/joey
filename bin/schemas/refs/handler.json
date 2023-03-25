@@ -21,6 +21,16 @@
       ],
       "default": {}
     },
-    "middleware": { "type": "array", "items": { "type": "string" }, "default": [] }
+    "middleware": { "type": "array", "items": { "type": "string" }, "default": [] },
+    "schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "path": { "type": "string" },
+        "query": { "type": "string" },
+        "body": { "type": "string" }
+      },
+      "default": {}
+    }
   }
 }

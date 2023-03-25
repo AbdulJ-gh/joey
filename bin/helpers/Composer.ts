@@ -1,4 +1,4 @@
-import { TempFile } from './';
+import { TempFile } from './index.js';
 import _ from 'lodash';
 
 export default class Composer {
@@ -6,7 +6,7 @@ export default class Composer {
 
 	constructor(tmpDir: string) {
 		this.tmpAppFile = new TempFile(tmpDir, 'app.js');
-	};
+	}
 
 	public write = (line: string, lineEnding = ';') => {
 		this.tmpAppFile.write(`${line}${lineEnding}`)
@@ -22,9 +22,10 @@ export default class Composer {
 
   public readonly steps = {
     IMPORT_JOEY: () => this.write(`import Joey from 'joeycf'`),
-    IMPORT_HANDLER: (name: string, file: string) => this.write(`import ${_.camelCase(name)} from '${file}'`),
+    IMPORT_HANDLER: (name: string, filepath: string) => this.write(`import ${_.camelCase(name)} from '${filepath}'`),
     IMPORT_LOGGER_INTERFACE: () => this.write(`import { Logger } from 'joeycf/Logger'`),
-    IMPORT_LOGGER: (file: string) => this.write(`import logger from '${file}'`),
+    IMPORT_LOGGER: (filepath: string) => this.write(`import logger from '${filepath}'`),
+		IMPORT_VALIDATORS: (filepath: string) => this.write(`import validators from '${filepath}'`),
     DECLARE_MIDDLEWARE: (middleware: string[]) => {
       this.write(`const middleware = ${JSON.stringify(middleware)}`, ';\n');
     },
@@ -44,6 +45,12 @@ export default class Composer {
     REPLACE_UNSAFE_MIDDLEWARE_NAME: (name: string) => {
       this.replace(`"__UNSAFE_MIDDLEWARE_NAME__${name}"`, _.camelCase(name))
     },
+		REPLACE_UNSAFE_VALIDATOR_REFS: () => {
+			this.replace(`"__UNSAFE_VALIDATOR_REF__`, '');
+			this.replace(`__UNSAFE_VALIDATOR_REF__"`, '');
+		},
+
+		// __UNSAFE_VALIDATOR_NAME__
     EXPORT: () => this.write('\nexport default new Joey(paths,config,middleware,logger,loggerInit)')
   }
-};
+}

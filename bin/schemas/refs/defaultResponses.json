@@ -1,0 +1,49 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://example.com/schema/defaultResponses",
+  "type": "object",
+  "properties": {
+    "notFound": {
+      "$ref": "https://example.com/schema/defaultError",
+      "default": {
+        "status": 404,
+        "body": "Resource not found"
+      }
+    },
+    "methodNotAllowed":{
+      "$ref": "https://example.com/schema/defaultError",
+      "default": {
+        "status": 405,
+        "body": "Method not allowed"
+      }
+    },
+    "urlTooLong": {
+      "$ref": "https://example.com/schema/defaultError",
+      "default": {
+        "status": 414,
+        "body": "Request URI too long"
+      }
+    },
+    "queryTooLong": {
+      "$ref": "https://example.com/schema/defaultError",
+      "default": {
+        "status": 414,
+        "body": "Request query too long"
+      }
+    },
+    "internalServerError": {
+      "$ref": "https://example.com/schema/defaultError",
+      "default": {
+        "status": 500,
+        "body": "An unexpected error occurred"
+      }
+    },
+    "validationError": {
+      "$ref": "https://example.com/schema/defaultError",
+      "default": {
+        "status": 400,
+        "body": "Could not process request due to validation errors"
+      }
+    }
+  }
+}

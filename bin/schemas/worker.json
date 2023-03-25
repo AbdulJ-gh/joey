@@ -6,10 +6,10 @@
   "additionalProperties": false,
   "properties": {
     "version":  { "type": "string" },
-    "src":  { "type": "string", "default": "./src" },
-    "handlersRoot":  { "type": "string", "default": "/handlers"  },
+    "handlersRoot":  { "type": "string", "default": "./src/handlers"  },
+    "middlewareRoot":  { "type": "string", "default": "./src/middleware"  },
     "logger":  { "type": "string" },
-    "schemas":  { "type": "string" },
+    "schemas": { "type": "array", "items": { "type": "string" }, "default": ["./src/**/*.schema.ts"] },
     "build": { "$ref": "https://example.com/schema/build", "default": {} },
     "middleware":  { "$ref": "https://example.com/schema/keyValueStringObject", "default": {} },
     "baseConfig":  {
@@ -18,7 +18,8 @@
       "default": {},
       "properties": {
         "options": { "$ref": "https://example.com/schema/options", "default": {} },
-        "middleware": { "type": "array", "items": { "type": "string" }, "default": [] }
+        "middleware": { "type": "array", "items": { "type": "string" }, "default": [] },
+        "defaultResponses": { "$ref": "https://example.com/schema/defaultResponses", "default": {} }
       }
     },
     "handlers": {

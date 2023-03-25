@@ -1,8 +1,7 @@
 import { join } from 'path';
 import { readdirSync, readFileSync } from 'fs';
 import { parse as parseYaml } from 'yaml';
-import { getBuildArgs, throwError, ERRORS } from './';
-import { Worker } from '../types';
+import { getBuildArgs, throwError, ERRORS } from './index.js';
 const { argv, cwd } = process;
 
 
@@ -16,18 +15,18 @@ export default function getWorkerConfig () {
 	if (configs.length === 0) { throwError(ERRORS.NO_FILE); }
 
 	if (configs.includes('worker.json')) {
-    const config = JSON.parse(readFileSync(join(cwd(), 'worker.json'), 'utf8'));
-    return Object.assign(config, buildArgs);
+    const config = JSON.parse(readFileSync(join(dir, 'worker.json'), 'utf8'));
+		return { ...config, ...buildArgs };
 	}
 
 
 	if (configs.includes('worker.yaml') || configs.includes('worker.yml')) {
 		const yaml = readFileSync(join(
-			cwd(),
+			dir,
 			configs.includes('worker.yaml') ? 'worker.yaml' : 'worker.yml'
 		), 'utf8');
 
-		return Object.assign(parseYaml(yaml), buildArgs);
+		return { ...parseYaml(yaml), ...buildArgs };
 	}
 
   throwError(ERRORS.NO_FILE)
