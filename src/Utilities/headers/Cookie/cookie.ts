@@ -1,5 +1,5 @@
 import { getSeconds } from '../../general';
-import { getMaxAge } from './../maxAge';
+import { getMaxAge } from '../maxAge';
 import type { CookieOptions, EpochOrFromNow } from './types';
 
 function getExpires(date: EpochOrFromNow) {
@@ -27,6 +27,32 @@ function mapOptionsToString(options: CookieOptions) {
 
 
 const cookie = {
+	get: (headers: Headers, name: string) => {
+		const headerString = headers.get('Cookie');
+		if (headerString) {
+			const split = headerString.split(';');
+			for (const cookie of split) {
+				const [key, value] = cookie.trim().split('=');
+				const decodedKey = decodeURIComponent(key);
+				if (decodedKey === name) {
+					return decodeURIComponent(value);
+				}
+			}
+		}
+		return null;
+	},
+	getAll: (headers: Headers) => {
+		const cookies: Record<string, string> = {};
+		const headerString = headers.get('Cookie');
+		if (headerString) {
+			const split = headerString.split(';');
+			for (const cookie of split) {
+				const [key, value] = cookie.trim().split('=');
+				cookies[decodeURIComponent(key)] = decodeURIComponent(value);
+			}
+		}
+		return cookies;
+	},
 	set: (headers: Headers, name: string, value: string, options?: CookieOptions) => {
 		let cookie = `${encodeURIComponent(name)}=${encodeURIComponent(value)};`;
 		if (options) { cookie += mapOptionsToString(options); }
