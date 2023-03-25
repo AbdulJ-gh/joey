@@ -32,7 +32,8 @@ export default class Joey {
 	public fetch: ExportedHandlerFetchHandler = async (request, env, ctx) => {
 		ctx.passThroughOnException();
 		try {
-			this.logger && this.loggerInit && this.initLogger(this.loggerInit, this.logger, request, ctx, env);
+			// console.log('BASE CONFIG IS', this.config);
+			if (this.logger && this.loggerInit) { this.loggerInit(this.logger, request, ctx, env); }
 			const req = new Req(request);
 			const resolvedHandler = this.resolve(req);
 			const context = new Context(ctx, req, env, this.logger);
@@ -44,14 +45,10 @@ export default class Joey {
 				return new Response((body || null) as BodyInit, { status, headers });
 			} catch (e) {
 				console.log('ERROR:', e);
-				return new Response(null, { status: 500 });
+				return new Response('Something went wrong', { status: 500 });
 			}
 		}
 	};
-
-	public initLogger(loggerInit: LoggerInit, ...args: [Logger, Request, ExecutionContext, unknown]): void {
-		loggerInit(...args);
-	}
 
 	private resolve(req: Req): ResolvedHandler {
 		const [path, method] = [req.url.pathname, req.method];
@@ -61,11 +58,10 @@ export default class Joey {
 			return { handler: () => this.config.notFound, path: '' };
 		}
 
-		if (typeof lookup === 'string') {
+		if (Array.isArray(lookup)) {
 			const headers = this.config.methodNotAllowed.headers || {};
 			if (this.config.emitAllowHeader) {
-				const methods = this.register.methods(lookup);
-				headers.allow = methods.join(', ');
+				headers.allow = lookup.join(', ');
 			}
 
 			return { handler: () => ({ ...this.config.methodNotAllowed, headers }), path: '' };

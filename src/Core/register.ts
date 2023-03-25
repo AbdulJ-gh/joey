@@ -8,19 +8,15 @@ export interface Paths<T> {
 }
 
 export default class Register<T> {
-	public paths: Paths<T>;
+	constructor(public paths: Paths<T>) {}
 
-	constructor(paths: Paths<T>) {
-		this.paths = paths;
-	}
-
-	// Path found but not method will return string representation of the path
-	public lookup(path: string, method: Method): T | string | null {
+	// Path found but not method will return array of allowed methods
+	public lookup(path: string, method: Method): T | Method[] | null {
 		const normalisedPath = Path.normalise(path);
 		const foundPath = Object.keys(this.paths).find(p => Path.match(normalisedPath, p));
 
 		return foundPath
-			? this.paths[foundPath][method] || foundPath
+			? this.paths[foundPath][method] || this.methods(path)
 			: null;
 	}
 

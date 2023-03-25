@@ -7,7 +7,7 @@ export function fromBytes(byteArray: Uint8Array): string {
 }
 
 export function toBytes(hexString: string): Uint8Array {
-	const matches: RegExpMatchArray = hexString.match(/.{1,2}/g) || [];
+	const matches: RegExpMatchArray|[] = hexString.match(/.{1,2}/g) || [];
 	const string = decodeURIComponent('%' + matches.join('%'));
 	return ByteArray.fromString(string);
 }

@@ -1,11 +1,21 @@
 import type Context from './context';
 import type { Config } from './config';
 import type { Res, ResponseBody } from './res';
-import type { PathParams } from './req';
-import type { QueryParams } from '../Utilities/queryParams/queryParams';
+import { Param, ParamsRecord } from '../Transforms/params';
 
 export type DeserialisedJson = Record<string, unknown> | unknown[];
 export type Method = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'OPTIONS'; // Missing 'CONNECT' | 'HEAD' | 'TRACE';
+
+export enum BodyType {
+	NoContent = 'noContent',
+	Plaintext =	'plaintext',
+	JSON = 'json',
+	ArrayBuffer = 'arrayBuffer',
+	TypedArray = 'typedArray',
+	Blob = 'blob',
+	UrlEncodedFormData = 'urlEncodedFormData',
+	FormData = 'formData'
+}
 
 /** Response */
 export type ResponseObject = {
@@ -38,16 +48,16 @@ export type Handler<ENV = unknown, DEPS = unknown, REQ = unknown> =
 export type ValidatorFn<DATA> = (data: DATA) => boolean; // Validator returns a boolean but create an errors property within the function
 
 export type Validator = {
-	path?: ValidatorFn<PathParams>,
-	query?: ValidatorFn<QueryParams>,
+	path?: ValidatorFn<ParamsRecord>,
+	query?: ValidatorFn<ParamsRecord>,
 	body?: ValidatorFn<DeserialisedJson>, // Only supports JSON body validation, and maybe form data as key value pairs only?
 }
 
-
+// TODO - bad name
 export type ResolvedHandler = {
 	handler: Handler;
 	path: string;
 	config?: Partial<Config>;
-	middleware?: MiddlewareHandler[]; // Todo - can these three be optional?
+	middleware?: MiddlewareHandler[];
 	validator?: Validator;
 };

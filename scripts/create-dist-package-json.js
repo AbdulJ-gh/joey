@@ -9,7 +9,7 @@ delete packageJson.type;
 
 writeFileSync('./lib/package.json', JSON.stringify(packageJson, null, 2));
 copyFileSync('README.md', './lib/README.md')
-renameSync('./lib/bin/joeycf.js', './lib/bin/joeycf') // specifies in the package.json now
+renameSync('./lib/bin/joeycf.js', './lib/bin/joeycf') // specified in the package.json now
 
 // Fs schemas
 mkdirSync('./lib/bin/schemas/refs', { recursive: true })

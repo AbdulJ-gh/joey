@@ -54,9 +54,10 @@ rules:
   require-jsdoc: off
   valid-jsdoc: warn
   spaced-comment: off
+  dot-notation: off
+  no-useless-constructor: off
   "@typescript-eslint/no-unsafe-assignment":
     - warn
-  dot-notation: off
 
 
 

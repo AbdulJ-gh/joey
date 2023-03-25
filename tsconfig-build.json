@@ -17,6 +17,6 @@
     "removeComments": true,
     "types": ["@cloudflare/workers-types"]
   },
-  "include": [ "src" ],
-  "exclude": [ "src/**/*.test.ts"]
+  "include": ["src"],
+  "exclude": ["src/**/*.test.ts"]
 }
