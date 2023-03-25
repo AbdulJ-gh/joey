@@ -1,0 +1,1 @@
+export { getFormData } from './formData';
