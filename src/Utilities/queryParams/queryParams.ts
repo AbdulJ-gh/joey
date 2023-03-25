@@ -1,5 +1,7 @@
-export declare type QueryParam = null | string | string[];
-export declare type QueryParams = Record<string, QueryParam>;
+import { UnparsedParam } from '../../Transforms/params';
+
+export type QueryParam = null | UnparsedParam;
+export type QueryParams<T> = Record<string, T>;
 
 function returnParam(param: string[]): QueryParam {
 	switch (param.length) {
@@ -22,9 +24,9 @@ export function getQueryParam(url: URL|string, param: string): QueryParam {
 }
 
 // For specifying a list of expected query params
-export function getQueryParams(url: URL|string, params: string[]): QueryParams {
+export function getQueryParams(url: URL|string, params: string[]): QueryParams<QueryParam> {
 	const queryParams = getParamsInstance(url);
-	const obj: QueryParams = {};
+	const obj: QueryParams<QueryParam> = {};
 
 	params.forEach(key => {
 		obj[key] = returnParam(queryParams.getAll(key));
@@ -33,51 +35,13 @@ export function getQueryParams(url: URL|string, params: string[]): QueryParams {
 	return obj;
 }
 
-
-export function transformParam(param: string): null | boolean | number | string | void {
-	// 9007199254740991 >= int >= -9007199254740991
-	function parseSafeInt(param: string): number | void {
-		if (param.length <= 17) {
-			const paramStringArray = param.split('');
-			const numChars = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
-			const isNumChar = (char: string): boolean => numChars.includes(char);
-			const isOk = (char: string, index: number): boolean =>
-				isNumChar(char) || (index === 0 && (char === '-' || char === '+'));
-
-			if (paramStringArray.every(isOk)) {
-				const int = Number.parseInt(param, 10);
-				if (int >= Number.MIN_SAFE_INTEGER && int <= Number.MAX_SAFE_INTEGER) {
-					return int;
-				}
-			}
-		}
-	}
-	function parseIntElseDecodeUri(param: string): number | string {
-		// `0` is falsey so handled in switch statement below
-		return parseSafeInt(param) || decodeURIComponent(param);
-	}
-
-	switch (param.toLowerCase()) {
-		case 'true':
-			return true;
-		case 'false':
-			return false;
-		case 'null':
-			return null;
-		case '0':
-			return 0;
-		default:
-			return parseIntElseDecodeUri(param);
-	}
-}
-
-export function getAllQueryParams(url: URL|string): QueryParams {
+export function getAllQueryParams(url: URL|string): QueryParams<UnparsedParam> {
 	const queryParams = getParamsInstance(url);
-	const obj: QueryParams = {};
+	const obj: QueryParams<UnparsedParam> = {};
 
 	queryParams.forEach((value, key) => {
 		if (!obj[key]) {
-			obj[key] = returnParam(queryParams.getAll(key));
+			obj[key] = returnParam(queryParams.getAll(key)) as UnparsedParam;
 		}
 	});
 
