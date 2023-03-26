@@ -1,5 +1,5 @@
 export { sizeLimit } from './sizeLimit';
-export { isTypedArray, TypedArray } from './isTypedArray';
+export { isTypedArray, type TypedArray } from './isTypedArray';
 export { setContentType } from './setContentType';
 export { getBodyType } from './getBodyType';
 export { transformBody } from './transformBody';

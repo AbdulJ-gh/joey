@@ -1,12 +1,14 @@
 {
   "compilerOptions": {
     "target": "esnext",
-    "module": "commonjs",
+    "module": "esnext",
     "lib": ["esnext"],
+    "skipLibCheck": true,
     "declaration": false,
     "outDir": "../lib/bin",
     "strict": true,
     "esModuleInterop": true,
+    "isolatedModules": true,
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "alwaysStrict": true,

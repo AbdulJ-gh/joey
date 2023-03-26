@@ -14,11 +14,12 @@ export function validateHandler(
 	function validationResponse(type: keyof Validator): Res | void {
 		const validatorFn = validator[type];
 		if (validatorFn) {
-			console.log('Running validation for ' + type);
-			console.log('Context is', context);
-			// const validation = validatorFn(context.req.queryParams as Record<string, string>); // Todo - this should be dynamic
-			const validation = validatorFn(context.req.body as Record<string, string>);
-			console.log('validation', validation);
+			const reqKeyMap: Record<keyof Validator, 'body'|'queryParams'|'pathParams'> = {
+				body: 'body',
+				query: 'queryParams',
+				path: 'pathParams'
+			};
+			const validation = validatorFn(context.req[reqKeyMap[type]] as Record<string, string>);
 
 			if (!validation) {
 				res.set(config.validationError);
@@ -31,12 +32,16 @@ export function validateHandler(
 					case 'json': { // Overrides the default validation error body with json. If already JSON, just adds/overrides the errors field
 						console.log('FAILED FOR TYPE', type);
 						return res.body({ // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-							...(typeof res.get.body === 'object' ? res.get.body : {}), // @ts-ignore
+							...(typeof res.get.body === 'object' ? res.get.body : {}), // @ts-ignore // Todo, array also is 'object'
 							errors: (validatorFn.errors as [{ instancePath: string, message: string }])
-								.map(error => ({
-									path: error.instancePath,
-									message: error.message
-								})
+								.map(error => {
+									console.log('THIS ERROR IS', error);
+									return {
+										location: type,
+										path: error.instancePath,
+										message: error.message
+									};
+								}
 								)
 						});
 					}

@@ -1,2 +1,2 @@
 export { cookie } from './cookie';
-export { CookieOptions } from './types';
+export { type CookieOptions } from './types';

@@ -5,22 +5,23 @@
   "type": "module",
   "description": "A framework for Cloudflare Workers",
   "scripts": {
-    "build": "npm run cleanup && tsc -p tsconfig.json && tsc -p bin/tsconfig.json && node scripts/create-dist-package-json.js",
+    "build": "npm run cleanup && tsc -p tsconfig.json && tsc -p bin/tsconfig.json && node scripts/create-dist-package.js",
     "build:prod": "npm run cleanup && tsc -p tsconfig-build.json && tsc -p bin/tsconfig.json",
-    "prepub": "npm run build:prod && npm version patch && node scripts/create-dist-package-json.js",
-    "prepub:minor": "npm run build:prod && npm version minor && node scripts/create-dist-package-json.js",
+    "prepub": "npm run build:prod && npm version patch && node scripts/create-dist-package.js",
+    "prepub:minor": "npm run build:prod && npm version minor && node scripts/create-dist-package.js",
     "pub": "npm publish ./lib",
     "pub:minor": "npm pub",
     "test": "c8 ava",
     "test:watch": "c8 ava --watch",
     "watch": "watch 'npm run build' ./src",
+    "watch:bin": "watch 'npm run build' ./bin",
     "cleanup": "rm -rf ./lib ./coverage",
     "madge": "npm run build && mkdir -p .graphviz && madge --image .graphviz/src.svg --exclude '^(test)\\.ts$' src",
     "madge:lib": "npm run build && mkdir -p .graphviz && madge --extensions js --image .graphviz/lib.svg lib",
     "madge:lib-dts": "npm run build && mkdir -p .graphviz && madge --extensions ts --image .graphviz/lib-dts.svg lib"
   },
   "bin": {
-    "joeycf": "./bin/joeycf"
+    "joeycf": "./bin/joeycf.js"
   },
   "exports": {
     ".": "./src/Core/index.js",

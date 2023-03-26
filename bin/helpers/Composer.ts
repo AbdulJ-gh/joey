@@ -25,7 +25,7 @@ export default class Composer {
     IMPORT_HANDLER: (name: string, filepath: string) => this.write(`import ${_.camelCase(name)} from '${filepath}'`),
     IMPORT_LOGGER_INTERFACE: () => this.write(`import { Logger } from 'joeycf/Logger'`),
     IMPORT_LOGGER: (filepath: string) => this.write(`import logger from '${filepath}'`),
-		IMPORT_VALIDATORS: (filepath: string) => this.write(`import validators from '${filepath}'`),
+		IMPORT_VALIDATORS: (filepath: string) => this.write(`import * as validators from '${filepath}'`),
     DECLARE_MIDDLEWARE: (middleware: string[]) => {
       this.write(`const middleware = ${JSON.stringify(middleware)}`, ';\n');
     },

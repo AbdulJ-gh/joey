@@ -1,5 +1,6 @@
 import { spawnSync } from 'child_process';
 import { join } from 'path';
+import { fileURLToPath } from 'url';
 import _ from 'lodash';
 import { TempFile, throwError, ERRORS } from './index.js';
 import type { Worker } from '../types.js';
@@ -14,6 +15,7 @@ type Change = { op: string, path: string, value: any };
 
 export default function validateWorker(worker: Worker, tmpDir: string): ReturnType {
   const workerFile = new TempFile(tmpDir, 'worker.json', JSON.stringify(worker))
+	const __dirname = fileURLToPath(new URL('.', import.meta.url));
 
   const validateWorker = spawnSync('ajv', [
     'validate',
