@@ -1,1 +1,1 @@
-export { getFormData } from './formData';
+export { parseFormData } from './formData';

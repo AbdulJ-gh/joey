@@ -6,7 +6,7 @@
 
 type FormInput = string | File;
 
-export function getFormData(formData: FormData) {
+export function parseFormData(formData: FormData) {
 	const data: Record<string, FormInput|FormInput[]> = {};
 	for (const [key, value] of formData) {
 		if (!data[key]) {
