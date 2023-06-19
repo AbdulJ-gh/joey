@@ -21,10 +21,15 @@ export function transformParamsObject(paramsObject: Record<string, UnparsedParam
 
 
 /**
- * Only parses integers between 9007199254740991 >= int >= -9007199254740991
+ * Only parses integers between 9007199254740991 >= int >= -9007199254740991, including -/+ sign
  * Does not parse floats
  */
 export function transformParam(param: string): Param {
+	function parseIntElseDecodeUri(param: string): number | string {
+		// `0` is falsey so handled in switch statement below
+		return parseSafeInt(param) || decodeURIComponent(param);
+	}
+
 	switch (param.toLowerCase()) {
 		case 'true':
 			return true;
@@ -39,10 +44,6 @@ export function transformParam(param: string): Param {
 	}
 }
 
-function parseIntElseDecodeUri(param: string): number | string {
-	// `0` is falsey so handled in switch statement below
-	return parseSafeInt(param) || decodeURIComponent(param);
-}
 
 function parseSafeInt(param: string): number | void {
 	if (param.length <= 17) {
