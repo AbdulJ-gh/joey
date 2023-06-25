@@ -1,4 +1,4 @@
-import { TimeString } from '../../general';
+import type { TimeString } from 'maxage';
 
 export declare type EpochOrFromNow = number | TimeString;
 

@@ -6,9 +6,9 @@
   "description": "A framework for Cloudflare Workers",
   "scripts": {
     "build": "npm run cleanup && tsc -p tsconfig.json && tsc -p bin/tsconfig.json && node scripts/create-dist-package.js",
-    "build:prod": "npm run cleanup && tsc -p tsconfig-build.json && tsc -p bin/tsconfig.json",
-    "prepub": "npm run build:prod && npm version patch && node scripts/create-dist-package.js",
-    "prepub:minor": "npm run build:prod && npm version minor && node scripts/create-dist-package.js",
+    "build:pub": "npm run cleanup && tsc -p tsconfig-build.json && tsc -p bin/tsconfig.json",
+    "prepub": "npm run build:pub && npm version patch && node scripts/create-dist-package.js",
+    "prepub:minor": "npm run build:pub && npm version minor && node scripts/create-dist-package.js",
     "pub": "npm publish ./lib",
     "pub:minor": "npm pub",
     "test": "c8 ava",
@@ -24,11 +24,21 @@
     "joeycf": "./bin/joeycf.js"
   },
   "exports": {
-    ".": { "import": "./src/Core/index.js" },
-    "./Logger": { "import":  "./src/Logger/index.js" },
-    "./Transforms": { "import": "./src/Transforms/index.js" },
-    "./Crypto": { "import": "./src/Crypto/index.js" },
-    "./Utilities": { "import": "./src/Utilities/index.js" }
+    ".": {
+      "import": "./src/Core/index.js"
+    },
+    "./Logger": {
+      "import": "./src/Logger/index.js"
+    },
+    "./Transforms": {
+      "import": "./src/Transforms/index.js"
+    },
+    "./Crypto": {
+      "import": "./src/Crypto/index.js"
+    },
+    "./Utilities": {
+      "import": "./src/Utilities/index.js"
+    }
   },
   "repository": {
     "type": "git",
@@ -87,7 +97,7 @@
     "esbuild": "^0.18.4",
     "fast-glob": "^3.2.12",
     "lodash": "^4.17.21",
-    "maxage": "^2.0.1",
+    "maxage": "^2.0.3",
     "yaml": "^2.3.1"
   }
 }
