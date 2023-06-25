@@ -1,5 +1,4 @@
-import { getSeconds } from '../../general';
-import { getMaxAge } from '../maxAge';
+import { maxage, getSeconds } from 'maxage';
 import type { CookieOptions, EpochOrFromNow } from './types';
 
 function getExpires(date: EpochOrFromNow) {
@@ -13,7 +12,7 @@ function mapOptionsToString(options: CookieOptions) {
 	const { expires, maxAge, domain, path, secure, httpOnly, sameSite } = options;
 	let opt = '';
 	if (expires) { opt += ` ${getExpires(expires)};`; }
-	if (maxAge) { opt += ` ${getMaxAge(maxAge)};`; }
+	if (maxAge) { opt += ` ${maxage(maxAge)};`; }
 	if (domain) { opt += ` Domain=${domain};`; }
 	if (path) { opt += ` Path=${path};`; }
 	if (secure) { opt += ' Secure;'; }

@@ -1,1 +1,2 @@
-export { transformParam, transformParamsObject, type UnparsedParam, type Param, type ParamsRecord } from './params';
+export type { UnparsedParam, Param, ParamsRecord } from './params';
+export { transformParam } from './params';

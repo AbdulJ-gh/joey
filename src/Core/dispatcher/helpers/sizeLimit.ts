@@ -1,11 +1,10 @@
-import { Config } from '../config';
-import { ResponseLike } from '../types';
+import type { Config, ResponseLike } from '../../types';
 
 export function sizeLimit(url: URL, config: Config): ResponseLike | void {
 	if (url.href.length > config.maxUrlLength) {
-		return config.urlTooLong;
+		return config.exceededUrlLimit;
 	}
 	if (url.search.length > config.maxQueryLength) {
-		return config.queryTooLong;
+		return config.exceededQueryLimit;
 	}
 }

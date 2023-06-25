@@ -36,6 +36,7 @@ export class Logger {
 	}
 
 	// These are static methods in order to keep the interface clean
+	// Used to initialise logger and pass context at runtime, without having to include logger in final build if it doesn't exist
 	private static event(logger: Logger, request: Request, ctx: ExecutionContext, env: unknown) {
 		logger.ctx = ctx;
 		ctx.waitUntil((async () => { await logger.incomingEventHandler(request, env); })());

@@ -1,7 +1,6 @@
 import Joey from './joey';
 
-export type { Handler, MiddlewareHandler, AsyncHandler, SyncHandler } from './types';
-export type { Config } from './config';
+export type { Handler, MiddlewareHandler, AsyncHandler, SyncHandler, Config } from './types';
 export { Res } from './res';
 export { Req } from './req';
 

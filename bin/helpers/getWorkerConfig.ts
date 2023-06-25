@@ -1,7 +1,8 @@
 import { join } from 'path';
 import { readdirSync, readFileSync } from 'fs';
 import { parse as parseYaml } from 'yaml';
-import { getBuildArgs, throwError, ERRORS } from './index.js';
+import { throwError, ERRORS } from './errors.js';
+import getBuildArgs from './getBuildArgs.js'
 const { argv, cwd } = process;
 
 

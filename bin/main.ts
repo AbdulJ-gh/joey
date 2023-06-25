@@ -88,12 +88,33 @@ export default async function main() {
 		importedSchemas.push(schemaFile.default)
 	}
 
+	// Todo - Passed in from config: - WIP WIP WIP
+	const includeFormats = [ 'uuid' ];
+		const reduced = includeFormats.reduce((acc: Record<string, string> , cur) => {
+		acc[cur] = cur;
+		return acc;
+	}, {})
+		const customFormats = { // TODO, placeholder, this should come from config as files
+		custom: () => true
+	}
+	const opts = {}
+	// Options type from ajv package. Warning. Any formats defined here would override the includeFormats and customFormats
+	// Note that some options may not work with standaloneCode. Check documentation
+
 	const ajv = new Ajv({
 		schemas: importedSchemas,
 		code: {
 			source: true,
 			esm: true
-		}
+		},
+		formats: {
+			...includeFormats.reduce((acc: Record<string, string> , cur) => {
+				acc[cur] = cur;
+				return acc;
+			}, {}),
+			...customFormats,
+		},
+		...opts
 	});
 	const tempValidatorsFile = new TempFile(tempDir, 'ajv.js', standaloneCode(ajv));
 

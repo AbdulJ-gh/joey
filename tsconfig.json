@@ -2,13 +2,11 @@
   "compilerOptions": {
     "target": "esnext",
     "module": "esnext",
-    "lib": ["esnext"],
     "skipLibCheck": true,
     "declaration": true,
     "outDir": "lib",
     "strict": true,
     "esModuleInterop": true,
-    "isolatedModules": true,
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "alwaysStrict": true,
@@ -16,7 +14,7 @@
     "preserveConstEnums": true,
     "sourceMap": false,
     "removeComments": true,
-    "types": ["@cloudflare/workers-types"]
+    "types": ["@cloudflare/workers-types", "@types/node"]
   },
   "include": ["src", "testUtils"],
   "exclude": ["bin"]

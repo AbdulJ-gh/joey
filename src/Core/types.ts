@@ -1,7 +1,7 @@
 import type Context from './context';
-import type { Config } from './config';
-import type { Res, ResponseBody } from './res';
-import { Param, ParamsRecord } from '../Transforms/params';
+import type { Res, ResponseObject } from './res';
+import type { ParamsRecord } from '../Transforms/params';
+import { RequestBodyStream } from './req';
 
 export type DeserialisedJson = Record<string, unknown> | unknown[];
 export type Method = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'OPTIONS'; // Missing 'CONNECT' | 'HEAD' | 'TRACE';
@@ -17,19 +17,49 @@ export enum BodyType {
 	FormData = 'formData'
 }
 
-/** Response */
-export type ResponseObject = {
-	status?: number; // defaults to 200 if handler found, or 204 if handler found with no body, else 404 or config value
-	body?: ResponseBody; // defaults to null if handler found, else config
-	headers?: HeadersInit; // defaults to config headers if handler found, else empty + not found config + allow header config
+export type ResponseLike = Response | ResponseObject | Res;
+
+/** Config */
+type DefaultError = {
+	status: number;
+	body?: null | string | Record<string, string>;
+	headers?: Record<string, string>;
 };
 
-export type ResponseLike = Response | ResponseObject | Res;
+type ContentHeaderParseMap = {
+	matchers: { query: string, bodyType: RequestBodyStream, matcher: 'inclusive'|'exact' }[];
+	fallback: BodyType;
+}
+
+export type TransformQueryParams = {
+	transform: boolean;
+	listDelimiter?: ',' | ';' | null;
+};
+
+export type Config = {
+	notFound: DefaultError;
+	methodNotAllowed: DefaultError;
+	exceededUrlLimit: DefaultError;
+	exceededQueryLimit: DefaultError;
+	internalServerError: DefaultError;
+	validationError: DefaultError;
+	allValidationErrors: boolean;
+	headers: Record<string, string>;
+	prettifyJson: boolean;
+	parseBody: RequestBodyStream | false | 'content-type-header';
+	contentHeaderParseMap: ContentHeaderParseMap;
+	transformPathParams: boolean;
+	transformQueryParams: TransformQueryParams;
+	emitAllowHeader: boolean;
+	maxUrlLength: number;
+	maxQueryLength: number;
+	validationErrors: false | 'plaintext' | 'json'
+};
 
 /** Handlers */
 type SyncMiddlewareHandler<ENV = unknown, DEPS = unknown, REQ = unknown> =
 	(ctx: Context<ENV, DEPS, REQ>) => ResponseLike | void;
-export type AsyncMiddlewareHandler<ENV = unknown, DEPS = unknown, REQ = unknown> =
+type AsyncMiddlewareHandler<ENV = unknown, DEPS = unknown, REQ = unknown> =
 	(ctx: Context<ENV, DEPS, REQ>) => Promise<ResponseLike | void>;
 
 export type MiddlewareHandler<ENV = unknown, DEPS = unknown, REQ = unknown> =
@@ -45,7 +75,7 @@ export type AsyncHandler<ENV = unknown, DEPS = unknown, REQ = unknown> =
 export type Handler<ENV = unknown, DEPS = unknown, REQ = unknown> =
 	SyncHandler<ENV, DEPS, REQ> | AsyncHandler<ENV, DEPS, REQ>;
 
-export type ValidatorFn<DATA> = (data: DATA) => boolean; // Validator returns a boolean but create an errors property within the function
+type ValidatorFn<DATA> = (data: DATA) => boolean; // Validator returns a boolean but create an errors property within the function
 
 export type Validator = {
 	path?: ValidatorFn<ParamsRecord>,
@@ -53,11 +83,10 @@ export type Validator = {
 	body?: ValidatorFn<DeserialisedJson>, // Only supports JSON body validation, and maybe form data as key value pairs only?
 }
 
-// TODO - bad name
-export type ResolvedHandler = {
+export type RegisteredHandler<CONFIG = Partial<Config>> = {
 	handler: Handler;
 	path: string;
-	config?: Partial<Config>;
-	middleware?: MiddlewareHandler[];
+	config: CONFIG;
+	middleware: MiddlewareHandler[];
 	validator?: Validator;
 };

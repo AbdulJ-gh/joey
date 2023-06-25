@@ -2,7 +2,6 @@ import type { Req, UnknownRecord } from './req';
 import type { Logger } from '../logger';
 import { Res } from './res';
 
-
 interface Context<ENV = unknown, DEPS = unknown, REQ = UnknownRecord> extends ExecutionContext {
 	req: Req<REQ>;
 	res: Res;

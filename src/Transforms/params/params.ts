@@ -1,24 +1,6 @@
-// TODO - use (before validation but have option to turn off)
-// TODO - Add on off option
-
 export type UnparsedParam = string | string[];
 export type Param = null | boolean | number | string | void;
 export type ParamsRecord = Record<string, Param | Param[]>;
-
-export function transformParamsObject(paramsObject: Record<string, UnparsedParam>): ParamsRecord {
-	const params: ParamsRecord = {};
-
-	for (const param in paramsObject) {
-		if (typeof paramsObject[param] === 'string') {
-			params[param] = transformParam(paramsObject[param] as string);
-		} else {
-			params[param] = (paramsObject[param] as string[]).map(transformParam);
-		}
-	}
-
-	return params;
-}
-
 
 /**
  * Only parses integers between 9007199254740991 >= int >= -9007199254740991, including -/+ sign

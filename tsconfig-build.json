@@ -2,7 +2,6 @@
   "compilerOptions": {
     "target": "esnext",
     "module": "esnext",
-    "lib": ["esnext"],
     "skipLibCheck": true,
     "declaration": true,
     "outDir": "lib",
@@ -18,5 +17,5 @@
     "types": ["@cloudflare/workers-types"]
   },
   "include": ["src"],
-  "exclude": ["src/**/*.test.ts"]
+  "exclude": ["src/**/*.test.ts", "testUtils"]
 }

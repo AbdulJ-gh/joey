@@ -3,7 +3,6 @@
 	* Accepts both `application/x-www-form-urlencoded` and `multipart/form-data` content
 	* Only works with string form values, no file uploads
 	* */
-
 type FormInput = string | File;
 
 export function parseFormData(formData: FormData) {

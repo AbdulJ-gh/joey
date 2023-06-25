@@ -1,4 +1,4 @@
-import { ERRORS, throwError } from './index.js';
+import { ERRORS, throwError } from './errors.js';
 
 export type BuildArgs = {
   outDir?: string;

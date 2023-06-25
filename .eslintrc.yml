@@ -6,7 +6,6 @@ env:
 extends:
   - standard
   - plugin:@typescript-eslint/recommended
-  - plugin:@typescript-eslint/recommended-requiring-type-checking
 parser: '@typescript-eslint/parser'
 parserOptions:
   ecmaVersion: latest
@@ -56,9 +55,8 @@ rules:
   spaced-comment: off
   dot-notation: off
   no-useless-constructor: off
-  "@typescript-eslint/no-unsafe-assignment":
+  '@typescript-eslint/no-unsafe-assignment':
     - warn
-
 
 
 # Docs

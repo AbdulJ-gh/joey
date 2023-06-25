@@ -1,6 +1,6 @@
-import { ResponseBody } from '../res';
-import { BodyType } from '../types';
-import { TypedArray } from '../helpers';
+import { BodyType } from '../../types';
+import type { ResponseBody } from '../../res';
+import type { TypedArray } from './isTypedArray';
 
 export function transformBody(body: ResponseBody, bodyType: BodyType, prettifyJson: boolean): BodyInit {
 	if (bodyType === BodyType.JSON) {

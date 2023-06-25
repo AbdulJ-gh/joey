@@ -9,5 +9,5 @@ export default {
 	cache: false,
 	timeout: '10s',
 	ignoredByWatcher: ['lib/**/*'],
-	nodeArguments: ['--experimental-specifier-resolution=node']
+	nodeArguments: ['--no-warnings=ExperimentalWarning', '--experimental-specifier-resolution=node']
 };

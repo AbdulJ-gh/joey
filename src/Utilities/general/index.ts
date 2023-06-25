@@ -1,1 +1,1 @@
-export { getSeconds, type TimeString } from './getSeconds';
+export { getSeconds, type TimeString } from 'maxage';

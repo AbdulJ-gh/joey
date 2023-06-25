@@ -1,5 +1,5 @@
-import { getHeadersInstance } from '../../Utilities';
-import { BodyType } from '../types';
+import { getHeadersInstance } from '../../../Utilities';
+import { BodyType } from '../../types';
 
 /**
  * Cannot set content type for Response type because body is already transformed
@@ -8,7 +8,7 @@ import { BodyType } from '../types';
  */
 export function setContentType(bodyType: BodyType, headers: Headers|Record<string, string>): void {
 	let contentType;
-	if (!getHeadersInstance(headers || {}).has('content-type')) {
+	if (!getHeadersInstance(headers).has('content-type')) {
 		switch (bodyType) {
 			case BodyType.JSON:
 				contentType = 'application/json';

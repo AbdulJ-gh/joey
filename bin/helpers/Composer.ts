@@ -1,4 +1,4 @@
-import { TempFile } from './index.js';
+import TempFile from './tempFile.js';
 import _ from 'lodash';
 
 export default class Composer {

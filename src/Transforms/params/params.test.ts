@@ -1,5 +1,5 @@
 import test from 'ava';
-import { transformParam, transformParamsObject } from './params';
+import { transformParam } from './params';
 
 test('#transformParam - boolean', t => {
 	t.true(transformParam('true'));
@@ -36,26 +36,4 @@ test('#transformParam - string', t => {
 	t.is(transformParam('abc'), 'abc');
 	t.is(transformParam('abc'), 'abc');
 	t.is(transformParam('abc'), 'abc');
-});
-
-
-test('#transformParamObject', t => {
-	t.is(transformParamsObject({}), {});
-	t.deepEqual(transformParamsObject({
-		param1: 'aaa',
-		param2: ['aaa', 'bbb'],
-		param3: '0',
-		param4: '1',
-		param5: 'null',
-		param6: 'true',
-		param7: 'false'
-	}), {
-		param1: 'aaa',
-		param2: ['aaa', 'bbb'],
-		param3: 0,
-		param4: 1,
-		param5: null,
-		param6: true,
-		param7: false
-	});
 });

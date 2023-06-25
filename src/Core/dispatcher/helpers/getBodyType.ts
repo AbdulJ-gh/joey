@@ -1,6 +1,6 @@
-import { ResponseBody } from '../res';
-import { BodyType } from '../types';
-import { isTypedArray } from '../helpers';
+import type { ResponseBody } from '../../res';
+import { BodyType } from '../../types';
+import { isTypedArray } from './isTypedArray';
 
 export function getBodyType(body: ResponseBody): BodyType {
 	if (body === null) return BodyType.NoContent;
@@ -12,3 +12,8 @@ export function getBodyType(body: ResponseBody): BodyType {
 	if (isTypedArray(body)) return BodyType.TypedArray;
 	return BodyType.JSON;
 }
+
+
+// THIS ONE IS USED IN BOTH:
+// validateRequest
+// transformResponse

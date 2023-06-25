@@ -2,7 +2,8 @@ import { spawnSync } from 'child_process';
 import { join } from 'path';
 import { fileURLToPath } from 'url';
 import _ from 'lodash';
-import { TempFile, throwError, ERRORS } from './index.js';
+import { throwError, ERRORS } from './errors.js';
+import TempFile from './tempFile.js';
 import type { Worker } from '../types.js';
 const { stderr } = process;
 

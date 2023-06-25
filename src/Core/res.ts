@@ -1,7 +1,14 @@
 import { cookie, CookieOptions } from '../Utilities/headers/';
+import type { DeserialisedJson } from './types';
 
-import type { DeserialisedJson, ResponseObject } from './types';
 export type ResponseBody = null | string | DeserialisedJson | ArrayBuffer | Blob | URLSearchParams | FormData;
+
+export type ResponseObject = {
+	status?: number; // defaults to 200 if handler found, or 204 if handler found with no body, else 404 or config value
+	body?: ResponseBody; // defaults to null if handler found, else config
+	headers?: HeadersInit; // defaults to config headers if handler found, else empty + not found config + allow header config
+};
+
 export declare type ResGetter = Omit<ResponseObject, 'headers'>;
 
 

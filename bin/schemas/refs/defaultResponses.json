@@ -17,14 +17,14 @@
         "body": "Method not allowed"
       }
     },
-    "urlTooLong": {
+    "exceededUrlLimit": {
       "$ref": "https://example.com/schema/defaultError",
       "default": {
         "status": 414,
         "body": "Request URI too long"
       }
     },
-    "queryTooLong": {
+    "exceededQueryLimit": {
       "$ref": "https://example.com/schema/defaultError",
       "default": {
         "status": 414,

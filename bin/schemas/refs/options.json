@@ -12,6 +12,34 @@
     "emitAllowHeader": { "type": "boolean", "default": true },
     "allValidationErrors": { "type": "boolean", "default": false },
     "validationErrors": { "enum": [ false, "plaintext", "json" ], "default": "json" },
-    "parseBody": { "enum": [ false, null, "plaintext", "json", "formData", "buffer", "blob" ], "default": "json" }
+    "parseBody": { "enum": [ false, "content-type-header", null, "plaintext", "json", "formData", "buffer", "blob" ], "default": "json" },
+    "contentHeaderParseMap": {
+      "type": "object",
+      "properties": {
+        "matchers": {
+          "type": "array",
+          "items": { "$ref": "https://example.com/schema/bodyParserMatcher" },
+          "default": [
+            { "query": "text", "bodyType": "plaintext", "matcher": "inclusive" },
+            { "query": "json", "bodyType": "json", "matcher": "inclusive" },
+            { "query": "formData", "bodyType": "formData", "matcher": "inclusive" },
+            { "query": "octet-stream", "bodyType": "buffer", "matcher": "inclusive" }
+            ]
+        },
+        "fallback": {
+          "enum": [ null, "plaintext", "json", "formData", "buffer", "blob" ],
+          "default": "json"
+        }
+      }
+    },
+    "transformPathParams": { "type": "boolean", "default": true },
+    "transformQueryParams": {
+      "type": "object",
+      "properties": {
+        "transform": { "type": "boolean", "default": true },
+        "listDelimiter": { "enum": [ ",", ";", null ], "default": null }
+      },
+      "default": {}
+    }
   }
 }

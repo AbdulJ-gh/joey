@@ -15,7 +15,7 @@ export type Worker = {
   handlersRoot: string,
 	middlewareRoot: string,
   logger: string
-	schemas: string,
+	schemas: string | string[],
   build: { outDir: string, filename: string, sourcemaps: boolean, watch: boolean, minify: boolean }
   middleware: Record<string, string>,
   baseConfig: {
