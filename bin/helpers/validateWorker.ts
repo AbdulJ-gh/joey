@@ -33,6 +33,7 @@ export default function validateWorker(worker: Worker, tmpDir: string): ReturnTy
   ]);
 
   if (validateWorker.status !== 0) {
+		// This should pick up errors from the validation itself but not errors in the underlying code here
     const message = validateWorker.stderr.toString('utf8')
     if (message.includes('invalid')) { stderr.write(message.split('invalid')[1]); }
     throwError(ERRORS.INVALID_WORKER_CONFIG)

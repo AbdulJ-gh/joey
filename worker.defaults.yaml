@@ -1,0 +1,105 @@
+# This example worker config file shows all available configuration options and default values
+# Required fields do not have default values, therefore are marked as required
+# All fields not marked as required display their default values unless stated otherwise
+# Commented out fields do not have default values
+
+version: 0.0.1 # Required
+handlerRoot: ./src/handlers # Specifies root directory for handler lookups in `handlers` section
+middlewareRoot: ./src/middleware # Specifies root directory for middleware lookups in `handlers` section
+#logger: ./src/utils/logger # Specifies path to custom logger
+
+schemas: ''
+# TODOOOOOOO, can be a string path regex thingy thing or list
+
+build:
+  outDir: ./dist # Output directory of build
+  filename: index.js # Name of build file
+  sourcemaps: true # Flag to enable sourcemap support
+  watch: false # DOES THIS WORK
+  minify: true # Flag to enable minification support
+
+# This section defines all middleware that the application requires
+# It does not specify if and when they are consumed
+# Defaults to an empty object, can be omitted
+# Middleware are listed with the following convention: `name: path`
+# Where `name` is the key used in other sections to specify when to use the middleware
+# Where `path` is the relative path of the middleware from the `middlewareRoot` option
+middleware:
+  name-of-ware-1: utils/name-of-ware-1 # Example
+  name-of-ware-2: utils/name-of-ware-2 # Example
+  name-of-ware-3: utils/name-of-ware-3 # Example
+
+# TODOOO - FROM HERE ONWARDS NO REALLY COMMENTED PROPERLY
+# This section defines all base configuration options used throughout the application
+# Individual options can be overridden within the handler config further below
+baseConfig:
+  middleware: # Specifies which middleware should run an all requests. Defaults to an empty array, can be omitted
+    - name-of-ware-1 # Example
+    - name-of-ware-2 # Example
+  options:
+    parsePath: true
+    parseQuery: true
+    parseBody: json
+    contentHeaderParseMap:
+      matchers:
+        - query: text
+          bodyType: plaintext
+          matcher: inclusive # What does it do. Always defaults to inclusive, can be omitted
+        - query: json
+          bodyType: json
+          matcher: inclusive
+        - query: formData
+          bodyType: formData
+          matcher: inclusive
+        - query: octet-stream
+          bodyType: buffer
+          matcher: inclusive
+      fallback: json
+    transformPathParams: true
+    transformQueryParams:
+      transform: true
+      listDelimited: null
+    allValidationErrors: false
+    validationerrors: json
+    prettifyJson: false
+    maxUrlLength: 2048
+    maxQueryLength: 1024
+    emitAllowHeader: true
+    headers:
+      access-control-allow-origin: '*' # Example
+      access-control-allow-methods: '*' # Example
+      cache-control: no-store # Example
+  defaultResponses:
+    notFound: ''
+      status: 404
+      body: Resource not found
+    methodNotAllowed:
+      status: 405
+      body: Method not allowed
+    exceededUrlLimit:
+      status: 414
+      body: Request URI too long
+    exceededQueryLimit:
+      status: 414
+      body: Request query too long
+    internalServerError:
+      status: 500
+      body: An unexpected error occurred
+    validationError:
+      status: 400
+      body: Could not process request due to validation errors
+
+handlers:
+  name-of-handler: # Example name
+    method: GET # Required
+    route: /resrouce/:id # Required
+    src: name-of-handler/index.ts # Required
+    middleware:
+      - name-of-ware-3
+    schema:
+      body: someBody
+      path: somePath
+      query: someQuery
+    options: # Any specific options to override the default. Accepts all options from baseConfig
+      prettifyJson: true # Example
+

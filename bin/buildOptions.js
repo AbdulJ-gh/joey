@@ -1,7 +1,7 @@
 import { build } from 'esbuild';
 
 function logBuildSuccess() {
-	console.log(`[${new Date().toISOString()}]`, 'Build succeeded 🦘✅ ')
+	console.log(`\x1b[33m[${new Date().toISOString()}]\x1b[0m`, '🦘 Build succeeded ✅ ')
 }
 
 async function runBuild(data){

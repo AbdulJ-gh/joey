@@ -3,15 +3,8 @@
   "$id": "https://example.com/schema/options",
   "type": "object",
   "properties": {
-    "headers": { "type": "object", "default": {} },
     "parsePath": { "type": "boolean", "default": true },
     "parseQuery": { "type": "boolean", "default": true },
-    "maxUrlLength": { "type": "integer", "default": 2048 },
-    "prettifyJson": { "type": "boolean", "default": false },
-    "maxQueryLength": { "type": "integer", "default": 1024 },
-    "emitAllowHeader": { "type": "boolean", "default": true },
-    "allValidationErrors": { "type": "boolean", "default": false },
-    "validationErrors": { "enum": [ false, "plaintext", "json" ], "default": "json" },
     "parseBody": { "enum": [ false, "content-type-header", null, "plaintext", "json", "formData", "buffer", "blob" ], "default": "json" },
     "contentHeaderParseMap": {
       "type": "object",
@@ -20,17 +13,18 @@
           "type": "array",
           "items": { "$ref": "https://example.com/schema/bodyParserMatcher" },
           "default": [
-            { "query": "text", "bodyType": "plaintext", "matcher": "inclusive" },
-            { "query": "json", "bodyType": "json", "matcher": "inclusive" },
-            { "query": "formData", "bodyType": "formData", "matcher": "inclusive" },
-            { "query": "octet-stream", "bodyType": "buffer", "matcher": "inclusive" }
-            ]
+            { "query": "text", "bodyType": "plaintext" },
+            { "query": "json", "bodyType": "json" },
+            { "query": "formData", "bodyType": "formData" },
+            { "query": "octet-stream", "bodyType": "buffer" }
+          ]
         },
         "fallback": {
           "enum": [ null, "plaintext", "json", "formData", "buffer", "blob" ],
           "default": "json"
         }
-      }
+      },
+      "default": {}
     },
     "transformPathParams": { "type": "boolean", "default": true },
     "transformQueryParams": {
@@ -40,6 +34,13 @@
         "listDelimiter": { "enum": [ ",", ";", null ], "default": null }
       },
       "default": {}
-    }
+    },
+    "allValidationErrors": { "type": "boolean", "default": false },
+    "validationErrors": { "enum": [ false, "plaintext", "json" ], "default": "json" },
+    "prettifyJson": { "type": "boolean", "default": false },
+    "maxUrlLength": { "type": "integer", "default": 2048 },
+    "maxQueryLength": { "type": "integer", "default": 1024 },
+    "emitAllowHeader": { "type": "boolean", "default": true },
+    "headers": { "type": "object", "default": {} }
   }
 }

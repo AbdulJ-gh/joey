@@ -1,0 +1,7 @@
+version: 0.0.1
+
+handlers:
+  name-of-handler:
+    method: POST
+    route: /:age
+    src: ./src/handlers/name-of-handler/index.ts

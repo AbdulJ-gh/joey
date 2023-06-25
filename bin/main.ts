@@ -107,6 +107,7 @@ export default async function main() {
 			source: true,
 			esm: true
 		},
+		allowUnionTypes: true,
 		formats: {
 			...includeFormats.reduce((acc: Record<string, string> , cur) => {
 				acc[cur] = cur;

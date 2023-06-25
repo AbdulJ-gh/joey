@@ -8,7 +8,8 @@
       "enum": [null, "plaintext", "json", "formData", "buffer", "blob"]
     },
     "matcher": {
-      "enum": ["inclusive", "exact"]
+      "enum": ["inclusive", "exact"],
+      "default": "inclusive"
     }
   },
   "additionalProperties": false
