@@ -63,7 +63,7 @@
   },
   "homepage": "https://gitlab.com/Abdul-Jabbar/joeycf#readme",
   "engines": {
-    "node": "^18"
+    "node": ">=18"
   },
   "peerDependencies": {
     "@cloudflare/workers-types": "^4.20230518.0"
@@ -78,7 +78,6 @@
     "ava": "^5.3.1",
     "c8": "^8.0.0",
     "camelcase": "^7.0.1",
-    "cross-fetch": "^3.1.6",
     "eslint": "^8.43.0",
     "eslint-config-standard": "^17.1.0",
     "eslint-plugin-ava": "^14.0.0",
@@ -87,7 +86,8 @@
     "eslint-plugin-promise": "^6.1.1",
     "form-data": "^4.0.0",
     "madge": "^6.1.0",
-    "typescript": "^4.9.5",
+    "typescript": "^5.1.6",
+    "undici": "^5.22.1",
     "watch": "^1.0.2",
     "wrangler": "^3.1.0"
   },

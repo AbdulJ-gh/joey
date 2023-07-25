@@ -1,14 +1,26 @@
 import TempFile from './tempFile.js';
 import _ from 'lodash';
 
-export default class Composer {
-	public tmpAppFile: TempFile;
+type Import = { name: string, path: string };
 
-	constructor(tmpDir: string) {
+type InitialWriteValues = {
+	handlerImports: Import[],
+	middlewareImports: Import[],
+	config: any,
+	globalMiddleware: string[],
+	validatorsPath: string,
+	paths: any,
+	logger?: string,
+}
+
+export default class Composer {
+	private tmpAppFile: TempFile;
+
+	constructor(private tmpDir: string) {
 		this.tmpAppFile = new TempFile(tmpDir, 'app.js');
 	}
 
-	public write = (line: string, lineEnding = ';') => {
+	private write = (line: string, lineEnding = ';') => {
 		this.tmpAppFile.write(`${line}${lineEnding}`)
 	}
 
@@ -20,37 +32,53 @@ export default class Composer {
 		this.tmpAppFile.overwrite(update)
 	}
 
-  public readonly steps = {
-    IMPORT_JOEY: () => this.write(`import Joey from 'joeycf'`),
-    IMPORT_HANDLER: (name: string, filepath: string) => this.write(`import ${_.camelCase(name)} from '${filepath}'`),
-    IMPORT_LOGGER_INTERFACE: () => this.write(`import { Logger } from 'joeycf/Logger'`),
-    IMPORT_LOGGER: (filepath: string) => this.write(`import logger from '${filepath}'`),
-		IMPORT_VALIDATORS: (filepath: string) => this.write(`import * as validators from '${filepath}'`),
-    DECLARE_MIDDLEWARE: (middleware: string[]) => {
-      this.write(`const middleware = ${JSON.stringify(middleware)}`, ';\n');
-    },
-    DECLARE_PATHS: (paths: Record<string, any>) => {
-      this.write(`const paths = ${JSON.stringify(paths)}`, ';\n');
-    },
-    DECLARE_CONFIG: (config: Record<string, unknown>) => {
-      this.write(`const config = ${JSON.stringify(config)}`, ';\n')
-    },
-    DECLARE_LOGGER_INIT: () => {
-      this.write(`const loggerInit = (logger,request,ctx,env)=>Logger['event'](logger,request,ctx,env)`);
-    },
-    NO_LOGGER: () => this.write('let logger, loggerInit') ,
-    REPLACE_UNSAFE_HANDLER_NAME: (name: string) => {
-      this.replace(`"__UNSAFE_HANDLER_NAME__${name}"`, _.camelCase(name))
-    },
-    REPLACE_UNSAFE_MIDDLEWARE_NAME: (name: string) => {
-      this.replace(`"__UNSAFE_MIDDLEWARE_NAME__${name}"`, _.camelCase(name))
-    },
-		REPLACE_UNSAFE_VALIDATOR_REFS: () => {
-			this.replace(`"__UNSAFE_VALIDATOR_REF__`, '');
-			this.replace(`__UNSAFE_VALIDATOR_REF__"`, '');
-		},
+	/** Initial Write */
+	private importModule = ({ name, path }: Import) => this.write(`import ${name} from '${path}'`);
+	private importList = (list: Import[]): void => list.forEach(this.importModule);
+	public initialWrite = (initialWriteValues: InitialWriteValues) => {
+		const { handlerImports, middlewareImports, config, globalMiddleware, validatorsPath, paths, logger } = initialWriteValues
+		const { importModule, importList } = this;
+		this.write(`import Joey from 'joeycf'`);
+		if (logger) {
+			this.write(`import { Logger } from 'joeycf/Logger`);
+			importModule({ name: 'logger', path: logger });
+			this.write(`const loggerInit = (logger,request,ctx,env)=>Logger['event'](logger,request,ctx,env)`)
+		} else {
+			this.write(`let logger, loggerInit`)
+		}
+		importList(handlerImports);
+		importList(middlewareImports);
+		this.write(`\nconst config = ${JSON.stringify(config)}`);
+		this.write(`\nconst middleware = ${JSON.stringify(globalMiddleware)}`);
+		this.write(`\nimport * as validators from '${validatorsPath}'`);
+		this.write(`\nconst paths = ${JSON.stringify(paths)}`);
+		this.write('\nconst joey = new Joey(paths,config,middleware,logger,loggerInit)')
+		this.write('\nexport default { fetch: joey.fetch }')
+	}
+	/** Initial Write */
 
-		// __UNSAFE_VALIDATOR_NAME__
-    EXPORT: () => this.write('\nexport default new Joey(paths,config,middleware,logger,loggerInit)')
-  }
+	/** Cleanup */
+  private REPLACE_UNSAFE_HANDLER_REF = (name: string) => {
+		this.replace(`"__UNSAFE_HANDLER_REF__${name}"`, _.camelCase(name))
+	};
+	private REPLACE_UNSAFE_MIDDLEWARE_REF = (name: string) => {
+		this.replace(`"__UNSAFE_MIDDLEWARE_REF__${name}"`, _.camelCase(name))
+	};
+	private REPLACE_UNSAFE_VALIDATOR_REFS = () => {
+		this.replace(`"__UNSAFE_VALIDATOR_REF__`, '');
+		this.replace(`__UNSAFE_VALIDATOR_REF__"`, '');
+	};
+	public cleanUnsafeRefs = (
+		handlerImports: string[],
+		middlewareImports: string[],
+	) => {
+		handlerImports.forEach(this.REPLACE_UNSAFE_HANDLER_REF)
+		middlewareImports.forEach(this.REPLACE_UNSAFE_MIDDLEWARE_REF)
+		this.REPLACE_UNSAFE_VALIDATOR_REFS()
+	};
+	/** Cleanup */
+
+	/** Static methods */
+	public static unsafeMiddlewareDeclaration = ((name: string): string => `__UNSAFE_MIDDLEWARE_REF__${name}`)
+	/** Static methods */
 }

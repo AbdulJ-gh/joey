@@ -4,7 +4,8 @@ import getWorkerConfig from './getWorkerConfig.js';
 import TempFile from './tempFile.js';
 import validateWorker from './validateWorker.js';
 import { throwError, ERRORS } from './errors.js';
-
+import { finalBuild } from './build.js';
+import generateValidators from './generateValidators.js'
 
 export {
   Composer,
@@ -12,5 +13,8 @@ export {
   getWorkerConfig,
   TempFile,
   validateWorker,
-  throwError, ERRORS
+  throwError,
+	ERRORS,
+	finalBuild,
+	generateValidators
 };

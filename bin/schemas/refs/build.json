@@ -6,7 +6,6 @@
     "outDir": { "type": "string", "default": "./dist" },
     "filename": { "type": "string", "default": "index.js" },
     "sourcemaps": { "type": "boolean", "default": false },
-    "watch": { "type": "boolean", "default": false },
     "minify": { "type": "boolean", "default": true }
   },
   "additionalProperties": false

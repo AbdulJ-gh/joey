@@ -16,7 +16,7 @@
     "preserveConstEnums": true,
     "sourceMap": false,
     "removeComments": true,
-    "typeRoots": ["node_modules/@types"],
+    "typeRoots": ["../node_modules"],
     "types": ["@types/node"]
   }
 }

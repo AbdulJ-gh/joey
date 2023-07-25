@@ -9,7 +9,21 @@
     "handlersRoot":  { "type": "string", "default": "./src/handlers"  },
     "middlewareRoot":  { "type": "string", "default": "./src/middleware"  },
     "logger":  { "type": "string" },
-    "schemas": { "type": ["string", "array"], "items": { "type": "string" }, "default": "./src/**/*.schema.ts" },
+    "schemas": {
+      "type": "object",
+      "required": ["pattern"],
+      "properties": {
+        "pattern": {
+          "type": ["string", "array"],
+          "items": { "type": "string" },
+          "default": "./src/**/*.schema.ts"
+        },
+        "ignore": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
     "build": { "$ref": "https://example.com/schema/build", "default": {} },
     "middleware":  { "$ref": "https://example.com/schema/keyValueStringObject", "default": {} },
     "baseConfig":  {

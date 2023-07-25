@@ -3,7 +3,7 @@ import Dispatcher from './dispatcher';
 import { resolveHandler } from './resolver';
 import { Req } from './req';
 import Context from './context';
-import type { Logger } from '../logger';
+import type { Logger } from '../Logger';
 import type { Config, RegisteredHandler, MiddlewareHandler } from './types';
 
 type LoggerInit = (logger: Logger, request: Request, ctx: ExecutionContext, env: unknown) => void;
@@ -29,7 +29,7 @@ export default class Joey {
 		this.loggerInit = loggerInit;
 	}
 
-	public fetch: ExportedHandlerFetchHandler = async (request, env, ctx) => {
+	public fetch: ExportedHandlerFetchHandler = async (request, env, ctx): Promise<Response> => {
 		ctx.passThroughOnException();
 		try {
 			if (this.logger && this.loggerInit) { this.loggerInit(this.logger, request, ctx, env); }		/** Initialise logger */

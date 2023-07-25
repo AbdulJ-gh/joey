@@ -8,14 +8,16 @@ handlerRoot: ./src/handlers # Specifies root directory for handler lookups in `h
 middlewareRoot: ./src/middleware # Specifies root directory for middleware lookups in `handlers` section
 #logger: ./src/utils/logger # Specifies path to custom logger
 
-schemas: ''
-# TODOOOOOOO, can be a string path regex thingy thing or list
+schemas:
+  pattern: ./src/**/*.schema.ts # Specify a glob or array of globs to lookup schema files. Example alternatives: ./src/schemas or./src/handlers/**/*.schema.ts
+#  ignore:
+#    - ./src/schemas/draftSchema.schema.ts
+#    - ./src/schemas/draftSchema2.schema.ts
 
 build:
   outDir: ./dist # Output directory of build
   filename: index.js # Name of build file
-  sourcemaps: true # Flag to enable sourcemap support
-  watch: false # DOES THIS WORK
+  sourcemaps: false # Flag to enable sourcemap support
   minify: true # Flag to enable minification support
 
 # This section defines all middleware that the application requires

@@ -1,5 +1,4 @@
-import { fetch, Request, Response, Headers } from 'cross-fetch';
-import FormData from 'form-data';
+import { fetch, Request, Response, Headers, FormData } from 'undici';
 import { webcrypto } from 'crypto';
 
 globalThis.fetch = fetch;

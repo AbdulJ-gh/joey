@@ -24,7 +24,7 @@ export default function validateWorker(worker: Worker, tmpDir: string): ReturnTy
     '-s', join(__dirname, '../schemas/worker.json'),
     '-d', workerFile.path,
     '--use-defaults',
-		'--strict=false',
+		'--strict=true',
     '--allow-matching-properties',
     '--all-errors',
     '--errors=json',
