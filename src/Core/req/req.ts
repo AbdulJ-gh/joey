@@ -15,12 +15,12 @@ class BaseRequest {
 	// @ts-ignore
 	get cf(): CfProperties { return this.request.cf ?? {}; }
 	get method(): Method { return this.request.method as Method; }
-	get clone() { return () => this.request.clone(); }
-	get arrayBuffer(): () => Promise<ArrayBuffer> { return this.request.arrayBuffer; }
-	get blob(): () => Promise<Blob> { return this.request.blob; }
-	get formData(): () => Promise<FormData> { return this.request.formData; }
-	get json(): <T>() => Promise<T> { return this.request.json; }
-	get text(): () => Promise<string> { return this.request.text; }
+	public clone = () => this.request.clone();
+	public arrayBuffer = () => this.request.arrayBuffer();
+	public blob = () => this.request.blob();
+	public formData = () => this.request.formData();
+	public json = <T>(): Promise<T> => this.request.json();
+	public text = () => this.request.text();
 }
 
 export class Req<T = UnknownRecord> extends BaseRequest {

@@ -11,17 +11,10 @@
     "logger":  { "type": "string" },
     "schemas": {
       "type": "object",
-      "required": ["pattern"],
+      "additionalProperties": false,
       "properties": {
-        "pattern": {
-          "type": ["string", "array"],
-          "items": { "type": "string" },
-          "default": "./src/**/*.schema.ts"
-        },
-        "ignore": {
-          "type": "array",
-          "items": { "type": "string" }
-        }
+        "pattern": { "type": ["string", "array"], "items": { "type": "string" }, "default": "./src/**/*.schema.ts" },
+        "ignore": { "type": "array", "items": { "type": "string" }, "default": [] }
       }
     },
     "build": { "$ref": "https://example.com/schema/build", "default": {} },
