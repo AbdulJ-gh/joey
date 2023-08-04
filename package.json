@@ -4,6 +4,7 @@
   "main": "./Core/index.js",
   "type": "module",
   "description": "A framework for Cloudflare Workers",
+  "sideEffects": false,
   "scripts": {
     "build": "npm run cleanup && tsc -p tsconfig.json && tsc -p bin/tsconfig.json && node scripts/create-dist-package.js",
     "build:pub": "npm run cleanup && tsc -p tsconfig-build.json && tsc -p bin/tsconfig.json",
