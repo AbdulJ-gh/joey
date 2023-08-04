@@ -2,7 +2,7 @@ import Ajv, { JSONSchemaType } from 'ajv';
 import fg from 'fast-glob';
 import * as esbuild from 'esbuild';
 import standaloneCode from 'ajv/dist/standalone/index.js';
-import { TempFile } from './index.js';
+import TempFile from './tempFile.js';
 import { Worker } from '../types';
 
 type ReturnType = {

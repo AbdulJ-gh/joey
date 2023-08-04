@@ -3,7 +3,7 @@ import { join, sep } from 'path';
 import { fileURLToPath } from 'url';
 import { tmpdir } from 'os';
 import { spawn } from 'child_process';
-import { TempFile } from './index.js';
+import TempFile from './tempFile';
 
 const { cwd, stdout, stderr } = process;
 

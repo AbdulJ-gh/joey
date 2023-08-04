@@ -1,4 +1,6 @@
-import { sizeLimit, getBodyType, validationHandler } from '.';
+import { sizeLimit } from './sizeLimit';
+import { getBodyType } from './getBodyType';
+import { validationHandler } from './validationHandler';
 import type { RegisteredHandler, Config } from '../../types';
 import type Context from '../../context';
 
