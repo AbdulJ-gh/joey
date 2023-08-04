@@ -16,7 +16,7 @@
     "removeComments": true,
     "types": ["@cloudflare/workers-types", "@types/node"]
   },
-  "include": ["src"],
-  "exclude": ["bin", "testUtils"]
+  "include": ["src", "testUtils"],
+  "exclude": ["bin"]
 }
 
