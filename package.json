@@ -1,7 +1,7 @@
 {
   "name": "joeycf",
   "version": "0.3.20",
-  "main": "./src/Core/index.js",
+  "main": "./Core/index.js",
   "type": "module",
   "description": "A framework for Cloudflare Workers",
   "scripts": {
