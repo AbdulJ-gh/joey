@@ -16,4 +16,4 @@ refs.forEach(ref => {
 })
 copyFileSync('./bin/schemas/worker.json', './lib/bin/schemas/worker.json')
 copyFileSync('./bin/buildOptions.js', './lib/bin/buildOptions.js')
-rmSync('./lib/testUtils', { recursive: true });
+rmSync('./lib/testUtils', { recursive: true, force: true  });
