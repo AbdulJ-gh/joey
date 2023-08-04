@@ -4,7 +4,7 @@
     "module": "esnext",
     "skipLibCheck": true,
     "declaration": true,
-    "outDir": "lib",
+    "outDir": "lib/src",
     "strict": true,
     "esModuleInterop": true,
     "moduleResolution": "node",
@@ -17,5 +17,5 @@
     "types": ["@cloudflare/workers-types"]
   },
   "include": ["src"],
-  "exclude": ["src/**/*.test.ts", "testUtils"]
+  "exclude": ["src/**/*.test.ts"]
 }
