@@ -1,5 +1,5 @@
 export type UnparsedParam = string | string[];
-export type Param = null | boolean | number | string | void;
+export type Param = null | boolean | number | string | undefined;
 export type ParamsRecord = Record<string, Param | Param[]>;
 
 /**
@@ -8,8 +8,7 @@ export type ParamsRecord = Record<string, Param | Param[]>;
  */
 export function transformParam(param: string): Param {
 	function parseIntElseDecodeUri(param: string): number | string {
-		// `0` is falsey so handled in switch statement below
-		return parseSafeInt(param) || decodeURIComponent(param);
+		return parseSafeInt(param) ?? decodeURIComponent(param);
 	}
 
 	switch (param.toLowerCase()) {
@@ -19,15 +18,13 @@ export function transformParam(param: string): Param {
 			return false;
 		case 'null':
 			return null;
-		case '0':
-			return 0;
 		default:
 			return parseIntElseDecodeUri(param);
 	}
 }
 
 
-function parseSafeInt(param: string): number | void {
+function parseSafeInt(param: string): number | undefined {
 	if (param.length <= 17) {
 		const paramStringArray = param.split('');
 		const numChars = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];

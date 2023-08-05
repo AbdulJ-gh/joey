@@ -10,7 +10,7 @@ export async function parseBody(req: Req, config: Config): Promise<void> {
 	}
 
 	try {
-		let headerMatch: RequestBodyStream|undefined;
+		let headerMatch: RequestBodyStream | undefined;
 
 		if (parseBody === 'content-type-header') {
 			const contentHeader = headers['content-type'].toLowerCase();

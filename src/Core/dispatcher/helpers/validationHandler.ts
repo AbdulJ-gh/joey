@@ -8,7 +8,7 @@ export function validationHandler(
 	context: Context,
 	bodyType: BodyType,
 	config: Config
-): Res|void {
+): Res | void {
 	const { res } = context;
 
 	function validationResponse(type: keyof Validator): Res | void {

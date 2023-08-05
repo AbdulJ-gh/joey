@@ -41,7 +41,7 @@ export default class Joey {
 			try {
 				this.logger && ctx.waitUntil(this.logger['exceptionHandler'](err) as Promise<void>);			/** Log exception */
 				const { status, body, headers } = this.config.internalServerError;												/** Respond with default 500 response */
-				return new Response((body ?? null) as BodyInit, { status, headers });
+				return new Response((body ?? null) as BodyInit, { status, headers: headers ?? {} });
 			} catch (e) {
 				console.error('ERROR:', e);
 				return new Response('Something went wrong', { status: 500 });				/** Last ditch 500 response */
