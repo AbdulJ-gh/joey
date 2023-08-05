@@ -6,7 +6,7 @@ export type Handler = {
   src: string;
   options?: Record<string, string>;
   middleware: string[];
-	schema: Record<keyof Validator, string>
+	schema: Record<Validator, string>
 }
 
 export type Worker = {

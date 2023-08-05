@@ -4,7 +4,7 @@ import { tmpdir } from 'os';
 import _ from 'lodash';
 
 import { Composer, TempFile, getWorkerConfig, validateWorker, throwError, ERRORS, finalBuild, generateValidators } from './helpers/index.js';
-import type { Worker } from './types.js'
+import type { Worker, Validator } from './types.js'
 
 export default async function main() {
 	/** Get and validate worker configuration */
@@ -57,10 +57,10 @@ export default async function main() {
 
 		let validator = '__UNSAFE_VALIDATOR_REF__{';
 		for (const key in schema) {
-			if (!schemaNames.includes(schema[key])) {
-				throwError(ERRORS.CANNOT_FIND_SCHEMA(schema[key]))
+			if (!schemaNames.includes(schema[key as Validator])) {
+				throwError(ERRORS.CANNOT_FIND_SCHEMA(schema[key as Validator]))
 			}
-			validator += `${key}:validators.${schema[key]},`
+			validator += `${key}:validators.${schema[key as Validator]},`
 		}
 		validator += '}__UNSAFE_VALIDATOR_REF__';
 

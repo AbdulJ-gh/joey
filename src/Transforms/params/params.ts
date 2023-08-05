@@ -1,5 +1,5 @@
 export type UnparsedParam = string | string[];
-export type Param = null | boolean | number | string | undefined;
+export type Param = null | boolean | number | string;
 export type ParamsRecord = Record<string, Param | Param[]>;
 
 /**

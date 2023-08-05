@@ -14,15 +14,12 @@ export function parseQueryParams(req: Req, options: TransformQueryParams): void 
 		return transformParam(param);
 	};
 
-
 	params.forEach((value, key) => {
-		const existingValue = req.queryParams[key];
 		const transformedValue = getValue(value);
-
-		if (existingValue === undefined) {
+		if (!req.queryParams[key]) {
 			req.queryParams[key] = transformedValue;
 		} else {
-			req.queryParams[key] = [existingValue, transformedValue].flat();
+			req.queryParams[key] = [req.queryParams[key], transformedValue].flat();
 		}
 	});
 }
