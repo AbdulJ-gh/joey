@@ -7,10 +7,6 @@ export type ParamsRecord = Record<string, Param | Param[]>;
  * Does not parse floats
  */
 export function transformParam(param: string): Param {
-	function parseIntElseDecodeUri(param: string): number | string {
-		return parseSafeInt(param) ?? decodeURIComponent(param);
-	}
-
 	switch (param.toLowerCase()) {
 		case 'true':
 			return true;
@@ -19,12 +15,12 @@ export function transformParam(param: string): Param {
 		case 'null':
 			return null;
 		default:
-			return parseIntElseDecodeUri(param);
+			return parseSafeInt(param) ?? decodeURIComponent(param);
 	}
 }
 
 
-function parseSafeInt(param: string): number | undefined {
+export function parseSafeInt(param: string): number | null {
 	if (param.length <= 17) {
 		const paramStringArray = param.split('');
 		const numChars = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
@@ -38,4 +34,5 @@ function parseSafeInt(param: string): number | undefined {
 			}
 		}
 	}
+	return null;
 }
