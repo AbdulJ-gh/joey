@@ -1,7 +1,4 @@
-export { getQueryParam, getQueryParams, getAllQueryParams } from './queryParams';
-
-/**
- * Is there a reason I can't just export these like so:
- *
- * export * from './queryParams'
- */
+export { getQueryParam } from './getQueryParam';
+export { getQueryParams } from './getQueryParams';
+export { getAllQueryParams } from './getAllQueryParams';
+export type { UnparsedParam, Param, UnparsedParams, Params } from './types';

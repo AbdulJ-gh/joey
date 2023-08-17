@@ -1,28 +1,35 @@
-import type { Req, UnknownRecord } from './req';
+import type { ExecutionContext } from '@cloudflare/workers-types';
+import type { Req, ReqArgs } from './req';
 import type { Logger } from '../Logger';
 import { Res } from './res';
 
-interface Context<ENV = unknown, DEPS = unknown, REQ = UnknownRecord> extends ExecutionContext {
+
+interface IContext<ENV = unknown, DEPS = unknown, REQ extends ReqArgs = ReqArgs> extends ExecutionContext {
 	req: Req<REQ>;
 	res: Res;
-	logger: Logger|Console;
 	env: ENV;
+	logger: Logger|Console;
 	deps?: DEPS;
 }
 
-class Context<ENV = unknown, DEPS = unknown, REQ = UnknownRecord> {
+class Context<ENV = unknown, DEPS = unknown, REQ extends ReqArgs = ReqArgs> implements IContext {
+	public res: Res = new Res();
+	public deps?: DEPS;
+	public waitUntil = () => {};
+	public passThroughOnException = () => {};
+
 	constructor(
 		ctx: ExecutionContext,
-    public req: Req<REQ>,
-    public env: ENV,
-    public logger: Logger|Console = console
+		public req: Req<REQ>,
+		public env: ENV,
+		public logger: Logger|Console = console
 	) {
 		this.init(ctx);
 	}
 
 	private init(ctx: ExecutionContext) {
 		Object.setPrototypeOf(this, ctx);
-		this.res = new Res();
+		// this.res = new Res(); // TOOD - Why was this here, will I have broken something by moving this to the public property?
 	}
 }
 

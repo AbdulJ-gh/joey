@@ -25,7 +25,7 @@ export async function contextualiseHandler(
 	globalConfig: Config,
 	context: Context,
 	middleware: MiddlewareHandler[]
-) {
+): Promise<void> {
 	// Adds base config to handler Config
 	consolidateConfig(registeredHandler, globalConfig);
 	// Adds base middleware to handler middleware
@@ -36,6 +36,5 @@ export async function contextualiseHandler(
 
 	/** Contextualise req object */
 	Req.parsePathParams(req, path, config.transformPathParams);
-	Req.parseQueryParams(req, config.transformQueryParams);
 	await Req.parseBody(req, config);
 }

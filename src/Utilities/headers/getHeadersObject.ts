@@ -17,8 +17,3 @@ export function getHeadersObject(headers: HeadersInit): Record<string, string> {
 
 	return headers;
 }
-
-export function getHeadersInstance(headers: HeadersInit): Headers {
-	if (headers instanceof Headers) return headers;
-	return new Headers(headers);
-}

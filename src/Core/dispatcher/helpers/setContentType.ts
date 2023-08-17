@@ -1,4 +1,4 @@
-import { getHeadersInstance } from '../../../Utilities';
+import { getHeadersInstance } from '../../../Utilities/headers';
 import { BodyType } from '../../types';
 
 /**

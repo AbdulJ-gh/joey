@@ -1,4 +1,4 @@
-import { cookie, CookieOptions } from '../Utilities/headers/';
+import { Cookie, type CookieOptions } from '../Utilities';
 import type { DeserialisedJson } from './types';
 
 export type ResponseBody = null | string | DeserialisedJson | ArrayBuffer | Blob | URLSearchParams | FormData;
@@ -10,7 +10,6 @@ export type ResponseObject = {
 };
 
 export declare type ResGetter = Omit<ResponseObject, 'headers'>;
-
 
 export class Res {
 	protected _body: ResponseBody;
@@ -78,10 +77,10 @@ export class Res {
 	public get cookie() {
 		return {
 			set: (name: string, value: string, options?: CookieOptions) => {
-				cookie.set(this.headers, name, value, options);
+				Cookie.set(this.headers, name, value, options);
 			},
 			clear: (name: string, options?: Pick<CookieOptions, 'domain' | 'path'>) => {
-				cookie.clear(this.headers, name, options);
+				Cookie.clear(this.headers, name, options);
 			}
 		};
 	}

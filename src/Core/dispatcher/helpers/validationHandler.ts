@@ -1,7 +1,8 @@
+import type { ErrorObject, ValidateFunction } from 'ajv';
 import { BodyType } from '../../types';
 import type { Config, Validator } from '../../types';
 import type Context from '../../context';
-import type { Res } from '../../res';
+import type { Res, ResponseObject } from '../../res';
 
 export function validationHandler(
 	validator: Validator,
@@ -12,7 +13,7 @@ export function validationHandler(
 	const { res } = context;
 
 	function validationResponse(type: keyof Validator): Res | void {
-		const validatorFn = validator[type];
+		const validatorFn = validator[type] as ValidateFunction;
 		if (validatorFn) {
 			const reqKeyMap: Record<keyof Validator, 'body'|'queryParams'|'pathParams'> = {
 				body: 'body',
@@ -23,11 +24,8 @@ export function validationHandler(
 			const validation = validatorFn(context.req[reqKeyMap[type]] as Record<string, string>);
 
 			if (!validation) {
-				res.set(config.validationError);
+				res.set(config.validationError as ResponseObject);
 				switch (config.validationErrors) {
-					case false:
-						// Uses the default validation error
-						return res;
 					case 'plaintext':
 						// Overrides the default validation error body with string
 						return res.body(
@@ -37,7 +35,7 @@ export function validationHandler(
 								? `The following validation error(s) occurred in the ${type}: ${validatorFn.errors}`
 								// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 								// @ts-ignore
-								: `The following validation error occurred in the ${type}: ${validatorFn.errors[0]}`
+								: `The following validation error occurred in the ${type}: ${(validatorFn.errors as ErrorObject[])[0]}`
 						);
 					case 'json': {
 						// Overrides the default validation error body with json. If already JSON, just adds/overrides the errors field
@@ -45,9 +43,10 @@ export function validationHandler(
 							message: 'Could not process request due to validation errors',
 							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 							// @ts-ignore
-							errors: config.allValidationErrors ? validatorFn.errors : validatorFn.errors[0]
+							errors: config.allValidationErrors ? validatorFn.errors : (validatorFn.errors as ErrorObject[])[0]
 						});
 					}
+					case false:
 					default:
 						break;
 				}

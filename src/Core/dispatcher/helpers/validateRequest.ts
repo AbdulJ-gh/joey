@@ -1,14 +1,14 @@
 import { sizeLimit } from './sizeLimit';
 import { getBodyType } from './getBodyType';
 import { validationHandler } from './validationHandler';
-import type { RegisteredHandler, Config } from '../../types';
+import type { RegisteredHandler, Config, ResponseLike } from '../../types';
 import type Context from '../../context';
 
 /** ---- Validation ----
  * Check size limit, weird place to do this, it's too implementation detaily
  * Validate request path, query and body
  * */
-export function validateRequest(registeredHandler: RegisteredHandler, context: Context) {
+export function validateRequest(registeredHandler: RegisteredHandler, context: Context): ResponseLike | void {
 	const { config, validator } = registeredHandler as RegisteredHandler<Config>;
 
 	const sizeLimitResponse = sizeLimit(context.req.url, config);

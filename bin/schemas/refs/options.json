@@ -27,14 +27,7 @@
       "default": {}
     },
     "transformPathParams": { "type": "boolean", "default": true },
-    "transformQueryParams": {
-      "type": "object",
-      "properties": {
-        "transform": { "type": "boolean", "default": true },
-        "listDelimiter": { "enum": [ ",", ";", null ], "default": null }
-      },
-      "default": {}
-    },
+    "transformQueryParams": { "type": "boolean", "default": true },
     "allValidationErrors": { "type": "boolean", "default": false },
     "validationErrors": { "enum": [ false, "plaintext", "json" ], "default": "json" },
     "prettifyJson": { "type": "boolean", "default": false },

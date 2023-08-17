@@ -66,11 +66,11 @@
     "node": ">=18"
   },
   "peerDependencies": {
-    "@cloudflare/workers-types": "^4.20230518.0"
+    "@cloudflare/workers-types": "^4.20230814.0"
   },
   "devDependencies": {
     "@ava/typescript": "^4.1.0",
-    "@cloudflare/workers-types": "^4.20230724.0",
+    "@cloudflare/workers-types": "^4.20230814.0",
     "@types/lodash": "^4.14.195",
     "@types/node": "^18.16.18",
     "@typescript-eslint/eslint-plugin": "^6.2.0",
@@ -89,7 +89,7 @@
     "typescript": "^5.1.6",
     "undici": "^5.22.1",
     "watch": "^1.0.2",
-    "wrangler": "^3.3.0"
+    "wrangler": "^3.5.1"
   },
   "dependencies": {
     "ajv": "^8.12.0",

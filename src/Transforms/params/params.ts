@@ -1,10 +1,22 @@
-export type UnparsedParam = string | string[];
-export type Param = null | boolean | number | string;
-export type ParamsRecord = Record<string, Param | Param[]>;
+import type { Param } from '../../Utilities';
 
 /**
- * Only parses integers between 9007199254740991 >= int >= -9007199254740991, including -/+ sign
- * Does not parse floats
+ * `true` <- 'true' case-insensitively.
+ *
+ *
+ * `false` <- 'false' case-insensitively.
+ *
+ *
+ * `null` <- 'null' case-insensitively
+ *
+ *
+ * int <- 9007199254740991 >= int >= -9007199254740991, including -/+ sign.
+ *
+ *
+ * floats ->Not supported<-
+ *
+ *
+ * string <- Everything else URI component decoded
  */
 export function transformParam(param: string): Param {
 	switch (param.toLowerCase()) {
@@ -18,7 +30,6 @@ export function transformParam(param: string): Param {
 			return parseSafeInt(param) ?? decodeURIComponent(param);
 	}
 }
-
 
 export function parseSafeInt(param: string): number | null {
 	if (param.length <= 17) {
