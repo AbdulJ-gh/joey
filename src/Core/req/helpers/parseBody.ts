@@ -1,9 +1,9 @@
-import { parseFormData } from '../../../Utilities/formData';
-import type { Req, RequestBodyStream } from '../req';
-import { Config } from '../../types';
+// import { parseFormData } from '../../../Utilities/formData';
+import type { Req } from '../req';
+import type { Config, RequestBodyStream } from '../../types';
 
 export async function parseBody(req: Req, config: Config): Promise<void> {
-	const { parseBody, headers, contentHeaderParseMap } = config;
+	const { parseBody, contentHeaderParseMap } = config;
 
 	if (parseBody === false) {
 		return;
@@ -13,10 +13,10 @@ export async function parseBody(req: Req, config: Config): Promise<void> {
 		let headerMatch: RequestBodyStream | undefined;
 
 		if (parseBody === 'content-type-header') {
-			const contentHeader = headers['content-type'].toLowerCase();
+			const contentHeader = req.headers['content-type'].toLowerCase();
 			const matcher = contentHeaderParseMap.matchers.find(matcher => {
 				const query = matcher.query.toLowerCase();
-				return matcher.matcher === 'exact' ? query === contentHeader : contentHeader.includes(query);
+				return matcher.matcher === 'exclusive' ? query === contentHeader : contentHeader.includes(query);
 			});
 			headerMatch = matcher?.bodyType ?? null;
 		}
@@ -30,7 +30,8 @@ export async function parseBody(req: Req, config: Config): Promise<void> {
 					req.body = await req.json();
 					break;
 				case 'formData':
-					req.body = parseFormData(await req.formData());
+					req.body = await req.formData();
+					// req.body = parseFormData(await req.formData());
 					break;
 				case 'blob':
 					req.body = await req.blob();

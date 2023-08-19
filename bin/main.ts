@@ -73,6 +73,9 @@ export default async function main() {
 		};
 	})
 
+	// TODO - Could be doing more verifications, such as:
+	//  * Ensure no route pattern appears twice even with different param names E.g. /:id and /:name cannot coexist)
+	//  * Check no route pattern uses the same param twice E.g. /user/:id/org/:id, it sh/could be /user/:id/org/:orgId)
 
 	/** Compile app */
 	const app = new Composer(tempDir);

@@ -1,6 +1,6 @@
 import { sizeLimit } from './sizeLimit';
-import { getBodyType } from './getBodyType';
-import { validationHandler } from './validationHandler';
+// import { getBodyType } from './getBodyType';
+// import { validationHandler } from './validationHandler';
 import type { RegisteredHandler, Config, ResponseLike } from '../../types';
 import type Context from '../../context';
 
@@ -9,13 +9,13 @@ import type Context from '../../context';
  * Validate request path, query and body
  * */
 export function validateRequest(registeredHandler: RegisteredHandler, context: Context): ResponseLike | void {
-	const { config, validator } = registeredHandler as RegisteredHandler<Config>;
-
+	// const { config, validator } = registeredHandler as RegisteredHandler<Config>;
+	const { config } = registeredHandler as RegisteredHandler<Config>;
 	const sizeLimitResponse = sizeLimit(context.req.url, config);
 	if (sizeLimitResponse) return sizeLimitResponse;
-	if (validator) {
-		const bodyType = getBodyType(context.req.body || null);
-		const response = validationHandler(validator, context, bodyType, config);
-		if (response) return response;
-	}
+	// if (validator) { // TODO - Refactor
+	// 	const bodyType = getBodyType(context.req.body);
+	// 	const response = validationHandler(validator, context, bodyType, config);
+	// 	if (response) return response;
+	// }
 }

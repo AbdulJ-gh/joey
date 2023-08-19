@@ -1,3 +1,5 @@
+import type { HeadersInit } from '@cloudflare/workers-types';
+
 export function getHeadersObject(headers: HeadersInit): Record<string, string> {
 	if (Array.isArray(headers)) {
 		return headers.reduce((acc: Record<string, string>, cur: [string, string]) => {
@@ -15,5 +17,5 @@ export function getHeadersObject(headers: HeadersInit): Record<string, string> {
 		return headersObj;
 	}
 
-	return headers;
+	return headers as Record<string, string>;
 }

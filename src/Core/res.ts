@@ -17,9 +17,9 @@ export class Res {
 	public headers: Headers;
 
 	constructor(body?: ResponseBody, status?: number, headers?: HeadersInit) {
-		this._body = body || null;
-		this._status = status || null;
-		this.headers = new Headers(headers || {});
+		this._body = body ?? null;
+		this._status = status ?? null;
+		this.headers = new Headers(headers ?? {});
 	}
 
 	/**
@@ -31,12 +31,12 @@ export class Res {
 		if (this._body) {
 			return {
 				body: this._body,
-				status: this._status ? this._status : 200
+				status: this._status ?? 200
 			};
 		}
 		return {
 			body: this._body,
-			status: this._status ? this._status : 204
+			status: this._status ?? 204
 		};
 	}
 

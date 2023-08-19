@@ -1,8 +1,17 @@
 import type { ErrorObject, ValidateFunction } from 'ajv';
-import { BodyType } from '../../types';
-import type { Config, Validator } from '../../types';
+import { BodyType, DeserialisedJson } from '../../types';
+import type { Config } from '../../types';
 import type Context from '../../context';
 import type { Res, ResponseObject } from '../../res';
+import type { Params } from '../../../Utilities';
+
+type ValidatorFn<DATA> = (data: DATA) => boolean; // Validator returns a boolean but create an errors property within the function
+
+export type Validator = {
+	path?: ValidatorFn<Params>,
+	query?: ValidatorFn<Params>,
+	body?: ValidatorFn<DeserialisedJson>, // Only supports JSON body validation, and maybe form data as key value pairs only?
+}
 
 export function validationHandler(
 	validator: Validator,

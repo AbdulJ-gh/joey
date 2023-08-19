@@ -1,21 +1,23 @@
 import type Context from './context';
 import type { Res, ResponseObject } from './res';
-import type { RequestBodyStream, ReqArgs } from './req';
-import type { Params } from '../Utilities';
+import type { ReqArgs } from './req';
+import type { Validator } from './dispatcher/helpers/validationHandler';
 
 export type DeserialisedJson = Record<string, unknown> | unknown[];
 export type Method = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'OPTIONS'; // Missing 'CONNECT' | 'HEAD' | 'TRACE';
 
 export enum BodyType {
-	NoContent = 'noContent',
-	Plaintext =	'plaintext',
-	JSON = 'json',
-	ArrayBuffer = 'arrayBuffer',
-	TypedArray = 'typedArray',
-	Blob = 'blob',
-	UrlEncodedFormData = 'urlEncodedFormData',
-	FormData = 'formData'
+	NoContent = 'noContent', // no body or null json
+	Plaintext =	'plaintext', // text(): Promise<string>;
+	JSON = 'json', // json<T>(): Promise<T>;
+	ArrayBuffer = 'arrayBuffer', // arrayBuffer(): Promise<ArrayBuffer>;
+	TypedArray = 'typedArray', // arrayBuffer(): Promise<ArrayBuffer>; ?? For Response body only?
+	Blob = 'blob', // blob(): Promise<Blob>;
+	UrlEncodedFormData = 'urlEncodedFormData', // formData(): Promise<FormData>; ??? For Response body only?
+	FormData = 'formData' // formData(): Promise<FormData>;
 }
+
+export type RequestBodyStream = null | 'plaintext' | 'json' | 'buffer' | 'blob' | 'formData';
 
 export type ResponseLike = Response | ResponseObject | Res;
 
@@ -27,7 +29,7 @@ type DefaultError = {
 };
 
 type ContentHeaderParseMap = {
-	matchers: { query: string, bodyType: RequestBodyStream, matcher: 'inclusive'|'exact' }[];
+	matchers: { query: string, bodyType: RequestBodyStream, matcher: 'inclusive' | 'exclusive' }[];
 	fallback: BodyType;
 }
 
@@ -70,13 +72,6 @@ export type AsyncHandler<ENV = unknown, DEPS = unknown, REQ extends ReqArgs = Re
 export type Handler<ENV = unknown, DEPS = unknown, REQ extends ReqArgs = ReqArgs> =
 	SyncHandler<ENV, DEPS, REQ> | AsyncHandler<ENV, DEPS, REQ>;
 
-type ValidatorFn<DATA> = (data: DATA) => boolean; // Validator returns a boolean but create an errors property within the function
-
-export type Validator = {
-	path?: ValidatorFn<Params>,
-	query?: ValidatorFn<Params>,
-	body?: ValidatorFn<DeserialisedJson>, // Only supports JSON body validation, and maybe form data as key value pairs only?
-}
 
 export type RegisteredHandler<CONFIG = Partial<Config>> = {
 	handler: Handler;

@@ -1,3 +1,5 @@
+import type { ExecutionContext, Request } from '@cloudflare/workers-types';
+
 type LogLevel = 'off' | 'debug' | 'info' | 'log' | 'warn' | 'error';
 type LoggerOptions = {
 	logLevel?: LogLevel;
@@ -25,8 +27,8 @@ export class Logger {
 	private readonly levels: LogLevel[] = ['off', 'debug', 'info', 'log', 'warn', 'error'];
 	[key: string]: unknown;
 	private ctx: ExecutionContext = <ExecutionContext>{};
-	private incomingEventHandler: IncomingEventHandler = async () => { /**/ };
-	private logHandler: LogHandler = async () => { /**/ };
+	private incomingEventHandler: IncomingEventHandler = async () => {};
+	private logHandler: LogHandler = async () => {};
 	private exceptionHandler: ExceptionHandler = (error: unknown) => { this.levelLog(1, error); };
 
 	constructor(options?: LoggerOptions) {
@@ -46,7 +48,6 @@ export class Logger {
 		logger.incomingEventHandler = handler;
 	}
 
-
 	public static logHandler(logger: Logger, handler: LogHandler) {
 		logger.logHandler = handler;
 	}
@@ -57,7 +58,9 @@ export class Logger {
 
 	private tail(logLevel: number, ...args: unknown[]) {
 		const level = this.levels[logLevel];
-		if (level !== 'off') console[level](...args);
+		if (level !== 'off') {
+			console[level](...args);
+		}
 	}
 
 	private levelLog(logLevel: number, ...args: unknown[]): void {

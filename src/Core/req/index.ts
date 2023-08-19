@@ -1,1 +1,1 @@
-export { Req, type RequestBodyStream, type ReqArgs } from './req';
+export { Req, type ReqArgs } from './req';

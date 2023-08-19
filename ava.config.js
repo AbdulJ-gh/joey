@@ -1,6 +1,6 @@
 export default {
 	require: ['./testUtils/testRuntimeGlobals.js'],
-	files: ['src/**/*.test.ts', 'bin/**/*.test.ts'],
+	files: ['src/**/*.test.ts', 'bin/**/*.test.ts'], // TODO - make bin tests run
 	typescript: {
 		rewritePaths: { 'src/': 'lib/src/' },
 		compile: 'tsc'
