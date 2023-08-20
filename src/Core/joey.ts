@@ -6,7 +6,7 @@ import type {
 
 import {
 	fetch,
-	queue, type QueueTask,
+	queue, type MessageQueueTasks,
 	scheduled, type CronJobs,
 	email
 } from './handlers';
@@ -19,24 +19,34 @@ type Register = Record<keyof ExportedHandler, {
 
 // fetch - method + route
 // scheduled - cron
-// queue - one off
+// queue - Can consume multiple queue, and will start of in batch process
 
+
+const initialCronJobs: CronJobs = {
+	'*/1 * * * *': (ctx) => {
+		console.log('THIS IS IN THE ACTUAL HANDLER', ctx.controller.cron);
+	}
+};
+
+const initialMessageQueueTasks: MessageQueueTasks = {
+	'name-o-queue': {
+		processMode: 'aggregate',
+		handler: (ctx) => {
+			console.log('THIS IS A QUEUE TASK', ctx.batch.queue);
+		},
+		validator: () => true,
+		deadLetterQueue: 'NAME-O-DLQ'
+	}
+};
 
 export default class Joey implements ExportedHandler {
 	readonly register: Register;
-	readonly cronJobs: CronJobs = {};
-	readonly queueTask: QueueTask;
-	readonly queue: ExportedHandlerQueueHandler;
+	readonly cronJobs: CronJobs;
+	readonly messageQueueTask: MessageQueueTasks;
 
 	constructor(
-		public readonly cronJobs: CronJobs = {
-			'*/1 * * * *': (ctx) => {
-				console.log('THIS IS IN THE ACTUAL HANDLER', ctx.controller.cron);
-			}
-		},
-		public readonly queueTask: QueueTask = () => {
-			console.log('THIS IS A QUEUE TASK');
-		}
+		public readonly cronJobs: CronJobs = initialCronJobs,
+		public readonly messageQueueTask: MessageQueueTasks = initialMessageQueueTasks
 	) {
 	}
 
@@ -44,7 +54,7 @@ export default class Joey implements ExportedHandler {
 
 	public queue: ExportedHandlerQueueHandler = async (...args: unknown[]): Promise<void> => {
 		queue({
-			task: this.queueTask,
+			tasks: this.messageQueueTask,
 			logger: 'placeholder'
 		})(...args);
 	};

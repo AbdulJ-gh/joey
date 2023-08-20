@@ -1,27 +1,29 @@
 import type { Scheduled } from './types';
 import { ScheduledContext } from './context';
 
-export const scheduled: Scheduled = ({ jobs, logger }) =>
-	async (controller, env, ctx): Promise<void> => {
-		if (jobs[controller.cron]) {
-			const context = new ScheduledContext(ctx, controller, env, logger);
-			await jobs[controller.cron](context);
-		}
-	};
+export const scheduled: Scheduled = ({ jobs, logger }) => async (
+	controller,
+	env,
+	ctx
+): Promise<void> => {
+	if (jobs[controller.cron]) {
+		const context = new ScheduledContext(ctx, controller, env, logger);
+		await jobs[controller.cron](context);
+	}
+};
 
 
 /** Example
 
-interface ENV { someEnv: string; }
-interface DEPS { 	someDep: string;}
+ interface Env { someEnv: string; }
+interface Deps { 	someDep: string;}
+const dependencies: Deps = { someDep: 'hello dep' };
 
-const Deps: DEPS = { someDep: 'hello dep' };
-
-const handler: ScheduledHandler<ENV, typeof Deps> = async ({
+const handler: ScheduledHandler<Env, Deps> = async ({
 	controller,
 	env,
 	logger,
-	deps = Deps,
+	deps = dependencies,
 	waitUntil,
 	passThroughOnException
 }) => {

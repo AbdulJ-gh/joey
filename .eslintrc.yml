@@ -55,6 +55,7 @@ rules:
   spaced-comment: off
   dot-notation: off
   no-useless-constructor: off
+  no-extra-semi: warn
   '@typescript-eslint/no-unsafe-assignment':
     - warn
 
