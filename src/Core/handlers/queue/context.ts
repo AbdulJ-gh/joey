@@ -1,8 +1,12 @@
 import type { ExecutionContext, MessageBatch } from '@cloudflare/workers-types';
-import type { UnknownRecord } from '../../types';
 import type { Logger } from './types';
+import type { UnknownRecord } from '../../types';
 
-interface IQueueContext<ENV = UnknownRecord, DEPS = UnknownRecord, MSG = null> extends ExecutionContext {
+interface IQueueContext<
+	ENV extends UnknownRecord = UnknownRecord,
+	DEPS extends UnknownRecord = UnknownRecord,
+	MSG = unknown
+> extends ExecutionContext {
 	batch: MessageBatch;
 	message: MSG;
 	env: ENV;
@@ -10,7 +14,11 @@ interface IQueueContext<ENV = UnknownRecord, DEPS = UnknownRecord, MSG = null> e
 	deps: DEPS;
 }
 
-export class QueueContext<ENV = unknown, DEPS = unknown, MSG = null> implements IQueueContext {
+export class QueueContext<
+	ENV extends UnknownRecord = UnknownRecord,
+	DEPS extends UnknownRecord = UnknownRecord,
+	MSG = unknown
+> implements IQueueContext {
 	public deps = <DEPS>{};
 	public message = <MSG>null;
 	public waitUntil = () => {};
@@ -25,8 +33,8 @@ export class QueueContext<ENV = unknown, DEPS = unknown, MSG = null> implements 
 		Object.setPrototypeOf(this, ctx);
 	}
 
-	public setMessage<MSG = unknown>(message: MSG) {
-		this.message = message;
+	public setMessage(message: unknown) {
+		this.message = message as MSG;
 	}
 }
 

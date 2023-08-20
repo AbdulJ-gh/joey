@@ -1,5 +1,5 @@
 import type { BatchTask } from '../types';
-import { QueueContext } from '../context';
+import type { QueueContext } from '../context';
 import { validateAggregate } from './validate';
 import { handleAggregate } from './handle';
 

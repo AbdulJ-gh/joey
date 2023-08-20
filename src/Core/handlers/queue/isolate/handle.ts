@@ -1,6 +1,6 @@
 import type { Message, Queue } from '@cloudflare/workers-types';
 import type { BatchTask } from '../types';
-import { QueueContext } from '../context';
+import type { QueueContext } from '../context';
 
 export async function handleIsolate(
 	message: Message,
@@ -9,11 +9,10 @@ export async function handleIsolate(
 ): Promise<void> {
 	const { handler, deadLetterQueue } = task;
 	context.setMessage(message);
-
 	try {
 		await handler(context);
 	} catch (error) {
-		if (context.env[deadLetterQueue]) {
+		if (deadLetterQueue && context.env[deadLetterQueue]) {
 			await (context.env[deadLetterQueue] as Queue).send({
 				reason: 'Message processor threw error',
 				attachment: message,

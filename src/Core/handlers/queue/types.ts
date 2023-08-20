@@ -1,7 +1,12 @@
 import type { ExportedHandlerQueueHandler } from '@cloudflare/workers-types';
 import type { QueueContext } from './context';
+import type { UnknownRecord } from '../../types';
 
-export type QueueHandler<ENV = unknown, DEPS = unknown, MSG = unknown> = (
+export type QueueHandler<
+	ENV extends UnknownRecord = UnknownRecord,
+	DEPS extends UnknownRecord = UnknownRecord,
+	MSG = unknown
+> = (
 	context: QueueContext<ENV, DEPS, MSG>
 ) => Promise<void>|void;
 

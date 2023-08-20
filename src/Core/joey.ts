@@ -1,7 +1,10 @@
 import type {
 	ExportedHandler,
 	ExportedHandlerQueueHandler,
-	ExportedHandlerScheduledHandler
+	ExportedHandlerScheduledHandler,
+	ExecutionContext,
+	MessageBatch,
+	ScheduledController
 } from '@cloudflare/workers-types';
 
 import {
@@ -12,9 +15,7 @@ import {
 } from './handlers';
 
 
-type Register = Record<keyof ExportedHandler, {
-	method: string
-}>
+type Register = Record<string, unknown>
 
 
 // fetch - method + route
@@ -39,28 +40,35 @@ const initialMessageQueueTasks: MessageQueueTasks = {
 	}
 };
 
+type QueueArgs = [MessageBatch, unknown, ExecutionContext]
+type ScheduledArgs = [ScheduledController, unknown, ExecutionContext]
+
 export default class Joey implements ExportedHandler {
-	readonly register: Register;
-	readonly cronJobs: CronJobs;
-	readonly messageQueueTask: MessageQueueTasks;
+	public readonly register;
+	public readonly cronJobs: CronJobs;
+	public readonly messageQueueTask: MessageQueueTasks;
 
 	constructor(
-		public readonly cronJobs: CronJobs = initialCronJobs,
-		public readonly messageQueueTask: MessageQueueTasks = initialMessageQueueTasks
+		register: Register = {},
+		cronJobs: CronJobs = initialCronJobs,
+		messageQueueTask: MessageQueueTasks = initialMessageQueueTasks
 	) {
+		this.register = register;
+		this.cronJobs = cronJobs;
+		this.messageQueueTask = messageQueueTask;
 	}
 
 	public fetch = fetch;
 
-	public queue: ExportedHandlerQueueHandler = async (...args: unknown[]): Promise<void> => {
-		queue({
+	public queue: ExportedHandlerQueueHandler = async (...args: QueueArgs): Promise<void> => {
+		await queue({
 			tasks: this.messageQueueTask,
 			logger: 'placeholder'
 		})(...args);
 	};
 
-	public scheduled: ExportedHandlerScheduledHandler = async (...args: unknown[]): Promise<void> => {
-		scheduled({
+	public scheduled: ExportedHandlerScheduledHandler = async (...args: ScheduledArgs): Promise<void> => {
+		await scheduled({
 			jobs: this.cronJobs,
 			logger: 'placeholder'
 		})(...args);

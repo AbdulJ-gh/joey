@@ -1,9 +1,8 @@
 import type { QueueConsumer } from './types';
+import type { UnknownRecord } from '../../types';
 import { QueueContext } from './context';
 import { processIsolate } from './isolate';
 import { processAggregate } from './aggregate';
-
-// TODO Queue and CfQueue are very different so will cause confusion, change names
 
 export const queue: QueueConsumer = ({ tasks, logger }) => async (
 	batch,
@@ -12,7 +11,7 @@ export const queue: QueueConsumer = ({ tasks, logger }) => async (
 ): Promise<void> => {
 	const task = tasks[batch.queue];
 	if (task) {
-		const context = new QueueContext(ctx, batch, env, logger);
+		const context = new QueueContext(ctx, batch, env as UnknownRecord, logger);
 
 		if (task.processMode === 'aggregate') {
 			await processAggregate(context, task);
