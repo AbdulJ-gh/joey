@@ -28,11 +28,9 @@
     },
     "transformPathParams": { "type": "boolean", "default": true },
     "transformQueryParams": { "type": "boolean", "default": true },
-    "allValidationErrors": { "type": "boolean", "default": false },
-    "validationErrors": { "enum": [ false, "plaintext", "json" ], "default": "json" },
-    "prettifyJson": { "type": "boolean", "default": false },
-    "maxUrlLength": { "type": "integer", "default": 2048 },
-    "maxQueryLength": { "type": "integer", "default": 1024 },
+    "validationErrors": { "type": "boolean", "default": true },
+    "allValidationErrors": { "type": "boolean", "default": true },
+    "prettifyJson": { "type": "boolean", "default": true },
     "emitAllowHeader": { "type": "boolean", "default": true },
     "headers": { "type": "object", "default": {} }
   }

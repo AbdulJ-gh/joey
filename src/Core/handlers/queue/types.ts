@@ -1,12 +1,7 @@
 import type { ExportedHandlerQueueHandler } from '@cloudflare/workers-types';
 import type { QueueContext } from './context';
-import type { UnknownRecord } from '../../types';
 
-export type QueueHandler<
-	ENV extends UnknownRecord = UnknownRecord,
-	DEPS extends UnknownRecord = UnknownRecord,
-	MSG = unknown
-> = (
+export type QueueHandler<ENV = unknown, DEPS = unknown, MSG = unknown> = (
 	context: QueueContext<ENV, DEPS, MSG>
 ) => Promise<void>|void;
 
@@ -27,4 +22,4 @@ type QueueProvider = {
 	logger?: Logger;
 };
 
-export type QueueConsumer = (provider: QueueProvider) => ExportedHandlerQueueHandler;
+export type QueueCoordinator = (provider: QueueProvider) => ExportedHandlerQueueHandler;

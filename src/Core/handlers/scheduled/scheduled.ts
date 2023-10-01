@@ -1,13 +1,9 @@
-import type { Scheduled } from './types';
-import { ScheduledContext } from './context';
+import type { ScheduleCoordinator } from './types';
+import { ScheduleContext } from './context';
 
-export const scheduled: Scheduled = ({ jobs, logger }) => async (
-	controller,
-	env,
-	ctx
-): Promise<void> => {
+export const scheduled: ScheduleCoordinator = ({ jobs, logger }) => async (controller, env, ctx): Promise<void> => {
 	if (jobs[controller.cron]) {
-		const context = new ScheduledContext(ctx, controller, env, logger);
+		const context = new ScheduleContext(ctx, controller, env, logger);
 		await jobs[controller.cron](context);
 	}
 };

@@ -1,5 +1,6 @@
 import type { HeadersInit } from '@cloudflare/workers-types';
 
+// TODO - toLowerStringed??
 export function getHeadersObject(headers: HeadersInit): Record<string, string> {
 	if (Array.isArray(headers)) {
 		return headers.reduce((acc: Record<string, string>, cur: [string, string]) => {

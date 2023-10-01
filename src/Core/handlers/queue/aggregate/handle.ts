@@ -1,10 +1,11 @@
 import type { Message, Queue } from '@cloudflare/workers-types';
 import type { BatchTask } from '../types';
 import type { QueueContext } from '../context';
+import type { UnknownRecord } from '../../../types';
 import { generateToken } from '../../../../Crypto';
 
 export async function handleAggregate(
-	context: QueueContext,
+	context: QueueContext<UnknownRecord>,
 	task: BatchTask
 ): Promise<void> {
 	const { handler, deadLetterQueue } = task;
@@ -15,13 +16,13 @@ export async function handleAggregate(
 			const batchId = generateToken(32);
 			const mapFn = (message: Message) => ({
 				body: {
-					reason: 'Batch message processor threw error',
+					reason: 'Aggregate message processor threw error',
 					attachment: message,
 					batchId,
 					error
 				}
 			});
-			await (context.env[deadLetterQueue] as Queue).sendBatch(context.batch.messages.map(mapFn));
+			await (<Queue>context.env[deadLetterQueue]).sendBatch(context.batch.messages.map(mapFn));
 		}
 	}
 }

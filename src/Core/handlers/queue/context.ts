@@ -1,12 +1,8 @@
-import type { ExecutionContext, MessageBatch } from '@cloudflare/workers-types';
+import type { MessageBatch } from '@cloudflare/workers-types';
+import type { CfExecutionContext } from '../../types';
 import type { Logger } from './types';
-import type { UnknownRecord } from '../../types';
 
-interface IQueueContext<
-	ENV extends UnknownRecord = UnknownRecord,
-	DEPS extends UnknownRecord = UnknownRecord,
-	MSG = unknown
-> extends ExecutionContext {
+interface IQueueContext<ENV = unknown, DEPS = unknown, MSG = unknown> extends CfExecutionContext {
 	batch: MessageBatch;
 	message: MSG;
 	env: ENV;
@@ -14,15 +10,10 @@ interface IQueueContext<
 	deps: DEPS;
 }
 
-export class QueueContext<
-	ENV extends UnknownRecord = UnknownRecord,
-	DEPS extends UnknownRecord = UnknownRecord,
-	MSG = unknown
-> implements IQueueContext {
+export class QueueContext<ENV = unknown, DEPS = unknown, MSG = unknown> implements IQueueContext {
 	public deps = <DEPS>{};
 	public message = <MSG>null;
-	public waitUntil = () => {};
-	public passThroughOnException = () => {};
+	public waitUntil: ExecutionContext['waitUntil'] = (): void => {};
 
 	constructor(
 		ctx: ExecutionContext,

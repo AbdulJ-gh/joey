@@ -1,1 +1,1 @@
-export { prng } from './PRNG';
+export { prng } from './prng';

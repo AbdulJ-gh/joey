@@ -4,8 +4,6 @@
 # Commented out fields do not have default values
 
 version: 0.0.1 # Required
-handlerRoot: ./src/handlers # Specifies root directory for handler lookups in `handlers` section
-middlewareRoot: ./src/middleware # Specifies root directory for middleware lookups in `handlers` section
 #logger: ./src/utils/logger # Specifies path to custom logger
 
 schemas:
@@ -22,14 +20,16 @@ build:
 
 # This section defines all middleware that the application requires
 # It does not specify if and when they are consumed
-# Defaults to an empty object, can be omitted
+# Defaults to an empty object and empty root, can be omitted
 # Middleware are listed with the following convention: `name: path`
 # Where `name` is the key used in other sections to specify when to use the middleware
 # Where `path` is the relative path of the middleware from the `middlewareRoot` option
 middleware:
-  name-of-ware-1: utils/name-of-ware-1 # Example
-  name-of-ware-2: utils/name-of-ware-2 # Example
-  name-of-ware-3: utils/name-of-ware-3 # Example
+  root: ./src/middleware # Specifies root directory for middleware lookups in `handlers` section # Default is './'
+  handlers:
+    name-of-ware-1: utils/name-of-ware-1 # Example
+    name-of-ware-2: utils/name-of-ware-2 # Example
+    name-of-ware-3: utils/name-of-ware-3 # Example
 
 # TODOOO - FROM HERE ONWARDS NO REALLY COMMENTED PROPERLY
 # This section defines all base configuration options used throughout the application
@@ -61,29 +61,21 @@ baseConfig:
     transformQueryParams:
       transform: true
       listDelimited: null
-    allValidationErrors: false
-    validationerrors: json
+    validationErrors: true
+    allValidationErrors: true
     prettifyJson: false
-    maxUrlLength: 2048
-    maxQueryLength: 1024
     emitAllowHeader: true
     headers:
       access-control-allow-origin: '*' # Example
       access-control-allow-methods: '*' # Example
       cache-control: no-store # Example
   defaultResponses:
-    notFound: ''
+    notFound:
       status: 404
       body: Resource not found
     methodNotAllowed:
       status: 405
       body: Method not allowed
-    exceededUrlLimit:
-      status: 414
-      body: Request URI too long
-    exceededQueryLimit:
-      status: 414
-      body: Request query too long
     internalServerError:
       status: 500
       body: An unexpected error occurred
@@ -92,16 +84,40 @@ baseConfig:
       body: Could not process request due to validation errors
 
 handlers:
-  name-of-handler: # Example name
-    method: GET # Required
-    route: /resrouce/:id # Required
-    src: name-of-handler/index.ts # Required
-    middleware:
-      - name-of-ware-3
-    schema:
-      body: someBody
-      path: somePath
-      query: someQuery
-    options: # Any specific options to override the default. Accepts all options from baseConfig
-      prettifyJson: true # Example
-
+  root: ./src/handlers # Specifies root directory for handler lookups in `handlers` section # Default is './'
+  fetch:
+    name-of-handler: # Example name
+      method: GET # Required
+      route: /resource/:id # Required
+      src: name-of-handler/index.ts # Required
+      middleware:
+        - name-of-ware-3
+      schema:
+        body: someBody
+        path: somePath
+        query: someQuery
+      options: # Any specific options to override the default. Accepts all options from baseConfig
+        prettifyJson: true # Example
+  scheduled:
+    name-of-job-1: # Not used but required for indentation?
+      cron: '*/1 * * * *'
+      src: scheduled/job1/index.ts
+    name-of-job-2:
+      cron: '* * * 5 *'
+      src: scheduled/job2/index.ts
+    max-3-jobs:
+      cron: '* * * * 10'
+      src: scheduled/job3/index.ts
+  queue:
+    name-of-consumer-1:
+      processMode: 'aggregate'
+      src: queues/consumer1/index.ts
+      validator: '?? Can this be picked up by schemas?'
+      deadLetterQueue: name-of-dead-letter-queue
+    name-of-consumer-2:
+      processMode: 'isolate'
+      src: queues/dlq-1/index.ts
+      validator: '?? Can this be picked up by schemas?'
+    name-of-consumer-3:
+      processMode: 'manual'
+      src: queues/consumer2/index.ts

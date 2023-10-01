@@ -58,6 +58,7 @@ rules:
   no-extra-semi: warn
   '@typescript-eslint/no-unsafe-assignment':
     - warn
+  '@typescript-eslint/ban-ts-comment': off
 
 
 # Docs

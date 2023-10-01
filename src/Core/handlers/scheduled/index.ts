@@ -1,2 +1,2 @@
 export { scheduled } from './scheduled';
-export type { CronJobs, ScheduledHandler } from './types';
+export type { CronJobs, ScheduledHandler, ScheduleCoordinator } from './types';

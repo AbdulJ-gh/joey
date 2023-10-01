@@ -1,16 +1,16 @@
 import type { ExportedHandlerScheduledHandler } from '@cloudflare/workers-types';
-import type { ScheduledContext } from './context';
+import type { ScheduleContext } from './context';
 
 export type ScheduledHandler<ENV = unknown, DEPS = unknown> = (
-	context: ScheduledContext<ENV, DEPS>
+	context: ScheduleContext<ENV, DEPS>
 ) => Promise<void>|void;
 
 export type CronJobs = Record<string, ScheduledHandler>;
 export type Logger = string;
 
-type ScheduledProvider = {
+type ScheduleProvider = {
 	jobs: CronJobs;
 	logger?: Logger;
 };
 
-export type Scheduled = (provider: ScheduledProvider) => ExportedHandlerScheduledHandler;
+export type ScheduleCoordinator = (provider: ScheduleProvider) => ExportedHandlerScheduledHandler;

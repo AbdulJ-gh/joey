@@ -1,4 +1,5 @@
 import Ajv, { JSONSchemaType } from 'ajv';
+import AjvErrors from 'ajv-errors'
 import fg from 'fast-glob';
 import * as esbuild from 'esbuild';
 import standaloneCode from 'ajv/dist/standalone/index.js';
@@ -38,11 +39,13 @@ export default async function generateValidators({ pattern, ignore }: Worker['sc
 		schemaNames.push(schemaFile.default.$id)
 	}
 
-	const ajv = new Ajv({
+	const ajv = AjvErrors(new Ajv({
+		allErrors: true,
 		schemas: importedSchemas,
 		code: { source: true, esm: true },
 		allowUnionTypes: true,
-	});
+		// formats: // TODO - look in to
+	}));
 
 	return {
 		validatorsFile: standaloneCode(ajv),

@@ -53,7 +53,8 @@ export default class Composer {
 		this.write(`\nimport * as validators from '${validatorsPath}'`);
 		this.write(`\nconst paths = ${JSON.stringify(paths)}`);
 		this.write('\nconst joey = new Joey(paths,config,middleware,logger,loggerInit)')
-		this.write('\nexport default { fetch: joey.fetch }')
+		this.write('\nconst { fetch, queue, scheduled } = joey')
+		this.write('\nexport default { fetch, queue, scheduled  }')
 	}
 	/** Initial Write */
 

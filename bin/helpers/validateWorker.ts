@@ -50,6 +50,8 @@ export default function validateWorker(worker: Worker, tmpDir: string): ReturnTy
     }
   })
 
+	// TODO - Body cannot exist if method is `GET`
+
   return {
     handlerNames: Object.keys(worker.handlers),
     middlewareNames: Object.keys(worker.middleware)

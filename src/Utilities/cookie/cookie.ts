@@ -1,3 +1,4 @@
+import type { Headers } from '@cloudflare/workers-types';
 import { maxage, getSeconds } from 'maxage';
 import type { CookieOptions, EpochOrFromNow } from './types';
 

@@ -1,17 +1,17 @@
-import type { ExecutionContext, ScheduledController } from '@cloudflare/workers-types';
+import type { ScheduledController } from '@cloudflare/workers-types';
+import type { CfExecutionContext } from '../../types';
 import type { Logger } from './types';
 
-interface IScheduledContext<ENV = unknown, DEPS = unknown> extends ExecutionContext {
+interface IScheduleContext<ENV = unknown, DEPS = unknown> extends CfExecutionContext {
 	controller: ScheduledController;
 	env: ENV;
 	logger: Logger;
 	deps: DEPS;
 }
 
-export class ScheduledContext<ENV = unknown, DEPS = unknown> implements IScheduledContext {
+export class ScheduleContext<	ENV = unknown, DEPS = unknown> implements IScheduleContext {
 	public deps = <DEPS>{};
-	public waitUntil = () => {};
-	public passThroughOnException = () => {};
+	public waitUntil: ExecutionContext['waitUntil'] = (): void => {};
 
 	constructor(
 		ctx: ExecutionContext,
