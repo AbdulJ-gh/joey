@@ -5,7 +5,8 @@
   "properties": {
     "parsePath": { "type": "boolean", "default": true },
     "parseQuery": { "type": "boolean", "default": true },
-    "parseBody": { "enum": [ false, "content-type-header", null, "plaintext", "json", "formData", "buffer", "blob" ], "default": "json" },
+    "cloneBody": { "type": "boolean", "default": false },
+    "parseBody": { "enum": [ false, "content-type-header", null, "plaintext", "json", "formData", "urlEncodedFormData", "buffer", "blob" ], "default": "json" },
     "contentHeaderParseMap": {
       "type": "object",
       "properties": {
@@ -15,7 +16,8 @@
           "default": [
             { "query": "text", "bodyType": "plaintext" },
             { "query": "json", "bodyType": "json" },
-            { "query": "formData", "bodyType": "formData" },
+            { "query": "form-data", "bodyType": "formData" },
+            { "query": "form-urlencoded", "bodyType": "urlEncodedFormData" },
             { "query": "octet-stream", "bodyType": "buffer" }
           ]
         },

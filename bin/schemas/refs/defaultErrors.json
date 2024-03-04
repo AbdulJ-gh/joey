@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://example.com/schema/defaultResponses",
+  "$id": "https://example.com/schema/defaultErrors",
   "type": "object",
   "properties": {
     "notFound": {
@@ -15,20 +15,6 @@
       "default": {
         "status": 405,
         "body": "Method not allowed"
-      }
-    },
-    "exceededUrlLimit": {
-      "$ref": "https://example.com/schema/defaultError",
-      "default": {
-        "status": 414,
-        "body": "Request URI too long"
-      }
-    },
-    "exceededQueryLimit": {
-      "$ref": "https://example.com/schema/defaultError",
-      "default": {
-        "status": 414,
-        "body": "Request query too long"
       }
     },
     "internalServerError": {

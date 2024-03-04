@@ -4,7 +4,7 @@
     "module": "esnext",
     "skipLibCheck": true,
     "declaration": true,
-    "outDir": "lib",
+    "outDir": "libTest",
     "strict": true,
     "esModuleInterop": true,
     "moduleResolution": "node",
@@ -14,8 +14,9 @@
     "preserveConstEnums": true,
     "sourceMap": false,
     "removeComments": true,
-    "types": ["@cloudflare/workers-types", "@types/node"]
+    "types": ["@cloudflare/workers-types", "@types/node"],
   },
-  "include": ["src", "bin"],
+  //"include": ["src", "bin"], // TODO
+  "include": ["src"],
 }
 

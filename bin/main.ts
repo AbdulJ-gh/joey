@@ -1,102 +1,47 @@
 import { mkdtempSync } from 'fs';
-import { join, sep } from 'path';
 import { tmpdir } from 'os';
-import _ from 'lodash';
+import { getWorkerConfig } from './config';
+import { Composer, type AppData, joeyLog } from './io';
+import { finalBuild } from './build';
+import { generateValidators, generateFetchRoutes, generateScheduledJobs, generateQueueTasks } from './helpers';
 
-import { Composer, TempFile, getWorkerConfig, validateWorker, throwError, ERRORS, finalBuild, generateValidators } from './helpers/index.js';
-import type { Worker, Validator } from './types.js'
-
-export default async function main() {
+async function main() {
 	/** Get and validate worker configuration */
-	const worker = <Worker>getWorkerConfig();
-	const tempDir = mkdtempSync(tmpdir() + sep);
-	const {
-		handlerNames,
-		middlewareNames
-	} = validateWorker(worker, tempDir);
-	const {
-		handlersRoot,
-		middlewareRoot,
-		logger,
-		schemas,
-		build,
-		handlers,
-		middleware,
-		baseConfig
-	} = worker;
+	const tempDir = mkdtempSync(tmpdir());
+	const { worker, handlerRefs } = getWorkerConfig(tempDir);
+	const { global: { options, middleware, defaultErrors }, handlers, schemas, logger, build } = worker;
 
-	/** Generate handler lists for imports  */
-	const handlersList = handlerNames.map((name) => ({
-		name: _.camelCase(name), path: './' + join(handlersRoot, handlers[name].src)
-	}))
-	const middlewareList = middlewareNames.map((name) => ({
-		name: _.camelCase(name), path: './' + join(middlewareRoot, middleware[name])
-	}))
-	const config = { ...baseConfig.options, ...baseConfig.defaultResponses }
-	const globalMiddleware = baseConfig.middleware.map(Composer.unsafeMiddlewareDeclaration)
+	/** Generate validators */
+	joeyLog('Generating schema validators');
+	const { schemaNames, validators } = await generateValidators(schemas, tempDir);
 
-	/** Generate Validators */
-	const { schemaNames, validatorsFile } = await generateValidators(schemas, tempDir)
-	const tempValidatorsFile = new TempFile(tempDir, 'ajv.js',  validatorsFile);
+	/** Create routes */
+	joeyLog('Creating fetch routes');
+	const fetch = generateFetchRoutes(handlers.fetch, schemaNames);
 
-	/** Create Paths */
-	const paths: Record<string, any> = {};
-	handlerNames.forEach((name) => {
-		const {
-			route,
-			method,
-			options,
-			middleware: handlerMiddleware,
-			schema
-		} = handlers[name];
+	/** Create scheduledJobs */
+	joeyLog('Creating scheduled jobs');
+	const cronJobs = generateScheduledJobs(handlers.scheduled);
 
-		if (!paths[route]) { paths[route] = {} }
-		if (paths[route][method]) {
-			throwError(ERRORS.DUPLICATE_HANDLER(`${method.toUpperCase()} ${route}`));
-		}
-
-		let validator = '__UNSAFE_VALIDATOR_REF__{';
-		for (const key in schema) {
-			if (!schemaNames.includes(schema[key as Validator])) {
-				throwError(ERRORS.CANNOT_FIND_SCHEMA(schema[key as Validator]))
-			}
-			validator += `${key}:validators.${schema[key as Validator]},`
-		}
-		validator += '}__UNSAFE_VALIDATOR_REF__';
-
-		paths[route][method] = {
-			handler: `__UNSAFE_HANDLER_REF__${name}`,
-			path: route,
-			config: options,
-			middleware: handlerMiddleware.map(Composer.unsafeMiddlewareDeclaration),
-			validator
-		};
-	})
-
-	// TODO - Could be doing more verifications, such as:
-	//  * Ensure no route pattern appears twice even with different param names E.g. /:id and /:name cannot coexist)
-	//  * Check no route pattern uses the same param twice E.g. /user/:id/org/:id, it sh/could be /user/:id/org/:orgId)
+	/** Create scheduledJobs */
+	joeyLog('Creating queue tasks');
+	const queueTasks = generateQueueTasks(handlers.queue, schemaNames);
 
 	/** Compile app */
-	const app = new Composer(tempDir);
-	app.initialWrite({
-		handlerImports: handlersList,
-		middlewareImports: middlewareList,
-		config,
-		globalMiddleware,
-		validatorsPath: tempValidatorsFile.path,
-		paths,
-		logger,
-	});
+	joeyLog('Composing application');
+	const appData: AppData = {
+		handlerRefs,
+		config: { options, defaultErrors },
+		validatorsPath: validators,
+		loggerPath: logger,
+		handlers: { fetch, cronJobs, queueTasks, middleware: middleware.map(Composer.UNSAFE_REF) }
+	};
 
-	app.cleanUnsafeRefs(handlerNames, middlewareNames)
+	const app = new Composer(tempDir, appData);
 
-	const finalApp = app.read();
-
-	if (finalApp.includes('__UNSAFE_MIDDLEWARE_REF__')) {
-		throwError(ERRORS.MISSING_MIDDLEWARE_DECLARATION);
-	}
-
-	finalBuild(finalApp, build);
+	/** Final build with esbuild */
+	joeyLog('Compiling code...');
+	finalBuild(app.read(), build, tempDir);
 }
 
+export default main;

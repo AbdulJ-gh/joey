@@ -1,13 +1,13 @@
 import { writeFileSync, readFileSync } from 'fs';
 
-export default class TempFile {
+export class TempFile {
 	public tmpDir: string;
 	public path: string;
 
 	constructor(tmpDir: string, filename: string, initialWrite?: string) {
 		this.tmpDir = tmpDir;
 		this.path = `${tmpDir}/${filename}`;
-		if (initialWrite) { this.overwrite(initialWrite) }
+		if (initialWrite) { this.overwrite(initialWrite); }
 	}
 
 	write(line: string) {

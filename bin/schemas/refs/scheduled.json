@@ -1,0 +1,11 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://example.com/schema/scheduled",
+  "type": "object",
+  "required": ["cron","src"],
+  "additionalProperties": false,
+  "properties": {
+    "cron": { "type": "string" },
+    "src": { "type": "string" }
+  }
+}

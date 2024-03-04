@@ -1,7 +1,6 @@
 coverage
-bin
 lib
-lib-test
+libTest
 node_modules
 scripts
 

@@ -1,28 +1,24 @@
-export type Validator = 'path' | 'query' | 'body'
+export type Import = { name: string, path: string };
 
-export type Handler = {
-  route: string;
-  method: string;
-  src: string;
-  options?: Record<string, string>;
-  middleware: string[];
-	schema: Record<Validator, string>
+export type ProcessMode = 'aggregate' | 'isolate' | 'manual';
+
+type RouteRecord = {
+	[key: string]: {
+		handler: string;
+		route: string;
+		config: Record<string, unknown>;
+		middleware: string[];
+		validator?: string;
+	};
 }
 
-export type Worker = {
-  handlersRoot: string,
-	middlewareRoot: string,
-  logger?: string
-	schemas: {
-		pattern: string | string[],
-		ignore: string[],
-	},
-  build: { outDir: string, filename: string, sourcemaps: boolean, watch: boolean, minify: boolean }
-  middleware: Record<string, string>,
-  baseConfig: {
-    middleware: string[],
-    options: Record<string, unknown>,
-		defaultResponses: Record<string, unknown>,
-  }
-  handlers: Record<string, Handler>
+type QueueRecord = {
+	handler: string,
+	processMode: ProcessMode,
+	validator?: string,
+	deadLetterQueue?: string // Service binding, e.g. env.
 }
+
+export type FetchRoutes = Record<string, RouteRecord> // Aligns with type Register<RouteInfo> in `src/core/handlers/fetch/types.ts`
+export type CronJobs = Record<string, string> // Aligns with type CronJobs in `src/core/handlers/scheduled/types.ts`
+export type QueueTasks = Record<string, QueueRecord> // Aligns with type QueueTasks in `src/core/handlers/queue/types.ts`

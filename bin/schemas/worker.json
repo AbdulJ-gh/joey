@@ -6,34 +6,62 @@
   "additionalProperties": false,
   "properties": {
     "version":  { "type": "string" },
-    "handlersRoot":  { "type": "string", "default": "./src/handlers"  },
-    "middlewareRoot":  { "type": "string", "default": "./src/middleware"  },
     "logger":  { "type": "string" },
     "schemas": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "pattern": { "type": ["string", "array"], "items": { "type": "string" }, "default": "./src/**/*.schema.ts" },
-        "ignore": { "type": "array", "items": { "type": "string" }, "default": [] }
+        "include": { "type": ["string", "array"], "items": { "type": "string" }, "default": "./src/**/*.schema.ts" },
+        "exclude": { "type": ["string", "array"], "items": { "type": "string" }, "default": [] }
       }
     },
     "build": { "$ref": "https://example.com/schema/build", "default": {} },
-    "middleware":  { "$ref": "https://example.com/schema/keyValueStringObject", "default": {} },
-    "baseConfig":  {
+    "middleware":  {
+      "type": "object",
+      "additionalProperties": false,
+      "default": {},
+      "properties": {
+        "root":  { "type": "string", "default": "./src/middleware"  },
+        "handlers": { "$ref": "https://example.com/schema/keyValueStringObject", "default": {} }
+      }
+    },
+    "global":  {
       "type": "object",
       "additionalProperties": false,
       "default": {},
       "properties": {
         "options": { "$ref": "https://example.com/schema/options", "default": {} },
         "middleware": { "type": "array", "items": { "type": "string" }, "default": [] },
-        "defaultResponses": { "$ref": "https://example.com/schema/defaultResponses", "default": {} }
+        "defaultErrors": { "$ref": "https://example.com/schema/defaultErrors", "default": {} }
       }
     },
     "handlers": {
       "type": "object",
-      "minProperties": 1,
-      "patternProperties": {
-        "^.*$": { "$ref": "https://example.com/schema/handler" }
+      "additionalProperties": false,
+      "default": {},
+      "properties": {
+        "root":  { "type": "string", "default": "./src/handlers"  },
+        "fetch": {
+          "type": "object",
+          "patternProperties": {
+            "^.*$": { "$ref": "https://example.com/schema/handler" }
+          },
+          "default": {}
+        },
+        "scheduled": {
+          "type": "object",
+          "patternProperties": {
+            "^.*$": { "$ref": "https://example.com/schema/scheduled" }
+          },
+          "default": {}
+        },
+        "queue": {
+          "type": "object",
+          "patternProperties": {
+            "^.*$": { "$ref": "https://example.com/schema/queue" }
+          },
+          "default": {}
+        }
       }
     }
   }

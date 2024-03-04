@@ -1,7 +1,7 @@
 .idea/
 .graphviz/
 lib/
-lib-test/
+libTest/
 node_modules/
 coverage/
 

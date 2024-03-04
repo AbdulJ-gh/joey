@@ -1,6 +1,6 @@
 {
   "fileExtensions": ["js", "ts"],
-  "tsConfig": "tsconfig.json",
+  "tsConfig": "tsconfig.build.json",
   "graphVizOptions": {
     "G": {
       "rankdir": "TB"
@@ -8,7 +8,7 @@
   },
   "detectiveOptions": {
     "ts": {
-      "skipTypeImports": true
+      "skipTypeImports": "true"
     }
   }
 }

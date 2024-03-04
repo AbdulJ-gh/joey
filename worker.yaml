@@ -8,7 +8,7 @@ version: 0.0.1 # Required
 
 schemas:
   include: ./src/**/*.schema.ts # Specify a glob or array of globs to lookup schema files. Example alternatives: ./src/schemas or./src/handlers/**/*.schema.ts
-#  exclude: # Can also be a single string value or array of strings. Can also be defined as globsl
+#  exclude:
 #    - ./src/schemas/draftSchema.schema.ts
 #    - ./src/schemas/draftSchema2.schema.ts
 
@@ -31,10 +31,10 @@ middleware:
     name-of-ware-2: utils/name-of-ware-2.ts # Example
     name-of-ware-3: utils/name-of-ware-3.ts # Example
 
-# TODOOO - FROM HERE ONWARDS NOT REALLY COMMENTED PROPERLY
+# TODOOO - FROM HERE ONWARDS NO REALLY COMMENTED PROPERLY
 # This section defines all base configuration options used throughout the application
 # Individual options can be overridden within the handler config further below
-global:
+baseConfig:
   middleware: # Specifies which middleware should run an all requests. Defaults to an empty array, can be omitted
     - name-of-ware-1 # Example
     - name-of-ware-2 # Example
@@ -42,12 +42,11 @@ global:
     parsePath: true
     parseQuery: true
     parseBody: json
-    cloneBody: false
     contentHeaderParseMap:
       matchers:
         - query: text
           bodyType: plaintext
-          matcher: inclusive
+          matcher: inclusive # What does it do. Always defaults to inclusive, can be omitted
         - query: json
           bodyType: json
           matcher: inclusive
@@ -63,7 +62,7 @@ global:
     validationErrors: true
     allValidationErrors: true
     prettifyJson: false
-    emitAllowHeader: true # Global only (and fetch only like most of these) obviously if a request gets routed to a handler it is already resolved so it won't 405
+    emitAllowHeader: true
     headers:
       access-control-allow-origin: '*' # Example
       access-control-allow-methods: '*' # Example
@@ -84,7 +83,6 @@ global:
 
 handlers:
   root: ./src/handlers # Specifies root directory for handler lookups in `handlers` section # Default is './src/handlers'
-
   fetch:
     name-of-handler: # Example name
       method: GET # Required
@@ -97,7 +95,6 @@ handlers:
         query: someQuery
       options: # Any specific options to override the default. Accepts all options from baseConfig
         prettifyJson: true # Example
-
     name-of-handler-2: # Example name
       method: POST # Required
       route: /resource/:id # Required
@@ -110,31 +107,26 @@ handlers:
         query: someQuery
       options: # Any specific options to override the default. Accepts all options from baseConfig
         prettifyJson: true # Example
-
   scheduled:
     name-of-job-1: # Not used but required for indentation?
       cron: '*/1 * * * *'
       src: scheduled/job1/index.ts
-
     name-of-job-2:
       cron: '* * * 5 *'
       src: scheduled/job2/index.ts
-
     max-3-jobs:
       cron: '* * * * 10'
       src: scheduled/job3/index.ts
-
   queue:
     name-of-consumer-1:
       processMode: 'aggregate' # defaults to 'isolate'?
       src: queues/consumer1/index.ts
-      schema: consumerSchema # schema type can be anything, even js objects - Only supports json validation
-      deadLetterQueue: dlq-env-service-binding1
-
+      validator: '?? Can this be picked up by schemas?' # No schema because type can be anything, even js objects
+      deadLetterQueue: name-of-dead-letter-queue
     name-of-consumer-2:
       processMode: 'isolate'
       src: queues/dlq-1/index.ts
-
+      validator: '?? Can this be picked up by schemas?'
     name-of-consumer-3:
       processMode: 'manual'
       src: queues/consumer2/index.ts

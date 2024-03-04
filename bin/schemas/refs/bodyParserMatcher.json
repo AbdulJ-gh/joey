@@ -5,7 +5,7 @@
   "properties": {
     "query": { "type": "string" },
     "bodyType": {
-      "enum": [null, "plaintext", "json", "formData", "buffer", "blob"]
+      "enum": [null, "plaintext", "json", "formData", "urlEncodedFormData", "buffer", "blob"]
     },
     "matcher": {
       "enum": ["inclusive", "exact"],

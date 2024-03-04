@@ -1,0 +1,13 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://example.com/schema/queue",
+  "type": "object",
+  "required": ["src"],
+  "additionalProperties": false,
+  "properties": {
+    "processMode": { "enum": ["aggregate", "isolate", "manual"], "default": "isolate" },
+    "src": { "type": "string" },
+    "validator": { "type": "string" },
+    "deadLetterQueue": { "type": "string" }
+  }
+}

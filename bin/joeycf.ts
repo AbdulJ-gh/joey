@@ -1,8 +1,9 @@
 #!/usr/bin/env node
-import main from './main.js';
-import { throwError } from './helpers/index.js';
+import main from './main';
+import { throwBuildError } from './errors';
 
-try{ await main(); }
-catch(err){
-	throwError(<string>err);
+try {
+	await main();
+} catch (err) {
+	throwBuildError(<string>err);
 }
